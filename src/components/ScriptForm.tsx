@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -70,6 +71,24 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
     'Small Business Owners', 'Content Creators', 'Remote Workers'
   ];
 
+  const getOrderedOptions = (options: string[], hasCustom = true, hasAiChoose = true) => {
+    const orderedOptions = [];
+    
+    if (hasAiChoose) {
+      orderedOptions.push({ value: 'ai-choose', label: 'Let AI choose', isSpecial: true });
+    }
+    
+    if (hasCustom) {
+      orderedOptions.push({ value: 'custom', label: 'Custom', isSpecial: true });
+    }
+    
+    options.forEach(option => {
+      orderedOptions.push({ value: option, label: option, isSpecial: false });
+    });
+    
+    return orderedOptions;
+  };
+
   const handleToneChange = (tone: string, checked: boolean) => {
     if (checked) {
       setFormData(prev => ({ ...prev, tones: [...prev.tones, tone] }));
@@ -117,16 +136,6 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
             <h3 className="text-xl font-semibold text-foreground">Basic Information</h3>
             
             <div className="space-y-2">
-              <Label htmlFor="title">Reel Title (Optional)</Label>
-              <Input
-                id="title"
-                placeholder="Enter a catchy title for your reel"
-                value={formData.title}
-                onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-              />
-            </div>
-
-            <div className="space-y-2">
               <Label htmlFor="description">Reel Description *</Label>
               <Textarea
                 id="description"
@@ -135,6 +144,16 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                 onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                 rows={4}
                 required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="title">Reel Title (Optional)</Label>
+              <Input
+                id="title"
+                placeholder="Enter a catchy title for your reel"
+                value={formData.title}
+                onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
               />
             </div>
           </div>
@@ -153,11 +172,15 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                     <SelectValue placeholder="Select duration" />
                   </SelectTrigger>
                   <SelectContent>
+                    <SelectItem value="ai-choose" className="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 text-emerald-700 font-medium">
+                      Let AI choose
+                    </SelectItem>
+                    <SelectItem value="custom" className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 text-amber-700 font-medium">
+                      Custom length
+                    </SelectItem>
                     <SelectItem value="30s">30 seconds</SelectItem>
                     <SelectItem value="60s">60 seconds</SelectItem>
                     <SelectItem value="90s">90 seconds</SelectItem>
-                    <SelectItem value="custom">Custom length</SelectItem>
-                    <SelectItem value="ai-choose">Let AI choose</SelectItem>
                   </SelectContent>
                 </Select>
                 {formData.length === 'custom' && (
@@ -176,10 +199,12 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                     <SelectValue placeholder="Select language" />
                   </SelectTrigger>
                   <SelectContent className="max-h-60">
+                    <SelectItem value="custom" className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 text-amber-700 font-medium">
+                      Custom language/dialect
+                    </SelectItem>
                     {languages.map((lang) => (
                       <SelectItem key={lang} value={lang}>{lang}</SelectItem>
                     ))}
-                    <SelectItem value="custom">Custom language/dialect</SelectItem>
                   </SelectContent>
                 </Select>
                 {formData.language === 'custom' && (
@@ -222,6 +247,7 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                 placeholder="Custom tone (optional)"
                 value={formData.customTone}
                 onChange={(e) => setFormData(prev => ({ ...prev, customTone: e.target.value }))}
+                className="bg-gradient-to-r from-amber-50 to-orange-50 border-amber-200 placeholder:text-amber-600"
               />
             </div>
 
@@ -232,11 +258,15 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                   <SelectValue placeholder="Choose structure" />
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="ai-choose" className="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 text-emerald-700 font-medium">
+                    Let AI choose
+                  </SelectItem>
+                  <SelectItem value="custom" className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 text-amber-700 font-medium">
+                    Custom structure
+                  </SelectItem>
                   {structureOptions.map((structure) => (
                     <SelectItem key={structure} value={structure}>{structure}</SelectItem>
                   ))}
-                  <SelectItem value="custom">Custom structure</SelectItem>
-                  <SelectItem value="ai-choose">Let AI choose</SelectItem>
                 </SelectContent>
               </Select>
               {formData.structure === 'custom' && (
@@ -263,11 +293,15 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                     <SelectValue placeholder="Select goal" />
                   </SelectTrigger>
                   <SelectContent>
+                    <SelectItem value="ai-choose" className="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 text-emerald-700 font-medium">
+                      Let AI choose
+                    </SelectItem>
+                    <SelectItem value="custom" className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 text-amber-700 font-medium">
+                      Custom goal
+                    </SelectItem>
                     {goalOptions.map((goal) => (
                       <SelectItem key={goal} value={goal}>{goal}</SelectItem>
                     ))}
-                    <SelectItem value="custom">Custom goal</SelectItem>
-                    <SelectItem value="ai-choose">Let AI choose</SelectItem>
                   </SelectContent>
                 </Select>
                 {formData.goal === 'custom' && (
@@ -286,11 +320,15 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                     <SelectValue placeholder="Select audience" />
                   </SelectTrigger>
                   <SelectContent>
+                    <SelectItem value="ai-choose" className="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 text-emerald-700 font-medium">
+                      Let AI choose
+                    </SelectItem>
+                    <SelectItem value="custom" className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 text-amber-700 font-medium">
+                      Custom audience
+                    </SelectItem>
                     {audienceOptions.map((audience) => (
                       <SelectItem key={audience} value={audience}>{audience}</SelectItem>
                     ))}
-                    <SelectItem value="custom">Custom audience</SelectItem>
-                    <SelectItem value="ai-choose">Let AI choose</SelectItem>
                   </SelectContent>
                 </Select>
                 {formData.targetAudience === 'custom' && (
