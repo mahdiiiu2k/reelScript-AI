@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { video } from 'lucide-react';
+import { Video } from 'lucide-react';
 
 export const Header = () => {
   return (
@@ -9,7 +9,7 @@ export const Header = () => {
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <div className="p-2 bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl">
-              <video className="h-6 w-6 text-white" />
+              <Video className="h-6 w-6 text-white" />
             </div>
             <div>
               <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">

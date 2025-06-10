@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { toast } from 'sonner';
-import { edit, play } from 'lucide-react';
+import { Edit, Play } from 'lucide-react';
 
 interface ScriptResultProps {
   script: string;
@@ -42,7 +42,7 @@ export const ScriptResult: React.FC<ScriptResultProps> = ({ script, onNewScript 
         <CardHeader className="text-center">
           <div className="flex items-center justify-center space-x-2 mb-2">
             <Badge className="bg-green-100 text-green-800 border-green-200">
-              <play className="h-3 w-3 mr-1" />
+              <Play className="h-3 w-3 mr-1" />
               Script Generated
             </Badge>
           </div>
@@ -74,7 +74,7 @@ export const ScriptResult: React.FC<ScriptResultProps> = ({ script, onNewScript 
               onClick={onNewScript}
               className="flex-1 sm:flex-none bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
             >
-              <edit className="h-4 w-4 mr-2" />
+              <Edit className="h-4 w-4 mr-2" />
               Generate New Script
             </Button>
           </div>

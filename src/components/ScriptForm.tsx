@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -12,7 +11,7 @@ import { Separator } from '@/components/ui/separator';
 import { toast } from 'sonner';
 import { generateScript } from '@/services/scriptGenerator';
 import { languages } from '@/data/languages';
-import { play } from 'lucide-react';
+import { Play } from 'lucide-react';
 
 interface ScriptFormProps {
   onScriptGenerated: (script: string) => void;
@@ -329,7 +328,7 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
               </div>
             ) : (
               <div className="flex items-center space-x-2">
-                <play className="h-5 w-5" />
+                <Play className="h-5 w-5" />
                 <span>Generate Script</span>
               </div>
             )}
