@@ -38,7 +38,7 @@ export const generateScript = async (formData: FormData): Promise<string> => {
         messages: [
           {
             role: 'system',
-            content: 'You are an expert Instagram reel script writer. Create engaging, viral-worthy scripts that capture attention quickly and drive engagement. Always provide structured, actionable scripts that are optimized for the specified duration and audience.'
+            content: 'You are an expert Instagram reel script writer. Generate natural, engaging spoken scripts that creators would say aloud. Do not include scene directions, visual cues, or formatting instructions. Focus only on the spoken content that follows the specified tone, structure, and goals.'
           },
           {
             role: 'user',
@@ -69,34 +69,28 @@ export const generateScript = async (formData: FormData): Promise<string> => {
 };
 
 const buildPrompt = (formData: FormData): string => {
-  let prompt = `Create an Instagram reel script with the following specifications:
+  let prompt = `Based on the following inputs, generate a natural, engaging spoken script for an Instagram reel. Only include what the creator would say aloud — no scene directions, no visuals, no formatting. The script should follow the chosen tone, structure, and goal, and be suitable for the selected reel length.
 
-**Description/Topic:** ${formData.description}
-
-**Basic Info:**`;
+Inputs:`;
 
   if (formData.title) {
-    prompt += `\n- Title: ${formData.title}`;
+    prompt += `\nTitle: ${formData.title}`;
   }
+
+  prompt += `\nDescription: ${formData.description}`;
 
   // Length
   if (formData.length && formData.length !== 'ai-choose') {
     if (formData.length === 'custom' && formData.customLength) {
-      prompt += `\n- Duration: ${formData.customLength}`;
+      prompt += `\nLength: ${formData.customLength}`;
     } else {
-      prompt += `\n- Duration: ${formData.length}`;
+      prompt += `\nLength: ${formData.length}`;
     }
-  }
-
-  // Language
-  const language = formData.language === 'custom' ? formData.customLanguage : formData.language;
-  if (language && language !== 'English') {
-    prompt += `\n- Language: ${language}`;
   }
 
   // Tone
   if (formData.tones.length > 0 || formData.customTone) {
-    prompt += `\n- Tone: `;
+    prompt += `\nTone: `;
     const tones = [...formData.tones];
     if (formData.customTone) {
       tones.push(formData.customTone);
@@ -107,35 +101,33 @@ const buildPrompt = (formData: FormData): string => {
   // Structure
   if (formData.structure && formData.structure !== 'ai-choose') {
     const structure = formData.structure === 'custom' ? formData.customStructure : formData.structure;
-    prompt += `\n- Structure: ${structure}`;
+    prompt += `\nStructure: ${structure}`;
   }
 
   // Goal
   if (formData.goal && formData.goal !== 'ai-choose') {
     const goal = formData.goal === 'custom' ? formData.customGoal : formData.goal;
-    prompt += `\n- Goal: ${goal}`;
+    prompt += `\nGoal: ${goal}`;
   }
 
   // Target Audience
   if (formData.targetAudience && formData.targetAudience !== 'ai-choose') {
     const audience = formData.targetAudience === 'custom' ? formData.customAudience : formData.targetAudience;
-    prompt += `\n- Target Audience: ${audience}`;
+    prompt += `\nTarget Audience: ${audience}`;
+  }
+
+  // Language
+  const language = formData.language === 'custom' ? formData.customLanguage : formData.language;
+  if (language && language !== 'English') {
+    prompt += `\nLanguage: ${language}`;
   }
 
   // Audience Age
   if (formData.audienceAge) {
-    prompt += `\n- Audience Age: ${formData.audienceAge}`;
+    prompt += `\nAudience Age: ${formData.audienceAge}`;
   }
 
-  prompt += `\n\n**Instructions:**
-1. Create a compelling hook within the first 3 seconds
-2. Provide clear, actionable content that matches the goal
-3. Include a strong call-to-action
-4. Format the script with clear sections and timing cues
-5. Make it engaging and shareable
-6. Optimize for the target audience and specified tone
-
-Please structure the script with clear sections like "Hook," "Main Content," "Call-to-Action," etc., and include timing suggestions where relevant.`;
+  prompt += `\n\nOutput:\nA fluent, engaging monologue or voiceover script for the reel.`;
 
   return prompt;
 };
