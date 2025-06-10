@@ -12,7 +12,7 @@ import { Separator } from '@/components/ui/separator';
 import { toast } from 'sonner';
 import { generateScript } from '@/services/scriptGenerator';
 import { languages } from '@/data/languages';
-import { Play } from 'lucide-react';
+import { Play, Sparkles } from 'lucide-react';
 
 interface ScriptFormProps {
   onScriptGenerated: (script: string) => void;
@@ -120,23 +120,28 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
   };
 
   return (
-    <Card className="w-full bg-white/80 backdrop-blur-md border-white/20 shadow-xl">
-      <CardHeader className="text-center">
-        <CardTitle className="text-3xl bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+    <Card className="w-full bg-white/90 backdrop-blur-lg border-white/30 shadow-2xl">
+      <CardHeader className="text-center pb-8">
+        <CardTitle className="text-4xl bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 bg-clip-text text-transparent font-bold">
           Create Your Viral Reel Script
         </CardTitle>
-        <CardDescription className="text-lg">
+        <CardDescription className="text-lg text-muted-foreground mt-2">
           Fill in the details below to generate a compelling Instagram reel script
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-6">
-        <form onSubmit={handleSubmit} className="space-y-6">
+      <CardContent className="space-y-8">
+        <form onSubmit={handleSubmit} className="space-y-8">
           {/* Basic Information */}
-          <div className="space-y-4">
-            <h3 className="text-xl font-semibold text-foreground">Basic Information</h3>
+          <div className="space-y-6">
+            <h3 className="text-xl font-semibold text-foreground flex items-center gap-2">
+              <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center">
+                <span className="text-white text-sm font-bold">1</span>
+              </div>
+              Basic Information
+            </h3>
             
             <div className="space-y-2">
-              <Label htmlFor="description">Reel Description *</Label>
+              <Label htmlFor="description" className="text-base font-medium">Reel Description *</Label>
               <Textarea
                 id="description"
                 placeholder="Describe what your reel should be about, the main message, or key points you want to cover..."
@@ -144,35 +149,43 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                 onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                 rows={4}
                 required
+                className="border-2 focus:border-purple-300 transition-colors"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="title">Reel Title (Optional)</Label>
+              <Label htmlFor="title" className="text-base font-medium">Reel Title (Optional)</Label>
               <Input
                 id="title"
                 placeholder="Enter a catchy title for your reel"
                 value={formData.title}
                 onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                className="border-2 focus:border-purple-300 transition-colors"
               />
             </div>
           </div>
 
-          <Separator />
+          <Separator className="bg-gradient-to-r from-purple-200 to-blue-200 h-px" />
 
           {/* Technical Specifications */}
-          <div className="space-y-4">
-            <h3 className="text-xl font-semibold text-foreground">Technical Specifications</h3>
+          <div className="space-y-6">
+            <h3 className="text-xl font-semibold text-foreground flex items-center gap-2">
+              <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center">
+                <span className="text-white text-sm font-bold">2</span>
+              </div>
+              Technical Specifications
+            </h3>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label>Reel Length</Label>
+                <Label className="text-base font-medium">Reel Length</Label>
                 <Select value={formData.length} onValueChange={(value) => setFormData(prev => ({ ...prev, length: value }))}>
-                  <SelectTrigger>
+                  <SelectTrigger className="border-2 focus:border-purple-300">
                     <SelectValue placeholder="Select duration" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="ai-choose" className="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 text-emerald-700 font-medium">
+                    <SelectItem value="ai-choose" className="bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-200 text-purple-700 font-medium flex items-center gap-2">
+                      <Sparkles className="w-4 h-4" />
                       Let AI choose
                     </SelectItem>
                     <SelectItem value="custom" className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 text-amber-700 font-medium">
@@ -188,14 +201,15 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                     placeholder="Enter specific length (e.g., 45 seconds)"
                     value={formData.customLength}
                     onChange={(e) => setFormData(prev => ({ ...prev, customLength: e.target.value }))}
+                    className="mt-2 border-amber-200 focus:border-amber-400"
                   />
                 )}
               </div>
 
               <div className="space-y-2">
-                <Label>Language / Dialect</Label>
+                <Label className="text-base font-medium">Language / Dialect</Label>
                 <Select value={formData.language} onValueChange={(value) => setFormData(prev => ({ ...prev, language: value }))}>
-                  <SelectTrigger>
+                  <SelectTrigger className="border-2 focus:border-purple-300">
                     <SelectValue placeholder="Select language" />
                   </SelectTrigger>
                   <SelectContent className="max-h-60">
@@ -212,53 +226,61 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                     placeholder="Enter custom language or dialect"
                     value={formData.customLanguage}
                     onChange={(e) => setFormData(prev => ({ ...prev, customLanguage: e.target.value }))}
+                    className="mt-2 border-amber-200 focus:border-amber-400"
                   />
                 )}
               </div>
             </div>
           </div>
 
-          <Separator />
+          <Separator className="bg-gradient-to-r from-purple-200 to-blue-200 h-px" />
 
           {/* Content Style */}
-          <div className="space-y-4">
-            <h3 className="text-xl font-semibold text-foreground">Content Style</h3>
+          <div className="space-y-6">
+            <h3 className="text-xl font-semibold text-foreground flex items-center gap-2">
+              <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center">
+                <span className="text-white text-sm font-bold">3</span>
+              </div>
+              Content Style
+            </h3>
             
-            <div className="space-y-2">
-              <Label>Tone (Select multiple)</Label>
+            <div className="space-y-4">
+              <Label className="text-base font-medium">Tone (Select multiple)</Label>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                 {toneOptions.map((tone) => (
-                  <div key={tone} className="flex items-center space-x-2">
+                  <div key={tone} className="flex items-center space-x-2 p-2 rounded-lg hover:bg-purple-50 transition-colors">
                     <Checkbox
                       id={`tone-${tone}`}
                       checked={formData.tones.includes(tone)}
                       onCheckedChange={(checked) => handleToneChange(tone, checked as boolean)}
+                      className="data-[state=checked]:bg-purple-600 data-[state=checked]:border-purple-600"
                     />
-                    <Label htmlFor={`tone-${tone}`} className="text-sm">{tone}</Label>
+                    <Label htmlFor={`tone-${tone}`} className="text-sm cursor-pointer">{tone}</Label>
                   </div>
                 ))}
               </div>
-              <div className="flex flex-wrap gap-2 mt-2">
+              <div className="flex flex-wrap gap-2 mt-3">
                 {formData.tones.map((tone) => (
-                  <Badge key={tone} variant="secondary">{tone}</Badge>
+                  <Badge key={tone} variant="secondary" className="bg-purple-100 text-purple-700 border-purple-200">{tone}</Badge>
                 ))}
               </div>
               <Input
                 placeholder="Custom tone (optional)"
                 value={formData.customTone}
                 onChange={(e) => setFormData(prev => ({ ...prev, customTone: e.target.value }))}
-                className="bg-gradient-to-r from-amber-50 to-orange-50 border-amber-200 placeholder:text-amber-600"
+                className="bg-gradient-to-r from-amber-50 to-orange-50 border-amber-200 placeholder:text-amber-600 focus:border-amber-400"
               />
             </div>
 
             <div className="space-y-2">
-              <Label>Script Structure</Label>
+              <Label className="text-base font-medium">Script Structure</Label>
               <Select value={formData.structure} onValueChange={(value) => setFormData(prev => ({ ...prev, structure: value }))}>
-                <SelectTrigger>
+                <SelectTrigger className="border-2 focus:border-purple-300">
                   <SelectValue placeholder="Choose structure" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="ai-choose" className="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 text-emerald-700 font-medium">
+                  <SelectItem value="ai-choose" className="bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-200 text-purple-700 font-medium flex items-center gap-2">
+                    <Sparkles className="w-4 h-4" />
                     Let AI choose
                   </SelectItem>
                   <SelectItem value="custom" className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 text-amber-700 font-medium">
@@ -274,26 +296,33 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                   placeholder="Describe your custom structure"
                   value={formData.customStructure}
                   onChange={(e) => setFormData(prev => ({ ...prev, customStructure: e.target.value }))}
+                  className="mt-2 border-amber-200 focus:border-amber-400"
                 />
               )}
             </div>
           </div>
 
-          <Separator />
+          <Separator className="bg-gradient-to-r from-purple-200 to-blue-200 h-px" />
 
           {/* Audience & Goals */}
-          <div className="space-y-4">
-            <h3 className="text-xl font-semibold text-foreground">Audience & Goals</h3>
+          <div className="space-y-6">
+            <h3 className="text-xl font-semibold text-foreground flex items-center gap-2">
+              <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center">
+                <span className="text-white text-sm font-bold">4</span>
+              </div>
+              Audience & Goals
+            </h3>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label>Reel Goal</Label>
+                <Label className="text-base font-medium">Reel Goal</Label>
                 <Select value={formData.goal} onValueChange={(value) => setFormData(prev => ({ ...prev, goal: value }))}>
-                  <SelectTrigger>
+                  <SelectTrigger className="border-2 focus:border-purple-300">
                     <SelectValue placeholder="Select goal" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="ai-choose" className="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 text-emerald-700 font-medium">
+                    <SelectItem value="ai-choose" className="bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-200 text-purple-700 font-medium flex items-center gap-2">
+                      <Sparkles className="w-4 h-4" />
                       Let AI choose
                     </SelectItem>
                     <SelectItem value="custom" className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 text-amber-700 font-medium">
@@ -309,18 +338,20 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                     placeholder="Describe your custom goal"
                     value={formData.customGoal}
                     onChange={(e) => setFormData(prev => ({ ...prev, customGoal: e.target.value }))}
+                    className="mt-2 border-amber-200 focus:border-amber-400"
                   />
                 )}
               </div>
 
               <div className="space-y-2">
-                <Label>Target Audience</Label>
+                <Label className="text-base font-medium">Target Audience</Label>
                 <Select value={formData.targetAudience} onValueChange={(value) => setFormData(prev => ({ ...prev, targetAudience: value }))}>
-                  <SelectTrigger>
+                  <SelectTrigger className="border-2 focus:border-purple-300">
                     <SelectValue placeholder="Select audience" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="ai-choose" className="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 text-emerald-700 font-medium">
+                    <SelectItem value="ai-choose" className="bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-200 text-purple-700 font-medium flex items-center gap-2">
+                      <Sparkles className="w-4 h-4" />
                       Let AI choose
                     </SelectItem>
                     <SelectItem value="custom" className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 text-amber-700 font-medium">
@@ -336,27 +367,29 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                     placeholder="Describe your target audience"
                     value={formData.customAudience}
                     onChange={(e) => setFormData(prev => ({ ...prev, customAudience: e.target.value }))}
+                    className="mt-2 border-amber-200 focus:border-amber-400"
                   />
                 )}
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="audienceAge">Audience Age (Optional)</Label>
+              <Label htmlFor="audienceAge" className="text-base font-medium">Audience Age (Optional)</Label>
               <Input
                 id="audienceAge"
                 placeholder="e.g., 18-25, 25-34, or specific age"
                 value={formData.audienceAge}
                 onChange={(e) => setFormData(prev => ({ ...prev, audienceAge: e.target.value }))}
+                className="border-2 focus:border-purple-300 transition-colors"
               />
             </div>
           </div>
 
-          <Separator />
+          <Separator className="bg-gradient-to-r from-purple-200 to-blue-200 h-px" />
 
           <Button 
             type="submit" 
-            className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white py-6 text-lg font-semibold"
+            className="w-full bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 hover:from-purple-700 hover:via-blue-700 hover:to-indigo-700 text-white py-6 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]"
             disabled={isGenerating}
           >
             {isGenerating ? (
