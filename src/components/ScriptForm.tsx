@@ -7,7 +7,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { toast } from 'sonner';
@@ -104,12 +103,6 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
     setFormData(prev => ({ ...prev, tones: [] }));
     setIsToneDropdownOpen(false);
   }, []);
-
-  const handleToneItemClick = useCallback((tone: string) => (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    handleToneToggle(tone);
-  }, [handleToneToggle]);
 
   const handleCustomToneKeyPress = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
@@ -340,11 +333,11 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                           <div 
                             key={tone}
                             className="flex items-center space-x-2 p-2 hover:bg-accent rounded cursor-pointer"
-                            onClick={handleToneItemClick(tone)}
+                            onClick={() => handleToneToggle(tone)}
                           >
-                            <Checkbox 
-                              checked={formData.tones.includes(tone)}
-                            />
+                            <div className={`w-4 h-4 border rounded flex items-center justify-center ${formData.tones.includes(tone) ? 'bg-purple-600 border-purple-600' : 'border-gray-300'}`}>
+                              {formData.tones.includes(tone) && <Check className="w-3 h-3 text-white" />}
+                            </div>
                             <span className="text-sm">{tone}</span>
                           </div>
                         ))}
