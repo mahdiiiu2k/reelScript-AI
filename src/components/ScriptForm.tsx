@@ -1,4 +1,5 @@
 
+
 import React, { useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -111,17 +112,25 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
   }, [handleToneToggle]);
 
   const handleCustomToneKeyPress = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && formData.customTone.trim()) {
+    if (e.key === 'Enter') {
       e.preventDefault();
-      if (!formData.tones.includes(formData.customTone.trim())) {
-        setFormData(prev => ({ 
-          ...prev, 
-          tones: [...prev.tones, prev.customTone.trim()],
-          customTone: ''
-        }));
+      const target = e.target as HTMLInputElement;
+      const customToneValue = target.value.trim();
+      
+      if (customToneValue) {
+        setFormData(prev => {
+          if (!prev.tones.includes(customToneValue)) {
+            return { 
+              ...prev, 
+              tones: [...prev.tones, customToneValue],
+              customTone: ''
+            };
+          }
+          return prev;
+        });
       }
     }
-  }, [formData.customTone, formData.tones]);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
