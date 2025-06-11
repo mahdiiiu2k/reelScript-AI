@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,7 +12,7 @@ import { Separator } from '@/components/ui/separator';
 import { toast } from 'sonner';
 import { generateScript } from '@/services/scriptGenerator';
 import { languages } from '@/data/languages';
-import { Play, Sparkles } from 'lucide-react';
+import { Play, Sparkles, Check } from 'lucide-react';
 
 interface ScriptFormProps {
   onScriptGenerated: (script: string) => void;
@@ -183,7 +184,7 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                     <SelectValue placeholder="Select duration" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="ai-choose" className="bg-gradient-to-r from-purple-600 to-purple-700 text-white font-semibold rounded-md my-1 mx-1 focus:bg-purple-700">
+                    <SelectItem value="ai-choose" className="bg-gradient-to-r from-purple-700 to-purple-800 text-white font-semibold rounded-md my-1 mx-1 focus:bg-purple-800 hover:bg-purple-800">
                       <div className="flex items-center gap-2">
                         <Sparkles className="w-4 h-4" />
                         Let AI choose
@@ -245,94 +246,107 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
               Content Style
             </h3>
             
-            <div className="space-y-4">
-              <Label className="text-base font-medium">Tone</Label>
-              <Select 
-                value={formData.tones.includes('ai-choose') ? 'ai-choose' : formData.tones.length > 0 ? 'multiple' : ''} 
-                onValueChange={(value) => {
-                  if (value === 'ai-choose') {
-                    setFormData(prev => ({ ...prev, tones: ['ai-choose'] }));
-                  } else if (value === 'custom') {
-                    // Handle custom selection
-                  }
-                }}
-              >
-                <SelectTrigger className="border-2 focus:border-purple-300">
-                  <SelectValue placeholder="Select tone approach" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="ai-choose" className="bg-gradient-to-r from-purple-700 to-purple-800 text-white font-semibold rounded-md my-1 mx-1 focus:bg-purple-800">
-                    <div className="flex items-center gap-2">
-                      <Sparkles className="w-4 h-4" />
-                      Let AI choose
+            <div className="space-y-6">
+              <div className="space-y-4">
+                <Label className="text-base font-medium">Tone</Label>
+                
+                {/* AI Choose Option */}
+                <div className="p-4 rounded-xl bg-gradient-to-r from-purple-800 to-purple-900 border-2 border-purple-700 shadow-lg">
+                  <div className="flex items-center space-x-3">
+                    <Checkbox
+                      id="tone-ai-choose"
+                      checked={formData.tones.includes('ai-choose')}
+                      onCheckedChange={(checked) => {
+                        if (checked) {
+                          setFormData(prev => ({ ...prev, tones: ['ai-choose'] }));
+                        } else {
+                          setFormData(prev => ({ ...prev, tones: prev.tones.filter(t => t !== 'ai-choose') }));
+                        }
+                      }}
+                      className="data-[state=checked]:bg-white data-[state=checked]:border-white data-[state=checked]:text-purple-800 border-purple-300"
+                    />
+                    <div className="flex items-center gap-2 text-white">
+                      <Sparkles className="w-5 h-5" />
+                      <Label htmlFor="tone-ai-choose" className="text-base font-semibold cursor-pointer text-white">
+                        Let AI choose the perfect tone
+                      </Label>
                     </div>
-                  </SelectItem>
-                  <SelectItem value="custom" className="bg-gradient-to-r from-amber-100 to-orange-100 border border-amber-300 text-amber-800 font-medium rounded-md my-1 mx-1">
-                    Custom approach
-                  </SelectItem>
-                  <SelectItem value="multiple">Choose multiple tones</SelectItem>
-                </SelectContent>
-              </Select>
-              
-              {!formData.tones.includes('ai-choose') && (
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                  {toneOptions.map((tone) => (
-                    <div key={tone} className="flex items-center space-x-2 p-3 rounded-lg border border-gray-200 hover:bg-purple-50 hover:border-purple-200 transition-all duration-200">
-                      <Checkbox
-                        id={`tone-${tone}`}
-                        checked={formData.tones.includes(tone)}
-                        onCheckedChange={(checked) => handleToneChange(tone, checked as boolean)}
-                        className="data-[state=checked]:bg-purple-600 data-[state=checked]:border-purple-600"
-                      />
-                      <Label htmlFor={`tone-${tone}`} className="text-sm cursor-pointer flex-1">{tone}</Label>
-                    </div>
-                  ))}
+                  </div>
                 </div>
-              )}
-              
-              <div className="flex flex-wrap gap-2 mt-3">
-                {formData.tones.map((tone) => (
-                  <Badge key={tone} variant="secondary" className="bg-purple-100 text-purple-700 border-purple-200">{tone}</Badge>
-                ))}
-              </div>
-              
-              <Input
-                placeholder="Custom tone (optional)"
-                value={formData.customTone}
-                onChange={(e) => setFormData(prev => ({ ...prev, customTone: e.target.value }))}
-                className="bg-gradient-to-r from-amber-50 to-orange-50 border-amber-200 placeholder:text-amber-600 focus:border-amber-400"
-              />
-            </div>
 
-            <div className="space-y-2">
-              <Label className="text-base font-medium">Script Structure</Label>
-              <Select value={formData.structure} onValueChange={(value) => setFormData(prev => ({ ...prev, structure: value }))}>
-                <SelectTrigger className="border-2 focus:border-purple-300">
-                  <SelectValue placeholder="Choose structure" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="ai-choose" className="bg-gradient-to-r from-purple-700 to-purple-800 text-white font-semibold rounded-md my-1 mx-1 focus:bg-purple-800">
-                    <div className="flex items-center gap-2">
-                      <Sparkles className="w-4 h-4" />
-                      Let AI choose
+                {/* Manual Selection */}
+                {!formData.tones.includes('ai-choose') && (
+                  <div className="space-y-4">
+                    <div className="p-4 rounded-lg bg-gradient-to-r from-gray-50 to-gray-100 border border-gray-200">
+                      <Label className="text-sm font-medium text-gray-700 mb-3 block">Choose specific tones:</Label>
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                        {toneOptions.map((tone) => (
+                          <div key={tone} className="flex items-center space-x-2 p-3 rounded-lg border border-gray-200 hover:bg-purple-50 hover:border-purple-200 transition-all duration-200 bg-white">
+                            <Checkbox
+                              id={`tone-${tone}`}
+                              checked={formData.tones.includes(tone)}
+                              onCheckedChange={(checked) => handleToneChange(tone, checked as boolean)}
+                              className="data-[state=checked]:bg-purple-600 data-[state=checked]:border-purple-600"
+                            />
+                            <Label htmlFor={`tone-${tone}`} className="text-sm cursor-pointer flex-1">{tone}</Label>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                  </SelectItem>
-                  <SelectItem value="custom" className="bg-gradient-to-r from-amber-100 to-orange-100 border border-amber-300 text-amber-800 font-medium rounded-md my-1 mx-1">
-                    Custom structure
-                  </SelectItem>
-                  {structureOptions.map((structure) => (
-                    <SelectItem key={structure} value={structure}>{structure}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {formData.structure === 'custom' && (
-                <Input
-                  placeholder="Describe your custom structure"
-                  value={formData.customStructure}
-                  onChange={(e) => setFormData(prev => ({ ...prev, customStructure: e.target.value }))}
-                  className="mt-2 border-amber-200 focus:border-amber-400"
-                />
-              )}
+                    
+                    <Input
+                      placeholder="Add a custom tone (optional)"
+                      value={formData.customTone}
+                      onChange={(e) => setFormData(prev => ({ ...prev, customTone: e.target.value }))}
+                      className="bg-gradient-to-r from-amber-50 to-orange-50 border-amber-200 placeholder:text-amber-600 focus:border-amber-400"
+                    />
+                  </div>
+                )}
+                
+                {/* Selected Tones Display */}
+                {formData.tones.length > 0 && (
+                  <div className="flex flex-wrap gap-2 p-3 bg-purple-50 rounded-lg border border-purple-200">
+                    <span className="text-sm font-medium text-purple-700">Selected:</span>
+                    {formData.tones.map((tone) => (
+                      <Badge key={tone} variant="secondary" className="bg-purple-100 text-purple-700 border-purple-200 flex items-center gap-1">
+                        <Check className="w-3 h-3" />
+                        {tone === 'ai-choose' ? 'AI will choose' : tone}
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-base font-medium">Script Structure</Label>
+                <Select value={formData.structure} onValueChange={(value) => setFormData(prev => ({ ...prev, structure: value }))}>
+                  <SelectTrigger className="border-2 focus:border-purple-300">
+                    <SelectValue placeholder="Choose structure" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="ai-choose" className="bg-gradient-to-r from-purple-700 to-purple-800 text-white font-semibold rounded-md my-1 mx-1 focus:bg-purple-800 hover:bg-purple-800">
+                      <div className="flex items-center gap-2">
+                        <Sparkles className="w-4 h-4" />
+                        Let AI choose
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="custom" className="bg-gradient-to-r from-amber-100 to-orange-100 border border-amber-300 text-amber-800 font-medium rounded-md my-1 mx-1">
+                      Custom structure
+                    </SelectItem>
+                    {structureOptions.map((structure) => (
+                      <SelectItem key={structure} value={structure}>{structure}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {formData.structure === 'custom' && (
+                  <Input
+                    placeholder="Describe your custom structure"
+                    value={formData.customStructure}
+                    onChange={(e) => setFormData(prev => ({ ...prev, customStructure: e.target.value }))}
+                    className="mt-2 border-amber-200 focus:border-amber-400"
+                  />
+                )}
+              </div>
             </div>
           </div>
 
@@ -355,7 +369,7 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                     <SelectValue placeholder="Select goal" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="ai-choose" className="bg-gradient-to-r from-purple-700 to-purple-800 text-white font-semibold rounded-md my-1 mx-1 focus:bg-purple-800">
+                    <SelectItem value="ai-choose" className="bg-gradient-to-r from-purple-700 to-purple-800 text-white font-semibold rounded-md my-1 mx-1 focus:bg-purple-800 hover:bg-purple-800">
                       <div className="flex items-center gap-2">
                         <Sparkles className="w-4 h-4" />
                         Let AI choose
@@ -386,7 +400,7 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                     <SelectValue placeholder="Select audience" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="ai-choose" className="bg-gradient-to-r from-purple-700 to-purple-800 text-white font-semibold rounded-md my-1 mx-1 focus:bg-purple-800">
+                    <SelectItem value="ai-choose" className="bg-gradient-to-r from-purple-700 to-purple-800 text-white font-semibold rounded-md my-1 mx-1 focus:bg-purple-800 hover:bg-purple-800">
                       <div className="flex items-center gap-2">
                         <Sparkles className="w-4 h-4" />
                         Let AI choose
