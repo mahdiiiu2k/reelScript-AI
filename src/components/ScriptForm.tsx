@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -81,19 +82,46 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
     }));
   }, []);
 
-  const handleToneDropdownToggle = useCallback(() => {
+  const handleToneDropdownToggle = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     setIsToneDropdownOpen(prev => !prev);
   }, []);
 
   const handleToneRemove = useCallback((tone: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setFormData(prev => ({
+      ...prev,
+      tones: prev.tones.filter(t => t !== tone)
+    }));
+  }, []);
+
+  const handleLetAIChooseTone = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setFormData(prev => ({ ...prev, tones: [] }));
+    setIsToneDropdownOpen(false);
+  }, []);
+
+  const handleToneItemClick = useCallback((tone: string) => (e: React.MouseEvent) => {
+    e.preventDefault();
     e.stopPropagation();
     handleToneToggle(tone);
   }, [handleToneToggle]);
 
-  const handleLetAIChooseTone = useCallback(() => {
-    setFormData(prev => ({ ...prev, tones: [] }));
-    setIsToneDropdownOpen(false);
-  }, []);
+  const handleCustomToneKeyPress = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && formData.customTone.trim()) {
+      e.preventDefault();
+      if (!formData.tones.includes(formData.customTone.trim())) {
+        setFormData(prev => ({ 
+          ...prev, 
+          tones: [...prev.tones, prev.customTone.trim()],
+          customTone: ''
+        }));
+      }
+    }
+  }, [formData.customTone, formData.tones]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -285,7 +313,7 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                   </div>
                   
                   {isToneDropdownOpen && (
-                    <div className="absolute top-full left-0 right-0 z-50 mt-1 bg-popover border rounded-md shadow-lg max-h-60 overflow-y-auto">
+                    <div className="absolute top-full left-0 right-0 z-50 mt-1 bg-white border rounded-md shadow-lg max-h-60 overflow-y-auto">
                       <div className="p-2">
                         <div 
                           className="bg-gradient-to-r from-purple-900 to-purple-950 text-white font-bold rounded-lg p-3 mb-2 hover:bg-gradient-to-r hover:from-purple-800 hover:to-purple-900 shadow-lg transition-all duration-300 transform hover:scale-[1.02] cursor-pointer group"
@@ -303,7 +331,7 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                           <div 
                             key={tone}
                             className="flex items-center space-x-2 p-2 hover:bg-accent rounded cursor-pointer"
-                            onClick={() => handleToneToggle(tone)}
+                            onClick={handleToneItemClick(tone)}
                           >
                             <Checkbox 
                               checked={formData.tones.includes(tone)}
@@ -317,17 +345,7 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                             placeholder="Add custom tone..."
                             value={formData.customTone}
                             onChange={(e) => setFormData(prev => ({ ...prev, customTone: e.target.value }))}
-                            onKeyPress={(e) => {
-                              if (e.key === 'Enter' && formData.customTone.trim()) {
-                                if (!formData.tones.includes(formData.customTone.trim())) {
-                                  setFormData(prev => ({ 
-                                    ...prev, 
-                                    tones: [...prev.tones, prev.customTone.trim()],
-                                    customTone: ''
-                                  }));
-                                }
-                              }
-                            }}
+                            onKeyPress={handleCustomToneKeyPress}
                             className="text-sm"
                           />
                         </div>
