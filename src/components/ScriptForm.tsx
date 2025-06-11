@@ -32,7 +32,7 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
     customLength: '',
     language: 'English',
     customLanguage: '',
-    tones: [] as string[],
+    tone: '',
     customTone: '',
     structure: '',
     customStructure: '',
@@ -70,32 +70,6 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
     'Travel Enthusiasts', 'Artists', 'Musicians', 'Crypto Investors',
     'Small Business Owners', 'Content Creators', 'Remote Workers'
   ];
-
-  const getOrderedOptions = (options: string[], hasCustom = true, hasAiChoose = true) => {
-    const orderedOptions = [];
-    
-    if (hasAiChoose) {
-      orderedOptions.push({ value: 'ai-choose', label: 'Let AI choose', isSpecial: true });
-    }
-    
-    if (hasCustom) {
-      orderedOptions.push({ value: 'custom', label: 'Custom', isSpecial: true });
-    }
-    
-    options.forEach(option => {
-      orderedOptions.push({ value: option, label: option, isSpecial: false });
-    });
-    
-    return orderedOptions;
-  };
-
-  const handleToneChange = (tone: string, checked: boolean) => {
-    if (checked) {
-      setFormData(prev => ({ ...prev, tones: [...prev.tones, tone] }));
-    } else {
-      setFormData(prev => ({ ...prev, tones: prev.tones.filter(t => t !== tone) }));
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -184,10 +158,12 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                     <SelectValue placeholder="Select duration" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="ai-choose" className="bg-gradient-to-r from-purple-700 to-purple-800 text-white font-semibold rounded-md my-1 mx-1 focus:bg-purple-800 hover:bg-purple-800">
-                      <div className="flex items-center gap-2">
-                        <Sparkles className="w-4 h-4" />
-                        Let AI choose
+                    <SelectItem value="ai-choose" className="bg-gradient-to-r from-purple-800 to-purple-900 text-white font-bold rounded-lg my-1 mx-1 focus:bg-purple-900 hover:bg-purple-900 shadow-lg">
+                      <div className="flex items-center gap-3">
+                        <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center">
+                          <Sparkles className="w-3 h-3 text-white" />
+                        </div>
+                        <span>Let AI choose the perfect length</span>
                       </div>
                     </SelectItem>
                     <SelectItem value="custom" className="bg-gradient-to-r from-amber-100 to-orange-100 border border-amber-300 text-amber-800 font-medium rounded-md my-1 mx-1">
@@ -246,74 +222,37 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
               Content Style
             </h3>
             
-            <div className="space-y-6">
-              <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
                 <Label className="text-base font-medium">Tone</Label>
-                
-                {/* AI Choose Option */}
-                <div className="p-4 rounded-xl bg-gradient-to-r from-purple-800 to-purple-900 border-2 border-purple-700 shadow-lg">
-                  <div className="flex items-center space-x-3">
-                    <Checkbox
-                      id="tone-ai-choose"
-                      checked={formData.tones.includes('ai-choose')}
-                      onCheckedChange={(checked) => {
-                        if (checked) {
-                          setFormData(prev => ({ ...prev, tones: ['ai-choose'] }));
-                        } else {
-                          setFormData(prev => ({ ...prev, tones: prev.tones.filter(t => t !== 'ai-choose') }));
-                        }
-                      }}
-                      className="data-[state=checked]:bg-white data-[state=checked]:border-white data-[state=checked]:text-purple-800 border-purple-300"
-                    />
-                    <div className="flex items-center gap-2 text-white">
-                      <Sparkles className="w-5 h-5" />
-                      <Label htmlFor="tone-ai-choose" className="text-base font-semibold cursor-pointer text-white">
-                        Let AI choose the perfect tone
-                      </Label>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Manual Selection */}
-                {!formData.tones.includes('ai-choose') && (
-                  <div className="space-y-4">
-                    <div className="p-4 rounded-lg bg-gradient-to-r from-gray-50 to-gray-100 border border-gray-200">
-                      <Label className="text-sm font-medium text-gray-700 mb-3 block">Choose specific tones:</Label>
-                      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                        {toneOptions.map((tone) => (
-                          <div key={tone} className="flex items-center space-x-2 p-3 rounded-lg border border-gray-200 hover:bg-purple-50 hover:border-purple-200 transition-all duration-200 bg-white">
-                            <Checkbox
-                              id={`tone-${tone}`}
-                              checked={formData.tones.includes(tone)}
-                              onCheckedChange={(checked) => handleToneChange(tone, checked as boolean)}
-                              className="data-[state=checked]:bg-purple-600 data-[state=checked]:border-purple-600"
-                            />
-                            <Label htmlFor={`tone-${tone}`} className="text-sm cursor-pointer flex-1">{tone}</Label>
-                          </div>
-                        ))}
+                <Select value={formData.tone} onValueChange={(value) => setFormData(prev => ({ ...prev, tone: value }))}>
+                  <SelectTrigger className="border-2 focus:border-purple-300">
+                    <SelectValue placeholder="Choose tone" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="ai-choose" className="bg-gradient-to-r from-purple-800 to-purple-900 text-white font-bold rounded-lg my-1 mx-1 focus:bg-purple-900 hover:bg-purple-900 shadow-lg">
+                      <div className="flex items-center gap-3">
+                        <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center">
+                          <Sparkles className="w-3 h-3 text-white" />
+                        </div>
+                        <span>Let AI choose the perfect tone</span>
                       </div>
-                    </div>
-                    
-                    <Input
-                      placeholder="Add a custom tone (optional)"
-                      value={formData.customTone}
-                      onChange={(e) => setFormData(prev => ({ ...prev, customTone: e.target.value }))}
-                      className="bg-gradient-to-r from-amber-50 to-orange-50 border-amber-200 placeholder:text-amber-600 focus:border-amber-400"
-                    />
-                  </div>
-                )}
-                
-                {/* Selected Tones Display */}
-                {formData.tones.length > 0 && (
-                  <div className="flex flex-wrap gap-2 p-3 bg-purple-50 rounded-lg border border-purple-200">
-                    <span className="text-sm font-medium text-purple-700">Selected:</span>
-                    {formData.tones.map((tone) => (
-                      <Badge key={tone} variant="secondary" className="bg-purple-100 text-purple-700 border-purple-200 flex items-center gap-1">
-                        <Check className="w-3 h-3" />
-                        {tone === 'ai-choose' ? 'AI will choose' : tone}
-                      </Badge>
+                    </SelectItem>
+                    <SelectItem value="custom" className="bg-gradient-to-r from-amber-100 to-orange-100 border border-amber-300 text-amber-800 font-medium rounded-md my-1 mx-1">
+                      Custom tone
+                    </SelectItem>
+                    {toneOptions.map((tone) => (
+                      <SelectItem key={tone} value={tone}>{tone}</SelectItem>
                     ))}
-                  </div>
+                  </SelectContent>
+                </Select>
+                {formData.tone === 'custom' && (
+                  <Input
+                    placeholder="Describe your custom tone"
+                    value={formData.customTone}
+                    onChange={(e) => setFormData(prev => ({ ...prev, customTone: e.target.value }))}
+                    className="mt-2 border-amber-200 focus:border-amber-400"
+                  />
                 )}
               </div>
 
@@ -324,10 +263,12 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                     <SelectValue placeholder="Choose structure" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="ai-choose" className="bg-gradient-to-r from-purple-700 to-purple-800 text-white font-semibold rounded-md my-1 mx-1 focus:bg-purple-800 hover:bg-purple-800">
-                      <div className="flex items-center gap-2">
-                        <Sparkles className="w-4 h-4" />
-                        Let AI choose
+                    <SelectItem value="ai-choose" className="bg-gradient-to-r from-purple-800 to-purple-900 text-white font-bold rounded-lg my-1 mx-1 focus:bg-purple-900 hover:bg-purple-900 shadow-lg">
+                      <div className="flex items-center gap-3">
+                        <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center">
+                          <Sparkles className="w-3 h-3 text-white" />
+                        </div>
+                        <span>Let AI choose the perfect structure</span>
                       </div>
                     </SelectItem>
                     <SelectItem value="custom" className="bg-gradient-to-r from-amber-100 to-orange-100 border border-amber-300 text-amber-800 font-medium rounded-md my-1 mx-1">
@@ -369,10 +310,12 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                     <SelectValue placeholder="Select goal" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="ai-choose" className="bg-gradient-to-r from-purple-700 to-purple-800 text-white font-semibold rounded-md my-1 mx-1 focus:bg-purple-800 hover:bg-purple-800">
-                      <div className="flex items-center gap-2">
-                        <Sparkles className="w-4 h-4" />
-                        Let AI choose
+                    <SelectItem value="ai-choose" className="bg-gradient-to-r from-purple-800 to-purple-900 text-white font-bold rounded-lg my-1 mx-1 focus:bg-purple-900 hover:bg-purple-900 shadow-lg">
+                      <div className="flex items-center gap-3">
+                        <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center">
+                          <Sparkles className="w-3 h-3 text-white" />
+                        </div>
+                        <span>Let AI choose the perfect goal</span>
                       </div>
                     </SelectItem>
                     <SelectItem value="custom" className="bg-gradient-to-r from-amber-100 to-orange-100 border border-amber-300 text-amber-800 font-medium rounded-md my-1 mx-1">
@@ -400,10 +343,12 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                     <SelectValue placeholder="Select audience" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="ai-choose" className="bg-gradient-to-r from-purple-700 to-purple-800 text-white font-semibold rounded-md my-1 mx-1 focus:bg-purple-800 hover:bg-purple-800">
-                      <div className="flex items-center gap-2">
-                        <Sparkles className="w-4 h-4" />
-                        Let AI choose
+                    <SelectItem value="ai-choose" className="bg-gradient-to-r from-purple-800 to-purple-900 text-white font-bold rounded-lg my-1 mx-1 focus:bg-purple-900 hover:bg-purple-900 shadow-lg">
+                      <div className="flex items-center gap-3">
+                        <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center">
+                          <Sparkles className="w-3 h-3 text-white" />
+                        </div>
+                        <span>Let AI choose the perfect audience</span>
                       </div>
                     </SelectItem>
                     <SelectItem value="custom" className="bg-gradient-to-r from-amber-100 to-orange-100 border border-amber-300 text-amber-800 font-medium rounded-md my-1 mx-1">
