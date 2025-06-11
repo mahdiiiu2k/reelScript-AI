@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -308,7 +307,6 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                           >
                             <Checkbox 
                               checked={formData.tones.includes(tone)}
-                              readOnly
                             />
                             <span className="text-sm">{tone}</span>
                           </div>
