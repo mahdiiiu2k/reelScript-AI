@@ -6,7 +6,7 @@ interface FormData {
   customLength: string;
   language: string;
   customLanguage: string;
-  tones: string[];
+  tone: string;
   customTone: string;
   structure: string;
   customStructure: string;
@@ -89,13 +89,11 @@ Inputs:`;
   }
 
   // Tone
-  if (formData.tones.length > 0 || formData.customTone) {
-    prompt += `\nTone: `;
-    const tones = [...formData.tones];
-    if (formData.customTone) {
-      tones.push(formData.customTone);
+  if (formData.tone && formData.tone !== 'ai-choose') {
+    const tone = formData.tone === 'custom' ? formData.customTone : formData.tone;
+    if (tone) {
+      prompt += `\nTone: ${tone}`;
     }
-    prompt += tones.join(', ');
   }
 
   // Structure
