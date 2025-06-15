@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 
 interface PreviousScriptCardProps {
@@ -73,7 +72,9 @@ export const PreviousScriptCard: React.FC<PreviousScriptCardProps> = ({
         </span>
         <div className="flex-1 text-gray-800 dark:text-gray-200 text-sm font-mono break-words min-h-8 flex items-start">
           {expanded ? (
-            <span className="whitespace-pre-line">{script}</span>
+            <span className="whitespace-pre-line font-sans text-base font-semibold leading-relaxed tracking-normal text-gray-900 dark:text-gray-100 transition-colors duration-200">
+              {script}
+            </span>
           ) : (
             <span>
               {preview}
