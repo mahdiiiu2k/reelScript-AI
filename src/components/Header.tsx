@@ -1,7 +1,11 @@
+
 import React from 'react';
 import { Video } from 'lucide-react';
+import { ThemeToggle } from '@/components/ThemeToggle';
+
 export const Header = () => {
-  return <header className="bg-white/80 backdrop-blur-md border-b border-white/20 sticky top-0 z-50">
+  return (
+    <header className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-white/20 dark:border-gray-700/20 sticky top-0 z-50">
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
@@ -15,10 +19,11 @@ export const Header = () => {
               <p className="text-sm text-muted-foreground">Generate viral Instagram reel scripts</p>
             </div>
           </div>
-          <div className="hidden md:flex items-center space-x-4">
-            
+          <div className="flex items-center space-x-4">
+            <ThemeToggle />
           </div>
         </div>
       </div>
-    </header>;
+    </header>
+  );
 };
