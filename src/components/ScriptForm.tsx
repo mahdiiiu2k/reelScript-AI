@@ -439,7 +439,7 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
               </Label>
               <Textarea
                 id="previousScriptInput"
-                placeholder="Paste a script from your past reels here. Press Enter (⌘/Ctrl+Enter) to add it."
+                placeholder="Add scripts from past reels—help the AI match your unique speaking style!"
                 value={previousScriptInput}
                 onChange={(e) => setPreviousScriptInput(e.target.value)}
                 onKeyDown={handlePreviousScriptKeyDown}
