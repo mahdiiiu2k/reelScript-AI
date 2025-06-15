@@ -11,6 +11,7 @@ import { toast } from 'sonner';
 import { generateScript } from '@/services/scriptGenerator';
 import { languages } from '@/data/languages';
 import { Play, Sparkles, Check, X, Plus, ChevronDown } from 'lucide-react';
+import { PreviousScriptCard } from "./PreviousScriptCard";
 
 interface ScriptFormProps {
   onScriptGenerated: (script: string) => void;
@@ -462,28 +463,12 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
               {formData.previousScripts.length > 0 && (
                 <div className="mt-4 space-y-4">
                   {formData.previousScripts.map((script, idx) => (
-                    <div
+                    <PreviousScriptCard
                       key={idx}
-                      className="bg-[#232323] dark:bg-slate-900/90 border border-gray-600/30 rounded-lg py-3 px-4 flex flex-col shadow-lg relative"
-                    >
-                      <div className="text-sm text-gray-100 whitespace-pre-line font-mono">{script}</div>
-                      <div className="mt-2 flex items-center justify-between">
-                        <span className="bg-gray-700 dark:bg-slate-800 text-gray-200 dark:text-gray-300 text-xs font-semibold px-2 py-1 rounded shadow">
-                          script {idx + 1}
-                        </span>
-                        <Button
-                          type="button"
-                          size="icon"
-                          variant="ghost"
-                          className="ml-2 text-xs px-2 py-0 h-6 w-6 hover:bg-red-800/50"
-                          onClick={() => handleRemoveScript(idx)}
-                          aria-label={`Remove script ${idx + 1}`}
-                          title="Remove"
-                        >
-                          ✕
-                        </Button>
-                      </div>
-                    </div>
+                      script={script}
+                      index={idx}
+                      onRemove={() => handleRemoveScript(idx)}
+                    />
                   ))}
                 </div>
               )}
