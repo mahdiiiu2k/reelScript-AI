@@ -330,20 +330,8 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                           </div>
                         </div>
                         
-                        {toneOptions.map((tone) => (
-                          <div 
-                            key={tone}
-                            className="flex items-center space-x-2 p-2 hover:bg-accent rounded cursor-pointer"
-                            onClick={() => handleToneToggle(tone)}
-                          >
-                            <div className={`w-4 h-4 border rounded flex items-center justify-center ${formData.tones.includes(tone) ? 'bg-purple-600 border-purple-600' : 'border-gray-300 dark:border-slate-500'}`}>
-                              {formData.tones.includes(tone) && <Check className="w-3 h-3 text-white" />}
-                            </div>
-                            <span className="text-sm">{tone}</span>
-                          </div>
-                        ))}
-                        
-                        <div className="border-t dark:border-slate-600 mt-2 pt-2">
+                        {/* Add custom tone input moved here */}
+                        <div className="mb-2">
                           <div className="flex items-center gap-2">
                             <Input
                               placeholder="Add custom tone..."
@@ -363,6 +351,21 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                             </Button>
                           </div>
                         </div>
+                        {/* End move */}
+
+                        {toneOptions.map((tone) => (
+                          <div 
+                            key={tone}
+                            className="flex items-center space-x-2 p-2 hover:bg-accent rounded cursor-pointer"
+                            onClick={() => handleToneToggle(tone)}
+                          >
+                            <div className={`w-4 h-4 border rounded flex items-center justify-center ${formData.tones.includes(tone) ? 'bg-purple-600 border-purple-600' : 'border-gray-300 dark:border-slate-500'}`}>
+                              {formData.tones.includes(tone) && <Check className="w-3 h-3 text-white" />}
+                            </div>
+                            <span className="text-sm">{tone}</span>
+                          </div>
+                        ))}
+                        
                       </div>
                     </div>
                   )}
