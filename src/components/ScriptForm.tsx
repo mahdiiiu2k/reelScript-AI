@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,7 +10,7 @@ import { Separator } from '@/components/ui/separator';
 import { toast } from 'sonner';
 import { generateScript } from '@/services/scriptGenerator';
 import { languages } from '@/data/languages';
-import { Play, Sparkles, Check, X, Plus } from 'lucide-react';
+import { Play, Sparkles, Check, X, Plus, ChevronDown } from 'lucide-react';
 
 interface ScriptFormProps {
   onScriptGenerated: (script: string) => void;
@@ -214,10 +213,10 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                     <SelectValue placeholder="Select duration" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="ai-choose" className="bg-gradient-to-r from-purple-300 to-purple-400 text-white font-bold rounded-lg my-1 mx-1 focus:bg-purple-300">
+                    <SelectItem value="ai-choose" className="bg-gradient-to-r from-purple-200 to-purple-300 text-purple-800 font-bold rounded-lg my-1 mx-1">
                       <div className="flex items-center gap-3">
-                        <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center">
-                          <Sparkles className="w-3 h-3 text-white" />
+                        <div className="w-6 h-6 bg-purple-600/20 rounded-full flex items-center justify-center">
+                          <Sparkles className="w-3 h-3 text-purple-700" />
                         </div>
                         <span>Let AI choose the perfect length</span>
                       </div>
@@ -247,10 +246,10 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                     <SelectValue placeholder="Select language" />
                   </SelectTrigger>
                   <SelectContent className="max-h-60">
-                    <SelectItem value="ai-choose" className="bg-gradient-to-r from-purple-300 to-purple-400 text-white font-bold rounded-lg my-1 mx-1 focus:bg-purple-300">
+                    <SelectItem value="ai-choose" className="bg-gradient-to-r from-purple-200 to-purple-300 text-purple-800 font-bold rounded-lg my-1 mx-1">
                       <div className="flex items-center gap-3">
-                        <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center">
-                          <Sparkles className="w-3 h-3 text-white" />
+                        <div className="w-6 h-6 bg-purple-600/20 rounded-full flex items-center justify-center">
+                          <Sparkles className="w-3 h-3 text-purple-700" />
                         </div>
                         <span>Let AI choose the perfect language</span>
                       </div>
@@ -313,19 +312,19 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                         ))
                       )}
                     </div>
-                    <div className="text-muted-foreground">▼</div>
+                    <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform ${isToneDropdownOpen ? 'rotate-180' : ''}`} />
                   </div>
                   
                   {isToneDropdownOpen && (
-                    <div className="absolute top-full left-0 right-0 z-50 mt-1 bg-white border rounded-md shadow-lg max-h-60 overflow-y-auto">
+                    <div className="absolute top-full left-0 right-0 z-50 mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-y-auto">
                       <div className="p-2">
                         <div 
-                          className="bg-gradient-to-r from-purple-300 to-purple-400 text-white font-bold rounded-lg p-3 mb-2 cursor-pointer"
+                          className="bg-gradient-to-r from-purple-200 to-purple-300 text-purple-800 font-bold rounded-lg p-3 mb-2 cursor-pointer"
                           onClick={handleLetAIChooseTone}
                         >
                           <div className="flex items-center gap-3">
-                            <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center">
-                              <Sparkles className="w-3 h-3 text-white" />
+                            <div className="w-6 h-6 bg-purple-600/20 rounded-full flex items-center justify-center">
+                              <Sparkles className="w-3 h-3 text-purple-700" />
                             </div>
                             <span>Let AI choose the perfect tone</span>
                           </div>
@@ -377,10 +376,10 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                     <SelectValue placeholder="Choose structure" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="ai-choose" className="bg-gradient-to-r from-purple-300 to-purple-400 text-white font-bold rounded-lg my-1 mx-1 focus:bg-purple-300">
+                    <SelectItem value="ai-choose" className="bg-gradient-to-r from-purple-200 to-purple-300 text-purple-800 font-bold rounded-lg my-1 mx-1">
                       <div className="flex items-center gap-3">
-                        <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center">
-                          <Sparkles className="w-3 h-3 text-white" />
+                        <div className="w-6 h-6 bg-purple-600/20 rounded-full flex items-center justify-center">
+                          <Sparkles className="w-3 h-3 text-purple-700" />
                         </div>
                         <span>Let AI choose the perfect structure</span>
                       </div>
@@ -424,10 +423,10 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                     <SelectValue placeholder="Select goal" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="ai-choose" className="bg-gradient-to-r from-purple-300 to-purple-400 text-white font-bold rounded-lg my-1 mx-1 focus:bg-purple-300">
+                    <SelectItem value="ai-choose" className="bg-gradient-to-r from-purple-200 to-purple-300 text-purple-800 font-bold rounded-lg my-1 mx-1">
                       <div className="flex items-center gap-3">
-                        <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center">
-                          <Sparkles className="w-3 h-3 text-white" />
+                        <div className="w-6 h-6 bg-purple-600/20 rounded-full flex items-center justify-center">
+                          <Sparkles className="w-3 h-3 text-purple-700" />
                         </div>
                         <span>Let AI choose the perfect goal</span>
                       </div>
@@ -457,10 +456,10 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                     <SelectValue placeholder="Select audience" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="ai-choose" className="bg-gradient-to-r from-purple-300 to-purple-400 text-white font-bold rounded-lg my-1 mx-1 focus:bg-purple-300">
+                    <SelectItem value="ai-choose" className="bg-gradient-to-r from-purple-200 to-purple-300 text-purple-800 font-bold rounded-lg my-1 mx-1">
                       <div className="flex items-center gap-3">
-                        <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center">
-                          <Sparkles className="w-3 h-3 text-white" />
+                        <div className="w-6 h-6 bg-purple-600/20 rounded-full flex items-center justify-center">
+                          <Sparkles className="w-3 h-3 text-purple-700" />
                         </div>
                         <span>Let AI choose the perfect audience</span>
                       </div>
