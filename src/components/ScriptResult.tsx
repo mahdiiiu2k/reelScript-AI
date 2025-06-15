@@ -23,13 +23,13 @@ export const ScriptResult: React.FC<ScriptResultProps> = ({ script, onNewScript 
     return sections.map((section, index) => {
       if (section.trim().startsWith('**') && section.trim().endsWith('**')) {
         return (
-          <h3 key={index} className="text-lg font-semibold text-purple-600 mb-2">
+          <h3 key={index} className="text-lg font-semibold text-purple-600 dark:text-purple-400 mb-2">
             {section.replace(/\*\*/g, '')}
           </h3>
         );
       }
       return (
-        <p key={index} className="text-foreground leading-relaxed mb-4">
+        <p key={index} className="text-gray-800 dark:text-gray-200 leading-relaxed mb-4">
           {section}
         </p>
       );
@@ -38,10 +38,10 @@ export const ScriptResult: React.FC<ScriptResultProps> = ({ script, onNewScript 
 
   return (
     <div className="space-y-6">
-      <Card className="w-full bg-white/80 backdrop-blur-md border-white/20 shadow-xl">
+      <Card className="w-full bg-white/90 dark:bg-gray-800/90 backdrop-blur-md border-gray-200/50 dark:border-gray-700/50 shadow-xl">
         <CardHeader className="text-center">
           <div className="flex items-center justify-center space-x-2 mb-2">
-            <Badge className="bg-green-100 text-green-800 border-green-200">
+            <Badge className="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 border-green-200 dark:border-green-700">
               <Play className="h-3 w-3 mr-1" />
               Script Generated
             </Badge>
@@ -49,30 +49,30 @@ export const ScriptResult: React.FC<ScriptResultProps> = ({ script, onNewScript 
           <CardTitle className="text-3xl bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
             Your Reel Script is Ready!
           </CardTitle>
-          <CardDescription className="text-lg">
+          <CardDescription className="text-lg text-gray-600 dark:text-gray-400">
             Copy the script below and start creating your viral reel
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div className="bg-gray-50/80 backdrop-blur-sm rounded-lg p-6 border border-gray-200/50">
-            <div className="prose prose-gray max-w-none">
+          <div className="bg-gray-50/90 dark:bg-gray-900/50 backdrop-blur-sm rounded-lg p-6 border border-gray-200/50 dark:border-gray-700/50">
+            <div className="prose prose-gray dark:prose-invert max-w-none">
               {formatScript(script)}
             </div>
           </div>
 
-          <Separator />
+          <Separator className="dark:bg-gray-700" />
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button 
               onClick={copyToClipboard}
               variant="outline"
-              className="flex-1 sm:flex-none"
+              className="flex-1 sm:flex-none border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800"
             >
               Copy Script
             </Button>
             <Button 
               onClick={onNewScript}
-              className="flex-1 sm:flex-none bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+              className="flex-1 sm:flex-none bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white"
             >
               <Edit className="h-4 w-4 mr-2" />
               Generate New Script
@@ -81,10 +81,10 @@ export const ScriptResult: React.FC<ScriptResultProps> = ({ script, onNewScript 
         </CardContent>
       </Card>
 
-      <Card className="bg-blue-50/80 backdrop-blur-md border-blue-200/50">
+      <Card className="bg-blue-50/90 dark:bg-blue-900/20 backdrop-blur-md border-blue-200/50 dark:border-blue-800/50">
         <CardContent className="pt-6">
-          <h4 className="font-semibold text-blue-900 mb-2">💡 Pro Tips for Your Reel:</h4>
-          <ul className="text-blue-800 space-y-1 text-sm">
+          <h4 className="font-semibold text-blue-900 dark:text-blue-200 mb-2">💡 Pro Tips for Your Reel:</h4>
+          <ul className="text-blue-800 dark:text-blue-300 space-y-1 text-sm">
             <li>• Practice your script before recording to sound natural</li>
             <li>• Use engaging visuals that match your script content</li>
             <li>• Add trending music or sounds to increase reach</li>
