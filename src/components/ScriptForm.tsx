@@ -457,9 +457,6 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                   + Add a previous script
                 </Button>
               </div>
-              <p className="text-xs text-muted-foreground">
-                Each script you add will help the AI match your unique speaking style (press <span className="font-bold">⌘/Ctrl+Enter</span> to add quickly).
-              </p>
               {formData.previousScripts.length > 0 && (
                 <div className="mt-4 space-y-4">
                   {formData.previousScripts.map((script, idx) => (
