@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 
 interface PreviousScriptCardProps {
@@ -37,50 +38,48 @@ export const PreviousScriptCard: React.FC<PreviousScriptCardProps> = ({
   return (
     <div className="setting-item mb-3 select-none">
       <div
-        className="setting-row flex items-start gap-3 cursor-pointer rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-slate-900/40 shadow-sm p-3 transition hover:bg-gray-100 dark:hover:bg-slate-800/60"
+        className="setting-row flex items-center gap-3 cursor-pointer rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-slate-900/40 shadow-sm p-3 transition hover:bg-gray-100 dark:hover:bg-slate-800/60"
         onClick={() => setExpanded((v) => !v)}
         title={expanded ? "Collapse" : "Expand"}
         style={{ minHeight: "48px" }}
       >
-        <span className="flex items-start justify-center" style={{ width: 40, minWidth: 40 }}>
-          <button
-            type="button"
-            aria-label={expanded ? "Collapse script" : "Expand script"}
-            tabIndex={0}
-            className={`
-              w-10 h-10 flex items-center justify-center
-              bg-transparent
-              border-none
-              rounded-full
-              p-0 m-0
-              focus:outline-none
-            `}
-            style={{
-              boxShadow: "none",
-            }}
-            onClick={(e) => {
-              e.stopPropagation();
-              setExpanded((v) => !v);
-            }}
+        <button
+          type="button"
+          aria-label={expanded ? "Collapse script" : "Expand script"}
+          tabIndex={0}
+          className={`
+            w-10 h-10 flex items-center justify-center
+            bg-transparent
+            border-none
+            rounded-full
+            p-0 m-0
+            focus:outline-none
+          `}
+          style={{ boxShadow: "none" }}
+          onClick={(e) => {
+            e.stopPropagation();
+            setExpanded((v) => !v);
+          }}
+        >
+          <span
+            className={`transition-transform duration-300 ease-in-out ${expanded ? "rotate-180" : "rotate-0"}`}
           >
-            <span
-              className={`transition-transform duration-300 ease-in-out ${expanded ? "rotate-180" : "rotate-0"}`}
-            >
-              <TriangleDown size={24} />
-            </span>
-          </button>
-        </span>
-        <div className="flex-1 text-gray-800 dark:text-gray-200 text-sm font-mono break-words min-h-8 flex items-start">
-          {expanded ? (
-            <span className="whitespace-pre-line font-sans text-base font-semibold leading-relaxed tracking-normal text-gray-900 dark:text-gray-100 transition-colors duration-200">
-              {script}
-            </span>
-          ) : (
-            <span className="font-sans text-base font-semibold leading-relaxed tracking-normal text-gray-900 dark:text-gray-100 transition-colors duration-200">
-              {preview}
-              {script.length > preview.length ? " ..." : ""}
-            </span>
-          )}
+            <TriangleDown size={24} />
+          </span>
+        </button>
+        <div className="flex-1 min-w-0">
+          <span className="font-sans text-base font-semibold leading-relaxed tracking-normal text-gray-900 dark:text-gray-100 transition-colors duration-200 break-words">
+            {expanded ? (
+              <span className="whitespace-pre-line">
+                {script}
+              </span>
+            ) : (
+              <>
+                {preview}
+                {script.length > preview.length ? " ..." : ""}
+              </>
+            )}
+          </span>
         </div>
         <button
           type="button"
