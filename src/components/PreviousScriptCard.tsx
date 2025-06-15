@@ -1,5 +1,6 @@
 
 import React, { useState } from "react";
+import { ArrowDown } from "lucide-react";
 
 interface PreviousScriptCardProps {
   script: string;
@@ -33,27 +34,27 @@ export const PreviousScriptCard: React.FC<PreviousScriptCardProps> = ({
             type="button"
             aria-label={expanded ? "Collapse script" : "Expand script"}
             tabIndex={0}
-            className="appearance-none border-none bg-transparent w-8 h-8 flex items-center justify-center rounded-md hover:bg-purple-100 dark:hover:bg-purple-900/30 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 self-start"
+            className={`
+              w-8 h-8 flex items-center justify-center
+              rounded-full border border-purple-100 dark:border-purple-900/50
+              bg-purple-50/60 dark:bg-purple-950/30
+              shadow-md hover:shadow-lg transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-500
+              hover:bg-purple-200 active:scale-95
+            `}
             style={{ display: "flex" }}
             onClick={(e) => {
               e.stopPropagation();
               setExpanded((v) => !v);
             }}
           >
-            <svg
-              viewBox="0 0 24 24"
-              width="28"
-              height="28"
-              className={`stroke-current text-purple-700 dark:text-purple-300 transition-transform duration-300 ${expanded ? "rotate-180" : "rotate-0"}`}
-              fill="none"
-              strokeWidth={2}
-            >
-              <path
-                d="M12 5v14M5 12l7 7 7-7"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+            <ArrowDown
+              size={24}
+              strokeWidth={2.3}
+              className={`transition-transform duration-300 ease-in-out
+                ${expanded ? "rotate-180" : "rotate-0"}
+                text-purple-700 dark:text-purple-300
+              `}
+            />
           </button>
         </span>
         <div className="flex-1 text-gray-800 dark:text-gray-200 text-sm font-mono break-words min-h-8 flex items-start">
@@ -85,3 +86,4 @@ export const PreviousScriptCard: React.FC<PreviousScriptCardProps> = ({
     </div>
   );
 };
+
