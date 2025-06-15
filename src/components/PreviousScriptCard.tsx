@@ -50,10 +50,9 @@ export const PreviousScriptCard: React.FC<PreviousScriptCardProps> = ({
             tabIndex={0}
             className={`
               w-10 h-10 flex items-center justify-center
-              bg-black
-              rounded-full
+              bg-transparent
               border-none
-              transition-none
+              rounded-full
               p-0 m-0
               focus:outline-none
             `}
@@ -66,9 +65,7 @@ export const PreviousScriptCard: React.FC<PreviousScriptCardProps> = ({
             }}
           >
             <span
-              className={`transition-transform duration-300 ease-in-out ${
-                expanded ? "rotate-180" : "rotate-0"
-              }`}
+              className={`transition-transform duration-300 ease-in-out ${expanded ? "rotate-180" : "rotate-0"}`}
             >
               <TriangleDown size={24} />
             </span>
