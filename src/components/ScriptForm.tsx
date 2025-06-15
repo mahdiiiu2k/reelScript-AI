@@ -149,9 +149,9 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
   };
 
   return (
-    <Card className="w-full bg-white/95 backdrop-blur-lg border-white/40 shadow-2xl">
+    <Card className="w-full bg-transparent dark:bg-transparent backdrop-blur-lg border-gray-200/40 dark:border-slate-600/40 shadow-2xl">
       <CardHeader className="text-center pb-8">
-        <CardTitle className="text-4xl bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 bg-clip-text text-transparent font-bold">
+        <CardTitle className="text-4xl bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 dark:from-purple-400 dark:via-blue-400 dark:to-indigo-400 bg-clip-text text-transparent font-bold">
           Create Your Viral Reel Script
         </CardTitle>
         <CardDescription className="text-lg text-muted-foreground mt-2">
@@ -178,7 +178,7 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                 onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                 rows={4}
                 required
-                className="border-2 focus:border-purple-300 transition-colors"
+                className="border-2 focus:border-purple-300 dark:focus:border-purple-500 transition-colors bg-background dark:bg-slate-900/50"
               />
             </div>
 
@@ -189,12 +189,12 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                 placeholder="Enter a catchy title for your reel"
                 value={formData.title}
                 onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                className="border-2 focus:border-purple-300 transition-colors"
+                className="border-2 focus:border-purple-300 dark:focus:border-purple-500 transition-colors bg-background dark:bg-slate-900/50"
               />
             </div>
           </div>
 
-          <Separator className="bg-gradient-to-r from-purple-200 to-blue-200 h-px" />
+          <Separator className="bg-gradient-to-r from-purple-200 to-blue-200 dark:from-purple-700 dark:to-blue-700 h-px" />
 
           {/* Technical Specifications */}
           <div className="space-y-6">
@@ -209,7 +209,7 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
               <div className="space-y-2">
                 <Label className="text-base font-medium">Reel Length</Label>
                 <Select value={formData.length} onValueChange={(value) => setFormData(prev => ({ ...prev, length: value }))}>
-                  <SelectTrigger className="border-2 focus:border-purple-300">
+                  <SelectTrigger className="border-2 focus:border-purple-300 dark:focus:border-purple-500 bg-background dark:bg-slate-900/50">
                     <SelectValue placeholder="Select duration" />
                   </SelectTrigger>
                   <SelectContent>
@@ -234,7 +234,7 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                     placeholder="Enter specific length (e.g., 45 seconds)"
                     value={formData.customLength}
                     onChange={(e) => setFormData(prev => ({ ...prev, customLength: e.target.value }))}
-                    className="mt-2 border-amber-200 focus:border-amber-400"
+                    className="mt-2 border-amber-200 focus:border-amber-400 dark:border-amber-600 dark:focus:border-amber-500 bg-background dark:bg-slate-900/50"
                   />
                 )}
               </div>
@@ -242,7 +242,7 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
               <div className="space-y-2">
                 <Label className="text-base font-medium">Language / Dialect</Label>
                 <Select value={formData.language} onValueChange={(value) => setFormData(prev => ({ ...prev, language: value }))}>
-                  <SelectTrigger className="border-2 focus:border-purple-300">
+                  <SelectTrigger className="border-2 focus:border-purple-300 dark:focus:border-purple-500 bg-background dark:bg-slate-900/50">
                     <SelectValue placeholder="Select language" />
                   </SelectTrigger>
                   <SelectContent className="max-h-60">
@@ -267,14 +267,14 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                     placeholder="Enter custom language or dialect"
                     value={formData.customLanguage}
                     onChange={(e) => setFormData(prev => ({ ...prev, customLanguage: e.target.value }))}
-                    className="mt-2 border-amber-200 focus:border-amber-400"
+                    className="mt-2 border-amber-200 focus:border-amber-400 dark:border-amber-600 dark:focus:border-amber-500 bg-background dark:bg-slate-900/50"
                   />
                 )}
               </div>
             </div>
           </div>
 
-          <Separator className="bg-gradient-to-r from-purple-200 to-blue-200 h-px" />
+          <Separator className="bg-gradient-to-r from-purple-200 to-blue-200 dark:from-purple-700 dark:to-blue-700 h-px" />
 
           {/* Content Style */}
           <div className="space-y-6">
@@ -290,7 +290,7 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                 <Label className="text-base font-medium">Tone (Multiple Selection)</Label>
                 <div className="relative">
                   <div 
-                    className="border-2 focus:border-purple-300 rounded-md p-3 cursor-pointer bg-background hover:bg-accent/50 transition-colors min-h-[40px] flex items-center justify-between"
+                    className="border-2 focus:border-purple-300 dark:focus:border-purple-500 rounded-md p-3 cursor-pointer bg-background dark:bg-slate-900/50 hover:bg-accent/50 transition-colors min-h-[40px] flex items-center justify-between"
                     onClick={handleToneDropdownToggle}
                   >
                     <div className="flex flex-wrap gap-1">
@@ -301,7 +301,7 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                           <Badge 
                             key={tone} 
                             variant="secondary" 
-                            className="bg-purple-100 text-purple-800 hover:bg-purple-200 flex items-center gap-1"
+                            className="bg-purple-100 dark:bg-purple-900/50 text-purple-800 dark:text-purple-200 hover:bg-purple-200 dark:hover:bg-purple-800/50 flex items-center gap-1"
                           >
                             {tone}
                             <X 
@@ -316,15 +316,15 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                   </div>
                   
                   {isToneDropdownOpen && (
-                    <div className="absolute top-full left-0 right-0 z-50 mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-y-auto">
+                    <div className="absolute top-full left-0 right-0 z-50 mt-1 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-md shadow-lg max-h-60 overflow-y-auto">
                       <div className="p-2">
                         <div 
-                          className="bg-gradient-to-r from-purple-200 to-purple-300 text-purple-800 font-bold rounded-lg p-3 mb-2 cursor-pointer"
+                          className="bg-gradient-to-r from-purple-200 to-purple-300 dark:from-purple-800 dark:to-purple-700 text-purple-800 dark:text-purple-200 font-bold rounded-lg p-3 mb-2 cursor-pointer"
                           onClick={handleLetAIChooseTone}
                         >
                           <div className="flex items-center gap-3">
                             <div className="w-6 h-6 bg-purple-600/20 rounded-full flex items-center justify-center">
-                              <Sparkles className="w-3 h-3 text-purple-700" />
+                              <Sparkles className="w-3 h-3 text-purple-700 dark:text-purple-300" />
                             </div>
                             <span>Let AI choose the perfect tone</span>
                           </div>
@@ -336,21 +336,21 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                             className="flex items-center space-x-2 p-2 hover:bg-accent rounded cursor-pointer"
                             onClick={() => handleToneToggle(tone)}
                           >
-                            <div className={`w-4 h-4 border rounded flex items-center justify-center ${formData.tones.includes(tone) ? 'bg-purple-600 border-purple-600' : 'border-gray-300'}`}>
+                            <div className={`w-4 h-4 border rounded flex items-center justify-center ${formData.tones.includes(tone) ? 'bg-purple-600 border-purple-600' : 'border-gray-300 dark:border-slate-500'}`}>
                               {formData.tones.includes(tone) && <Check className="w-3 h-3 text-white" />}
                             </div>
                             <span className="text-sm">{tone}</span>
                           </div>
                         ))}
                         
-                        <div className="border-t mt-2 pt-2">
+                        <div className="border-t dark:border-slate-600 mt-2 pt-2">
                           <div className="flex items-center gap-2">
                             <Input
                               placeholder="Add custom tone..."
                               value={formData.customTone}
                               onChange={(e) => setFormData(prev => ({ ...prev, customTone: e.target.value }))}
                               onKeyPress={handleCustomToneKeyPress}
-                              className="text-sm flex-1"
+                              className="text-sm flex-1 bg-background dark:bg-slate-900/50"
                             />
                             <Button
                               type="button"
@@ -372,7 +372,7 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
               <div className="space-y-2">
                 <Label className="text-base font-medium">Script Structure</Label>
                 <Select value={formData.structure} onValueChange={(value) => setFormData(prev => ({ ...prev, structure: value }))}>
-                  <SelectTrigger className="border-2 focus:border-purple-300">
+                  <SelectTrigger className="border-2 focus:border-purple-300 dark:focus:border-purple-500 bg-background dark:bg-slate-900/50">
                     <SelectValue placeholder="Choose structure" />
                   </SelectTrigger>
                   <SelectContent>
@@ -397,14 +397,14 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                     placeholder="Describe your custom structure"
                     value={formData.customStructure}
                     onChange={(e) => setFormData(prev => ({ ...prev, customStructure: e.target.value }))}
-                    className="mt-2 border-amber-200 focus:border-amber-400"
+                    className="mt-2 border-amber-200 focus:border-amber-400 dark:border-amber-600 dark:focus:border-amber-500 bg-background dark:bg-slate-900/50"
                   />
                 )}
               </div>
             </div>
           </div>
 
-          <Separator className="bg-gradient-to-r from-purple-200 to-blue-200 h-px" />
+          <Separator className="bg-gradient-to-r from-purple-200 to-blue-200 dark:from-purple-700 dark:to-blue-700 h-px" />
 
           {/* Audience & Goals */}
           <div className="space-y-6">
@@ -419,7 +419,7 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
               <div className="space-y-2">
                 <Label className="text-base font-medium">Reel Goal</Label>
                 <Select value={formData.goal} onValueChange={(value) => setFormData(prev => ({ ...prev, goal: value }))}>
-                  <SelectTrigger className="border-2 focus:border-purple-300">
+                  <SelectTrigger className="border-2 focus:border-purple-300 dark:focus:border-purple-500 bg-background dark:bg-slate-900/50">
                     <SelectValue placeholder="Select goal" />
                   </SelectTrigger>
                   <SelectContent>
@@ -444,7 +444,7 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                     placeholder="Describe your custom goal"
                     value={formData.customGoal}
                     onChange={(e) => setFormData(prev => ({ ...prev, customGoal: e.target.value }))}
-                    className="mt-2 border-amber-200 focus:border-amber-400"
+                    className="mt-2 border-amber-200 focus:border-amber-400 dark:border-amber-600 dark:focus:border-amber-500 bg-background dark:bg-slate-900/50"
                   />
                 )}
               </div>
@@ -452,7 +452,7 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
               <div className="space-y-2">
                 <Label className="text-base font-medium">Target Audience</Label>
                 <Select value={formData.targetAudience} onValueChange={(value) => setFormData(prev => ({ ...prev, targetAudience: value }))}>
-                  <SelectTrigger className="border-2 focus:border-purple-300">
+                  <SelectTrigger className="border-2 focus:border-purple-300 dark:focus:border-purple-500 bg-background dark:bg-slate-900/50">
                     <SelectValue placeholder="Select audience" />
                   </SelectTrigger>
                   <SelectContent>
@@ -477,7 +477,7 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                     placeholder="Describe your target audience"
                     value={formData.customAudience}
                     onChange={(e) => setFormData(prev => ({ ...prev, customAudience: e.target.value }))}
-                    className="mt-2 border-amber-200 focus:border-amber-400"
+                    className="mt-2 border-amber-200 focus:border-amber-400 dark:border-amber-600 dark:focus:border-amber-500 bg-background dark:bg-slate-900/50"
                   />
                 )}
               </div>
@@ -490,12 +490,12 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                 placeholder="e.g., 18-25, 25-34, or specific age"
                 value={formData.audienceAge}
                 onChange={(e) => setFormData(prev => ({ ...prev, audienceAge: e.target.value }))}
-                className="border-2 focus:border-purple-300 transition-colors"
+                className="border-2 focus:border-purple-300 dark:focus:border-purple-500 transition-colors bg-background dark:bg-slate-900/50"
               />
             </div>
           </div>
 
-          <Separator className="bg-gradient-to-r from-purple-200 to-blue-200 h-px" />
+          <Separator className="bg-gradient-to-r from-purple-200 to-blue-200 dark:from-purple-700 dark:to-blue-700 h-px" />
 
           <Button 
             type="submit" 
