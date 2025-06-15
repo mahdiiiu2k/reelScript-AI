@@ -451,7 +451,7 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                 <div className="rounded-lg bg-gradient-to-br from-purple-50 to-blue-50 dark:from-slate-900/70 dark:to-slate-800/70 border border-purple-200 dark:border-purple-800/70 p-4 flex flex-col gap-2 shadow-inner">
                   <Textarea
                     id="previousScriptInput"
-                    placeholder="Paste a script from your past reels here. Press ⌘/Ctrl+Enter to add it quickly."
+                    placeholder="Add scripts from past reels—help the AI match your unique speaking style!"
                     value={previousScriptInput}
                     onChange={(e) => setPreviousScriptInput(e.target.value)}
                     onKeyDown={handlePreviousScriptKeyDown}
@@ -459,16 +459,11 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                     className="border-2 focus:border-purple-300 dark:focus:border-purple-500 transition-colors bg-background dark:bg-slate-900/60 font-mono"
                   />
                   <div className="flex justify-end items-center">
-                    <div className="mr-auto flex items-center text-xs text-muted-foreground gap-1">
-                      <kbd className="rounded bg-muted px-1">⌘</kbd>/<kbd className="rounded bg-muted px-1">Ctrl</kbd>
-                      + <kbd className="rounded bg-muted px-1">Enter</kbd>
-                      <span>- add quickly!</span>
-                    </div>
                     <div className="relative group">
                       <Button
                         type="button"
                         onClick={handleAddPreviousScript}
-                        className="bg-green-800 hover:bg-green-900 text-white px-3 py-1 text-sm rounded shadow-lg transition-all duration-150"
+                        className="bg-green-700 hover:bg-green-800 text-white px-3 py-1 text-sm rounded shadow-lg transition-all duration-150"
                         size="sm"
                         disabled={!previousScriptInput.trim()}
                         aria-label="Add previous script"
