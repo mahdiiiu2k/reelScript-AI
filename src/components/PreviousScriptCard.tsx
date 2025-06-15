@@ -1,12 +1,26 @@
 
 import React, { useState } from "react";
-import { ArrowDown } from "lucide-react";
 
 interface PreviousScriptCardProps {
   script: string;
   index: number;
   onRemove: () => void;
 }
+
+// Custom triangle icon component (solid downward-pointing triangle)
+const TriangleDown = ({ size = 24 }: { size?: number }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    aria-hidden="true"
+    focusable="false"
+    fill="white"
+    style={{ display: "block" }}
+  >
+    <polygon points="12,17 4,7 20,7" />
+  </svg>
+);
 
 export const PreviousScriptCard: React.FC<PreviousScriptCardProps> = ({
   script,
@@ -29,35 +43,35 @@ export const PreviousScriptCard: React.FC<PreviousScriptCardProps> = ({
         title={expanded ? "Collapse" : "Expand"}
         style={{ minHeight: "48px" }}
       >
-        <span
-          className="flex items-start justify-center"
-          style={{ width: 40, minWidth: 40 }}
-        >
+        <span className="flex items-start justify-center" style={{ width: 40, minWidth: 40 }}>
           <button
             type="button"
             aria-label={expanded ? "Collapse script" : "Expand script"}
             tabIndex={0}
             className={`
-              w-8 h-8 flex items-center justify-center
-              bg-transparent border-none outline-none
-              hover:bg-zinc-100 dark:hover:bg-zinc-800
-              transition-colors duration-150
-              focus-visible:ring-2 focus-visible:ring-purple-400
+              w-10 h-10 flex items-center justify-center
+              bg-black
+              rounded-full
+              border-none
+              transition-none
+              p-0 m-0
+              focus:outline-none
             `}
-            style={{ borderRadius: 4, padding: 0, margin: 0 }}
+            style={{
+              boxShadow: "none",
+            }}
             onClick={(e) => {
               e.stopPropagation();
               setExpanded((v) => !v);
             }}
           >
-            <ArrowDown
-              size={24}
-              strokeWidth={2}
-              color="#8c8f94"
-              className={`transition-transform duration-300 ease-in-out
-                ${expanded ? "rotate-180" : "rotate-0"}
-              `}
-            />
+            <span
+              className={`transition-transform duration-300 ease-in-out ${
+                expanded ? "rotate-180" : "rotate-0"
+              }`}
+            >
+              <TriangleDown size={24} />
+            </span>
           </button>
         </span>
         <div className="flex-1 text-gray-800 dark:text-gray-200 text-sm font-mono break-words min-h-8 flex items-start">
@@ -89,4 +103,3 @@ export const PreviousScriptCard: React.FC<PreviousScriptCardProps> = ({
     </div>
   );
 };
-
