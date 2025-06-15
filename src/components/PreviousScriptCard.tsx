@@ -29,19 +29,22 @@ export const PreviousScriptCard: React.FC<PreviousScriptCardProps> = ({
         title={expanded ? "Collapse" : "Expand"}
         style={{ minHeight: "48px" }}
       >
-        <span className="flex items-start justify-center" style={{ width: 40, minWidth: 40 }}>
+        <span
+          className="flex items-start justify-center"
+          style={{ width: 40, minWidth: 40 }}
+        >
           <button
             type="button"
             aria-label={expanded ? "Collapse script" : "Expand script"}
             tabIndex={0}
             className={`
               w-8 h-8 flex items-center justify-center
-              rounded-full border border-purple-100 dark:border-purple-900/50
-              bg-purple-50/60 dark:bg-purple-950/30
-              shadow-md hover:shadow-lg transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-500
-              hover:bg-purple-200 active:scale-95
+              bg-transparent border-none outline-none
+              hover:bg-zinc-100 dark:hover:bg-zinc-800
+              transition-colors duration-150
+              focus-visible:ring-2 focus-visible:ring-purple-400
             `}
-            style={{ display: "flex" }}
+            style={{ borderRadius: 4, padding: 0, margin: 0 }}
             onClick={(e) => {
               e.stopPropagation();
               setExpanded((v) => !v);
@@ -49,10 +52,10 @@ export const PreviousScriptCard: React.FC<PreviousScriptCardProps> = ({
           >
             <ArrowDown
               size={24}
-              strokeWidth={2.3}
+              strokeWidth={2}
+              color="#8c8f94"
               className={`transition-transform duration-300 ease-in-out
                 ${expanded ? "rotate-180" : "rotate-0"}
-                text-purple-700 dark:text-purple-300
               `}
             />
           </button>
