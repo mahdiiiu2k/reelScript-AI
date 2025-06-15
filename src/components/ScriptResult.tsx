@@ -3,9 +3,8 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
 import { toast } from 'sonner';
-import { Edit, Play } from 'lucide-react';
+import { Edit, Copy, CheckCircle, ArrowLeft } from 'lucide-react';
 
 interface ScriptResultProps {
   script: string;
@@ -23,13 +22,13 @@ export const ScriptResult: React.FC<ScriptResultProps> = ({ script, onNewScript 
     return sections.map((section, index) => {
       if (section.trim().startsWith('**') && section.trim().endsWith('**')) {
         return (
-          <h3 key={index} className="text-lg font-semibold text-purple-600 mb-2">
+          <h3 key={index} className="text-lg font-semibold text-gray-900 mb-3">
             {section.replace(/\*\*/g, '')}
           </h3>
         );
       }
       return (
-        <p key={index} className="text-foreground leading-relaxed mb-4">
+        <p key={index} className="text-gray-700 leading-relaxed mb-4">
           {section}
         </p>
       );
@@ -38,58 +37,65 @@ export const ScriptResult: React.FC<ScriptResultProps> = ({ script, onNewScript 
 
   return (
     <div className="space-y-6">
-      <Card className="w-full bg-white/80 backdrop-blur-md border-white/20 shadow-xl">
-        <CardHeader className="text-center">
-          <div className="flex items-center justify-center space-x-2 mb-2">
-            <Badge className="bg-green-100 text-green-800 border-green-200">
-              <Play className="h-3 w-3 mr-1" />
-              Script Generated
-            </Badge>
-          </div>
-          <CardTitle className="text-3xl bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-            Your Reel Script is Ready!
+      <div className="text-center space-y-2">
+        <div className="flex items-center justify-center">
+          <Badge className="bg-green-50 text-green-700 border-green-200 px-3 py-1">
+            <CheckCircle className="h-4 w-4 mr-2" />
+            Script Generated
+          </Badge>
+        </div>
+        <h1 className="text-3xl font-bold text-gray-900">
+          Your script is ready!
+        </h1>
+        <p className="text-gray-600">
+          Copy the script below and start creating your viral reel
+        </p>
+      </div>
+
+      <Card className="bg-white border border-gray-200 shadow-sm">
+        <CardHeader>
+          <CardTitle className="text-xl font-semibold text-gray-900">
+            Generated Script
           </CardTitle>
-          <CardDescription className="text-lg">
-            Copy the script below and start creating your viral reel
+          <CardDescription className="text-gray-600">
+            Your personalized Instagram reel script
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div className="bg-gray-50/80 backdrop-blur-sm rounded-lg p-6 border border-gray-200/50">
+          <div className="bg-gray-50 rounded-lg p-6 border border-gray-100">
             <div className="prose prose-gray max-w-none">
               {formatScript(script)}
             </div>
           </div>
 
-          <Separator />
-
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-gray-100">
             <Button 
               onClick={copyToClipboard}
               variant="outline"
-              className="flex-1 sm:flex-none"
+              className="flex-1 sm:flex-none border-gray-300 text-gray-700 hover:bg-gray-50"
             >
+              <Copy className="h-4 w-4 mr-2" />
               Copy Script
             </Button>
             <Button 
               onClick={onNewScript}
-              className="flex-1 sm:flex-none bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+              className="flex-1 sm:flex-none bg-indigo-600 hover:bg-indigo-700 text-white"
             >
-              <Edit className="h-4 w-4 mr-2" />
+              <ArrowLeft className="h-4 w-4 mr-2" />
               Generate New Script
             </Button>
           </div>
         </CardContent>
       </Card>
 
-      <Card className="bg-blue-50/80 backdrop-blur-md border-blue-200/50">
+      <Card className="bg-blue-50 border-blue-200">
         <CardContent className="pt-6">
-          <h4 className="font-semibold text-blue-900 mb-2">💡 Pro Tips for Your Reel:</h4>
-          <ul className="text-blue-800 space-y-1 text-sm">
+          <h4 className="font-semibold text-blue-900 mb-3">💡 Pro Tips</h4>
+          <ul className="text-blue-800 space-y-2 text-sm">
             <li>• Practice your script before recording to sound natural</li>
             <li>• Use engaging visuals that match your script content</li>
             <li>• Add trending music or sounds to increase reach</li>
             <li>• Include relevant hashtags in your caption</li>
-            <li>• Post during your audience's most active hours</li>
           </ul>
         </CardContent>
       </Card>

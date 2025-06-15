@@ -1,133 +1,76 @@
 
-interface FormData {
+interface ScriptFormData {
   title: string;
   description: string;
   length: string;
-  customLength: string;
   language: string;
-  customLanguage: string;
-  tones: string[];
-  customTone: string;
+  tone: string;
   structure: string;
-  customStructure: string;
   goal: string;
-  customGoal: string;
   targetAudience: string;
-  customAudience: string;
   audienceAge: string;
 }
 
-export const generateScript = async (formData: FormData): Promise<string> => {
-  const API_KEY = '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';
-  const API_URL = 'https://openrouter.ai/api/v1/chat/completions';
+export const generateScript = async (formData: ScriptFormData): Promise<string> => {
+  // Simulate API call delay
+  await new Promise(resolve => setTimeout(resolve, 2000));
 
-  // Build the prompt based on form data
-  const prompt = buildPrompt(formData);
+  const { description, title, tone, structure, goal, targetAudience } = formData;
 
-  try {
-    const response = await fetch(API_URL, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${API_KEY}`,
-        'Content-Type': 'application/json',
-        'HTTP-Referer': window.location.origin,
-        'X-Title': 'Reel Script AI'
-      },
-      body: JSON.stringify({
-        model: 'deepseek/deepseek-r1-0528:free',
-        messages: [
-          {
-            role: 'system',
-            content: 'You are an expert Instagram reel script writer. Generate natural, engaging spoken scripts that creators would say aloud. Do not include scene directions, visual cues, or formatting instructions. Focus only on the spoken content that follows the specified tone, structure, and goals.'
-          },
-          {
-            role: 'user',
-            content: prompt
-          }
-        ],
-        temperature: 0.8,
-        max_tokens: 2000,
-        top_p: 0.9
-      })
-    });
+  // Mock script generation based on form data
+  const scripts = [
+    `**Hook (0-3 seconds)**
+"Stop scrolling if you've ever wondered why some people seem to have it all figured out..."
 
-    if (!response.ok) {
-      throw new Error(`API request failed: ${response.status}`);
-    }
+**Value/Content (3-25 seconds)**
+Here's the truth: Success isn't about perfection, it's about consistency. I learned this the hard way when I ${description}. 
 
-    const data = await response.json();
-    
-    if (!data.choices || !data.choices[0] || !data.choices[0].message) {
-      throw new Error('Invalid response format from API');
-    }
+The 3 game-changing habits that transformed everything:
+1. Start before you feel ready
+2. Focus on progress, not perfection  
+3. Celebrate small wins daily
 
-    return data.choices[0].message.content;
-  } catch (error) {
-    console.error('Error generating script:', error);
-    throw new Error('Failed to generate script. Please try again.');
-  }
-};
+**Call to Action (25-30 seconds)**
+Which habit will you start today? Comment below and let's build this community together! Follow for more real talk about ${goal.toLowerCase()}.
 
-const buildPrompt = (formData: FormData): string => {
-  let prompt = `Based on the following inputs, generate a natural, engaging spoken script for an Instagram reel. Only include what the creator would say aloud — no scene directions, no visuals, no formatting. The script should follow the chosen tone, structure, and goal, and be suitable for the selected reel length.
+#realtalk #motivation #success #mindset #growth`,
 
-Inputs:`;
+    `**Problem/Hook (0-5 seconds)**
+"POV: You're tired of feeling stuck while everyone else moves forward..."
 
-  if (formData.title) {
-    prompt += `\nTitle: ${formData.title}`;
-  }
+**Solution/Value (5-25 seconds)**
+I get it. I was exactly where you are when ${description}. But here's what changed everything:
 
-  prompt += `\nDescription: ${formData.description}`;
+✨ I stopped waiting for the "perfect moment"
+✨ I started treating failures as data, not defeats
+✨ I focused on becoming 1% better daily
 
-  // Length
-  if (formData.length && formData.length !== 'ai-choose') {
-    if (formData.length === 'custom' && formData.customLength) {
-      prompt += `\nLength: ${formData.customLength}`;
-    } else {
-      prompt += `\nLength: ${formData.length}`;
-    }
-  }
+The result? ${goal} became not just a dream, but my reality.
 
-  // Tone
-  if (formData.tones.length > 0 || formData.customTone) {
-    prompt += `\nTone: `;
-    const tones = [...formData.tones];
-    if (formData.customTone) {
-      tones.push(formData.customTone);
-    }
-    prompt += tones.join(', ');
-  }
+**Call to Action (25-30 seconds)**
+Your turn! What's one small step you can take today? Drop it in the comments and let's support each other! 
 
-  // Structure
-  if (formData.structure && formData.structure !== 'ai-choose') {
-    const structure = formData.structure === 'custom' ? formData.customStructure : formData.structure;
-    prompt += `\nStructure: ${structure}`;
-  }
+#transformation #growthmindset #motivation #success #progress`,
 
-  // Goal
-  if (formData.goal && formData.goal !== 'ai-choose') {
-    const goal = formData.goal === 'custom' ? formData.customGoal : formData.goal;
-    prompt += `\nGoal: ${goal}`;
-  }
+    `**Attention Grabber (0-3 seconds)**
+"This mindset shift changed my entire life..."
 
-  // Target Audience
-  if (formData.targetAudience && formData.targetAudience !== 'ai-choose') {
-    const audience = formData.targetAudience === 'custom' ? formData.customAudience : formData.targetAudience;
-    prompt += `\nTarget Audience: ${audience}`;
-  }
+**Story/Value (3-27 seconds)**
+When I started ${description}, I thought I needed to have everything figured out. WRONG.
 
-  // Language
-  const language = formData.language === 'custom' ? formData.customLanguage : formData.language;
-  if (language && language !== 'English') {
-    prompt += `\nLanguage: ${language}`;
-  }
+The breakthrough came when I realized:
+→ Clarity comes through action, not thought
+→ You don't have to be great to get started
+→ But you have to get started to be great
 
-  // Audience Age
-  if (formData.audienceAge) {
-    prompt += `\nAudience Age: ${formData.audienceAge}`;
-  }
+This simple shift helped me ${goal} faster than I ever imagined.
 
-  prompt += `\n\nOutput:\nA fluent, engaging monologue or voiceover script for the reel.`;
+**Engagement/CTA (27-30 seconds)**
+What's one thing you've been overthinking? Time to take action! Save this as your reminder and share with someone who needs to see this.
 
-  return prompt;
+#mindsetshift #action #growth #motivation #breakthrough`
+  ];
+
+  // Return a random script
+  return scripts[Math.floor(Math.random() * scripts.length)];
 };
