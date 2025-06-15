@@ -1,4 +1,3 @@
-
 interface FormData {
   title: string;
   description: string;
@@ -15,6 +14,7 @@ interface FormData {
   targetAudience: string;
   customAudience: string;
   audienceAge: string;
+  previousExamples?: string;
 }
 
 export const generateScript = async (formData: FormData): Promise<string> => {
@@ -125,6 +125,11 @@ Inputs:`;
   // Audience Age
   if (formData.audienceAge) {
     prompt += `\nAudience Age: ${formData.audienceAge}`;
+  }
+
+  // Insert previous reel scripts/patterns, if provided
+  if (formData.previousExamples && formData.previousExamples.trim()) {
+    prompt += `\n\nHere are examples of my previous reel scripts. Please mimic the speaking style and tone in the new script:\n${formData.previousExamples.trim()}`;
   }
 
   prompt += `\n\nOutput:\nA fluent, engaging monologue or voiceover script for the reel.`;

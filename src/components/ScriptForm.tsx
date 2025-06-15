@@ -38,7 +38,8 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
     customGoal: '',
     targetAudience: '',
     customAudience: '',
-    audienceAge: ''
+    audienceAge: '',
+    previousExamples: ''
   });
 
   const [isToneDropdownOpen, setIsToneDropdownOpen] = useState(false);
@@ -405,6 +406,28 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                 )}
               </div>
             </div>
+            {/* New field: Previous Reels Scripts Input */}
+            <div className="space-y-2">
+              <Label htmlFor="previousExamples" className="text-base font-medium">
+                Paste your previous reel scripts (optional)
+              </Label>
+              <Textarea
+                id="previousExamples"
+                placeholder="Paste scripts from your past reels here, so the AI can match your speaking style..."
+                value={formData.previousExamples}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    previousExamples: e.target.value,
+                  }))
+                }
+                rows={3}
+                className="border-2 focus:border-purple-300 dark:focus:border-purple-500 transition-colors bg-background dark:bg-slate-900/50"
+              />
+              <p className="text-xs text-muted-foreground">
+                This helps the AI pick up on your unique way of speaking.
+              </p>
+            </div>
           </div>
 
           <Separator className="bg-gradient-to-r from-purple-200 to-blue-200 dark:from-purple-700 dark:to-blue-700 h-px" />
@@ -500,6 +523,7 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
 
           <Separator className="bg-gradient-to-r from-purple-200 to-blue-200 dark:from-purple-700 dark:to-blue-700 h-px" />
 
+          {/* Submit Button */}
           <Button 
             type="submit" 
             className="w-full bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 hover:from-purple-700 hover:via-blue-700 hover:to-indigo-700 text-white py-6 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]"
