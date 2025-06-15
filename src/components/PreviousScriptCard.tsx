@@ -15,7 +15,7 @@ const TriangleDown = ({ size = 24 }: { size?: number }) => (
     viewBox="0 0 24 24"
     aria-hidden="true"
     focusable="false"
-    fill="white"
+    fill="#bdbdbd"
     style={{ display: "block" }}
   >
     <polygon points="12,17 4,7 20,7" />
