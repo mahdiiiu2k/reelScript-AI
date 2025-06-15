@@ -450,7 +450,7 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                 <Button
                   type="button"
                   onClick={handleAddPreviousScript}
-                  className="bg-gray-800 dark:bg-gray-700 hover:bg-gray-900 dark:hover:bg-gray-800 text-white px-3 py-1 text-sm rounded"
+                  className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 text-sm rounded"
                   size="sm"
                   disabled={!previousScriptInput.trim()}
                 >
