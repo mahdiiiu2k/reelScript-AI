@@ -39,9 +39,9 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
     targetAudience: '',
     customAudience: '',
     audienceAge: '',
-    previousExamples: ''
+    previousScripts: [] as string[],
   });
-
+  const [previousScriptInput, setPreviousScriptInput] = useState("");
   const [isToneDropdownOpen, setIsToneDropdownOpen] = useState(false);
 
   const toneOptions = [
@@ -126,6 +126,31 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
       });
     }
   }, [formData.customTone]);
+
+  const handleAddPreviousScript = useCallback(() => {
+    const script = previousScriptInput.trim();
+    if (script) {
+      setFormData(prev => ({
+        ...prev,
+        previousScripts: [...prev.previousScripts, script]
+      }));
+      setPreviousScriptInput("");
+    }
+  }, [previousScriptInput]);
+
+  const handlePreviousScriptKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+      e.preventDefault();
+      handleAddPreviousScript();
+    }
+  }, [handleAddPreviousScript]);
+
+  const handleRemoveScript = useCallback((idx: number) => {
+    setFormData(prev => ({
+      ...prev,
+      previousScripts: prev.previousScripts.filter((_, i) => i !== idx)
+    }));
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -408,25 +433,60 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
             </div>
             {/* New field: Previous Reels Scripts Input */}
             <div className="space-y-2">
-              <Label htmlFor="previousExamples" className="text-base font-medium">
+              <Label htmlFor="previousScriptInput" className="text-base font-medium">
                 Paste your previous reel scripts (optional)
               </Label>
               <Textarea
-                id="previousExamples"
-                placeholder="Paste scripts from your past reels here, so the AI can match your speaking style..."
-                value={formData.previousExamples}
-                onChange={(e) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    previousExamples: e.target.value,
-                  }))
-                }
+                id="previousScriptInput"
+                placeholder="Paste a script from your past reels here. Press Enter (⌘/Ctrl+Enter) to add it."
+                value={previousScriptInput}
+                onChange={(e) => setPreviousScriptInput(e.target.value)}
+                onKeyDown={handlePreviousScriptKeyDown}
                 rows={3}
                 className="border-2 focus:border-purple-300 dark:focus:border-purple-500 transition-colors bg-background dark:bg-slate-900/50"
               />
+              <div className="flex justify-end mt-1">
+                <Button
+                  type="button"
+                  onClick={handleAddPreviousScript}
+                  className="bg-gray-800 dark:bg-gray-700 hover:bg-gray-900 dark:hover:bg-gray-800 text-white px-3 py-1 text-sm rounded"
+                  size="sm"
+                  disabled={!previousScriptInput.trim()}
+                >
+                  Paste Script
+                </Button>
+              </div>
               <p className="text-xs text-muted-foreground">
-                This helps the AI pick up on your unique way of speaking.
+                Each script you add will help the AI match your unique speaking style (press <span className="font-bold">⌘/Ctrl+Enter</span> to add quickly).
               </p>
+              {formData.previousScripts.length > 0 && (
+                <div className="mt-4 space-y-4">
+                  {formData.previousScripts.map((script, idx) => (
+                    <div
+                      key={idx}
+                      className="bg-[#232323] dark:bg-slate-900/90 border border-gray-600/30 rounded-lg py-3 px-4 flex flex-col shadow-lg relative"
+                    >
+                      <div className="text-sm text-gray-100 whitespace-pre-line font-mono">{script}</div>
+                      <div className="mt-2 flex items-center justify-between">
+                        <span className="bg-gray-700 dark:bg-slate-800 text-gray-200 dark:text-gray-300 text-xs font-semibold px-2 py-1 rounded shadow">
+                          script {idx + 1}
+                        </span>
+                        <Button
+                          type="button"
+                          size="icon"
+                          variant="ghost"
+                          className="ml-2 text-xs px-2 py-0 h-6 w-6 hover:bg-red-800/50"
+                          onClick={() => handleRemoveScript(idx)}
+                          aria-label={`Remove script ${idx + 1}`}
+                          title="Remove"
+                        >
+                          ✕
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 
