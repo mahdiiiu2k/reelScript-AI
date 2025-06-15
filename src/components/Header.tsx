@@ -7,9 +7,9 @@ export const Header = () => {
   return (
     <header className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-gray-200/50 dark:border-slate-700/50 sticky top-0 z-50 transition-all duration-300">
       <div className="container mx-auto px-4 py-4">
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-          {/* Title, icon, and ThemeToggle grouped */}
-          <div className="flex items-center gap-3 w-full sm:w-auto">
+        <div className="flex items-center justify-between">
+          {/* Left side: Logo and title */}
+          <div className="flex items-center gap-3">
             <div className="p-2 bg-gradient-to-r from-purple-600 to-blue-600 dark:from-purple-500 dark:to-blue-500 rounded-xl shadow-lg flex items-center">
               <Video className="h-6 w-6 text-white" />
             </div>
@@ -19,12 +19,12 @@ export const Header = () => {
               </h1>
               <p className="text-sm text-gray-600 dark:text-slate-400">Generate viral Instagram reel scripts</p>
             </div>
-            {/* Theme Toggle right beside title */}
-            <div className="ml-1 flex-shrink-0">
-              <ThemeToggle />
-            </div>
           </div>
-          {/* Optional: Place for future actions (useful for wider screens) */}
+          
+          {/* Right side: Theme Toggle */}
+          <div className="flex items-center">
+            <ThemeToggle />
+          </div>
         </div>
       </div>
     </header>
