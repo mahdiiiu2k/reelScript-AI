@@ -432,68 +432,48 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                 )}
               </div>
             </div>
-
-              {/* Improved Previous Reels Scripts Input */}
-              <div className="space-y-3">
-                <div className="flex items-center gap-2 mb-1">
-                  <Label htmlFor="previousScriptInput" className="text-base font-medium">
-                    Paste your previous reel scripts
-                  </Label>
-                  {formData.previousScripts.length > 0 && (
-                    <span className="ml-2 inline-flex items-center justify-center rounded-full bg-purple-100 dark:bg-purple-900/60 text-purple-700 dark:text-purple-200 text-xs font-bold px-2 py-0.5">
-                      {formData.previousScripts.length}
-                    </span>
-                  )}
-                </div>
-                <span className="block text-xs text-muted-foreground mb-2">
-                  Add scripts from past reels—help the AI match your unique speaking style!
-                </span>
-                <div className="rounded-lg bg-gradient-to-br from-purple-50 to-blue-50 dark:from-slate-900/70 dark:to-slate-800/70 border border-purple-200 dark:border-purple-800/70 p-4 flex flex-col gap-2 shadow-inner">
-                  <Textarea
-                    id="previousScriptInput"
-                    placeholder="Add scripts from past reels—help the AI match your unique speaking style!"
-                    value={previousScriptInput}
-                    onChange={(e) => setPreviousScriptInput(e.target.value)}
-                    onKeyDown={handlePreviousScriptKeyDown}
-                    rows={3}
-                    className="border-2 focus:border-purple-300 dark:focus:border-purple-500 transition-colors bg-background dark:bg-slate-900/60 font-mono"
-                  />
-                  <div className="flex justify-end items-center">
-                    <div className="relative group">
-                      <Button
-                        type="button"
-                        onClick={handleAddPreviousScript}
-                        className="bg-green-700 hover:bg-green-800 text-white px-3 py-1 text-sm rounded shadow-lg transition-all duration-150"
-                        size="sm"
-                        disabled={!previousScriptInput.trim()}
-                        aria-label="Add previous script"
-                      >
-                        + Add a previous script
-                      </Button>
-                      <span className="pointer-events-none opacity-0 group-hover:opacity-100 absolute z-20 top-full right-0 mt-1 w-max bg-slate-900 text-white text-xs px-2 py-1 rounded shadow-lg transition-opacity">
-                        or press ⌘/Ctrl+Enter
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                {formData.previousScripts.length > 0 && (
-                  <div className="mt-3 space-y-3 animate-fade-in">
-                    {formData.previousScripts.map((script, idx) => (
-                      <div key={idx} className="relative group transition-transform animate-scale-in">
-                        <PreviousScriptCard
-                          script={script}
-                          index={idx}
-                          onRemove={() => handleRemoveScript(idx)}
-                        />
-                        {/* Clear (X) button is already styled, consider margin adjustment if needed */}
-                      </div>
-                    ))}
-                  </div>
-                )}
+            {/* New field: Previous Reels Scripts Input */}
+            <div className="space-y-2">
+              <Label htmlFor="previousScriptInput" className="text-base font-medium">
+                Paste your previous reel scripts (optional)
+              </Label>
+              <Textarea
+                id="previousScriptInput"
+                placeholder="Paste a script from your past reels here. Press Enter (⌘/Ctrl+Enter) to add it."
+                value={previousScriptInput}
+                onChange={(e) => setPreviousScriptInput(e.target.value)}
+                onKeyDown={handlePreviousScriptKeyDown}
+                rows={3}
+                className="border-2 focus:border-purple-300 dark:focus:border-purple-500 transition-colors bg-background dark:bg-slate-900/50"
+              />
+              <div className="flex justify-end mt-1">
+                <Button
+                  type="button"
+                  onClick={handleAddPreviousScript}
+                  className="bg-green-700 hover:bg-green-800 text-white px-3 py-1 text-sm rounded"
+                  size="sm"
+                  disabled={!previousScriptInput.trim()}
+                >
+                  + Add a previous script
+                </Button>
               </div>
-            {/* End Improved Previous Scripts Input */}
-
+              <p className="text-xs text-muted-foreground">
+                Each script you add will help the AI match your unique speaking style (press <span className="font-bold">⌘/Ctrl+Enter</span> to add quickly).
+              </p>
+              {formData.previousScripts.length > 0 && (
+                <div className="mt-4 space-y-4">
+                  {formData.previousScripts.map((script, idx) => (
+                    <PreviousScriptCard
+                      key={idx}
+                      script={script}
+                      index={idx}
+                      onRemove={() => handleRemoveScript(idx)}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
+          </div>
 
           <Separator className="bg-gradient-to-r from-purple-200 to-blue-200 dark:from-purple-700 dark:to-blue-700 h-px" />
 
