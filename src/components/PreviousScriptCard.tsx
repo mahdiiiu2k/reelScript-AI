@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 
 interface PreviousScriptCardProps {
@@ -94,8 +93,10 @@ export const PreviousScriptCard: React.FC<PreviousScriptCardProps> = ({
           &#10005;
         </button>
       </div>
-      <div className="mt-1 text-xs text-gray-500 dark:text-gray-400 px-3">
-        script {index + 1}
+      <div className="mt-1 px-3">
+        <span className="text-sm sm:text-base font-semibold text-gray-500 dark:text-gray-400">
+          script {index + 1}
+        </span>
       </div>
     </div>
   );
