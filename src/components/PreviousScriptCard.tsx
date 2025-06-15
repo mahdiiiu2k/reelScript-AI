@@ -76,7 +76,7 @@ export const PreviousScriptCard: React.FC<PreviousScriptCardProps> = ({
               {script}
             </span>
           ) : (
-            <span>
+            <span className="font-sans text-base font-semibold leading-relaxed tracking-normal text-gray-900 dark:text-gray-100 transition-colors duration-200">
               {preview}
               {script.length > preview.length ? " ..." : ""}
             </span>
