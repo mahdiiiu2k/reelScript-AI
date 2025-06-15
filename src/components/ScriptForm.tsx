@@ -454,7 +454,7 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                   size="sm"
                   disabled={!previousScriptInput.trim()}
                 >
-                  Paste Script
+                  + Add a previous script
                 </Button>
               </div>
               <p className="text-xs text-muted-foreground">
