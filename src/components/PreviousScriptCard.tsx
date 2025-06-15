@@ -28,32 +28,35 @@ export const PreviousScriptCard: React.FC<PreviousScriptCardProps> = ({
         title={expanded ? "Collapse" : "Expand"}
         style={{ minHeight: "48px" }}
       >
-        <button
-          type="button"
-          aria-label={expanded ? "Collapse script" : "Expand script"}
-          tabIndex={0}
-          className="appearance-none border-none bg-transparent p-2 mr-1 flex items-center justify-center rounded-md hover:bg-purple-100 dark:hover:bg-purple-900/30 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-500"
-          onClick={(e) => {
-            e.stopPropagation();
-            setExpanded((v) => !v);
-          }}
-        >
-          {/* Arrow icon (lucide 'arrow-down'), animated */}
-          <svg
-            viewBox="0 0 24 24"
-            width="28"
-            height="28"
-            className={`stroke-current text-purple-700 dark:text-purple-300 transition-transform duration-300 ${expanded ? "rotate-180" : "rotate-0"}`}
-            fill="none"
-            strokeWidth={2}
+        <span className="flex items-center justify-center" style={{ width: 40, minWidth: 40 }}>
+          <button
+            type="button"
+            aria-label={expanded ? "Collapse script" : "Expand script"}
+            tabIndex={0}
+            className="appearance-none border-none bg-transparent w-8 h-8 flex items-center justify-center rounded-md hover:bg-purple-100 dark:hover:bg-purple-900/30 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-500"
+            style={{ display: "flex" }}
+            onClick={(e) => {
+              e.stopPropagation();
+              setExpanded((v) => !v);
+            }}
           >
-            <path
-              d="M12 5v14M5 12l7 7 7-7"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </button>
+            {/* Arrow icon (lucide 'arrow-down'), animated */}
+            <svg
+              viewBox="0 0 24 24"
+              width="28"
+              height="28"
+              className={`stroke-current text-purple-700 dark:text-purple-300 transition-transform duration-300 ${expanded ? "rotate-180" : "rotate-0"}`}
+              fill="none"
+              strokeWidth={2}
+            >
+              <path
+                d="M12 5v14M5 12l7 7 7-7"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
+        </span>
         <div className="flex-1 text-gray-800 dark:text-gray-200 text-sm font-mono break-words">
           {expanded ? (
             <span className="whitespace-pre-line">{script}</span>
