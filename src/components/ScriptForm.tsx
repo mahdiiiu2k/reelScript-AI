@@ -35,6 +35,10 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
     customTone: '',
     structure: '',
     customStructure: '',
+    hook: '',
+    customHook: '',
+    cta: '',
+    customCta: '',
     goal: '',
     customGoal: '',
     targetAudience: '',
@@ -57,6 +61,102 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
     'Before – After – Bridge', 'List Format', 'Mini Story – Lesson – Takeaway',
     'Question – Answer – Action', 'Myth – Truth – Example',
     'What / Why / How'
+  ];
+
+  const hookOptions = [
+    // Curiosity-Driven Hooks
+    '"No one\'s talking about this but it changes everything…"',
+    '"Here\'s what I wish I knew before I started…"',
+    '"You won\'t believe what happened when I tried this…"',
+    '"Everyone gets this wrong… except the top 1%."',
+    '"This one small shift changed everything for me."',
+    
+    // Problem/Pain-Based Hooks
+    '"Still struggling with [problem]? Here\'s the real reason why."',
+    '"If you\'re doing this, you\'re wasting your time."',
+    '"Why you can\'t [achieve goal] — and how to fix it."',
+    '"Here\'s why your [business/content/fitness/etc.] isn\'t growing."',
+    
+    // Bold/Controversial Hooks
+    '"This is going to trigger some people…"',
+    '"I said what I said: [unpopular opinion]."',
+    '"Stop doing this immediately if you want to grow."',
+    '"You\'ve been lied to about [common belief]."',
+    
+    // Value-Packed List Hooks
+    '"3 things I wish I knew earlier…"',
+    '"Here are 5 quick hacks to improve your [topic] today."',
+    '"Top 3 mistakes you\'re making with [topic]."',
+    '"Want to grow fast? Start doing these 3 things."',
+    
+    // Question Hooks
+    '"What\'s the #1 reason you\'re not growing on Instagram?"',
+    '"Do you know what\'s really holding you back?"',
+    '"Ever wondered why your reels flop?"',
+    '"What if I told you [unexpected truth]?"',
+    
+    // Viral/Trend-Based Hooks
+    '"POV: You\'re finally taking [topic] seriously."',
+    '"I tried [popular thing] for 30 days — here\'s what happened."',
+    '"Here\'s how I got [X result] with 0 experience."',
+    '"This trend actually works, but no one tells you how to use it."',
+    
+    // "Did You Know?" / Fact Hooks
+    '"Did you know this trick is used by all top creators?"',
+    '"Most people don\'t realize this… but it matters."',
+    '"Here\'s a stat that might blow your mind…"',
+    '"This ancient trick is now used by billionaires."',
+    
+    // Fast Impact Hooks
+    '"Stop scrolling. This will change your [life/business]."',
+    '"In just 15 seconds, you\'ll know exactly what to do."',
+    '"This might be the most important thing you hear today."'
+  ];
+
+  const ctaOptions = [
+    // Engagement
+    '"Double tap if this hit you!"',
+    '"Tag someone who needs this today."',
+    '"Comment 🔥 if you agree!"',
+    '"Save this for later—trust me, you\'ll need it."',
+    '"Share this with a friend who needs to hear it."',
+    '"Which one are you? Comment below 👇"',
+    
+    // Followers & Community Building
+    '"Follow for more real-talk like this."',
+    '"Want more content like this? Hit follow!"',
+    '"I post daily tips just like this—follow to stay ahead."',
+    '"Join the tribe—follow now."',
+    
+    // Educational / Informative
+    '"Screenshot this so you don\'t forget."',
+    '"Try this out and let me know how it goes."',
+    '"Bookmark this—this one\'s gold."',
+    '"Want a full breakdown? DM me \'INFO\'."',
+    
+    // Sales / Product or Service
+    '"Click the link in my bio to get started."',
+    '"Grab your free trial today—link in bio."',
+    '"Spots are limited—DM me the word \'JOIN\'."',
+    '"Want this result? My program is open now."',
+    
+    // Inspire / Motivate
+    '"Take the first step today. You got this."',
+    '"Believe in yourself—start now."',
+    '"Your future self is waiting. Let\'s go."',
+    '"It\'s never too late to become who you were meant to be."',
+    
+    // Entertain / Humor
+    '"Tag your lazy friend 😂"',
+    '"If this is you… no shame. We\'ve all been there."',
+    '"Send this to someone who needs this energy."',
+    '"Like if you laughed, comment if it\'s too real."',
+    
+    // Drive Traffic / Website / Link Click
+    '"Check the full thing in my bio."',
+    '"Full version on my YouTube—link in bio."',
+    '"I go deeper into this in my free guide—link in bio."',
+    '"Want to go next level? You know where to click."'
   ];
 
   const goalOptions = [
@@ -313,6 +413,7 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
             </h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Tone Selection */}
               <div className="space-y-2">
                 <Label className="text-base font-medium">Tone (Multiple Selection)</Label>
                 <div className="relative">
@@ -357,7 +458,6 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                           </div>
                         </div>
                         
-                        {/* Add custom tone input moved here */}
                         <div className="mb-2">
                           <div className="flex items-center gap-2">
                             <Input
@@ -378,7 +478,6 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                             </Button>
                           </div>
                         </div>
-                        {/* End move */}
 
                         {toneOptions.map((tone) => (
                           <div 
@@ -399,6 +498,7 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                 </div>
               </div>
 
+              {/* Script Structure */}
               <div className="space-y-2">
                 <Label className="text-base font-medium">Script Structure</Label>
                 <Select value={formData.structure} onValueChange={(value) => setFormData(prev => ({ ...prev, structure: value }))}>
@@ -432,7 +532,44 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                 )}
               </div>
             </div>
-            {/* New field: Previous Reels Scripts Input */}
+
+            {/* Hook Selection */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label className="text-base font-medium">Hook</Label>
+                <Select value={formData.hook} onValueChange={(value) => setFormData(prev => ({ ...prev, hook: value }))}>
+                  <SelectTrigger className="border-2 focus:border-purple-300 dark:focus:border-purple-500 bg-background dark:bg-slate-900/50">
+                    <SelectValue placeholder="Choose hook" />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-60">
+                    <SelectItem value="ai-choose" className="bg-gradient-to-r from-purple-200 to-purple-300 text-purple-800 font-bold rounded-lg my-1 mx-1">
+                      <div className="flex items-center gap-3">
+                        <div className="w-6 h-6 bg-purple-600/20 rounded-full flex items-center justify-center">
+                          <Sparkles className="w-3 h-3 text-purple-700" />
+                        </div>
+                        <span>Let AI choose the perfect hook</span>
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="custom" className="bg-gradient-to-r from-amber-100 to-orange-100 border border-amber-300 text-amber-800 font-medium rounded-md my-1 mx-1">
+                      Custom hook
+                    </SelectItem>
+                    {hookOptions.map((hook) => (
+                      <SelectItem key={hook} value={hook}>{hook}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {formData.hook === 'custom' && (
+                  <Input
+                    placeholder="Enter your custom hook"
+                    value={formData.customHook}
+                    onChange={(e) => setFormData(prev => ({ ...prev, customHook: e.target.value }))}
+                    className="mt-2 border-amber-200 focus:border-amber-400 dark:border-amber-600 dark:focus:border-amber-500 bg-background dark:bg-slate-900/50"
+                  />
+                )}
+              </div>
+            </div>
+
+            {/* Previous Reels Scripts Input */}
             <div className="space-y-2">
               <Label htmlFor="previousScriptInput" className="text-base font-medium">
                 Paste your previous reel scripts (optional)
@@ -545,6 +682,45 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                     placeholder="Describe your target audience"
                     value={formData.customAudience}
                     onChange={(e) => setFormData(prev => ({ ...prev, customAudience: e.target.value }))}
+                    className="mt-2 border-amber-200 focus:border-amber-400 dark:border-amber-600 dark:focus:border-amber-500 bg-background dark:bg-slate-900/50"
+                  />
+                )}
+              </div>
+            </div>
+
+            {/* CTA Selection */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label className="text-base font-medium">Call to Action (CTA)</Label>
+                <Select value={formData.cta} onValueChange={(value) => setFormData(prev => ({ ...prev, cta: value }))}>
+                  <SelectTrigger className="border-2 focus:border-purple-300 dark:focus:border-purple-500 bg-background dark:bg-slate-900/50">
+                    <SelectValue placeholder="Choose CTA" />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-60">
+                    <SelectItem value="ai-choose" className="bg-gradient-to-r from-purple-200 to-purple-300 text-purple-800 font-bold rounded-lg my-1 mx-1">
+                      <div className="flex items-center gap-3">
+                        <div className="w-6 h-6 bg-purple-600/20 rounded-full flex items-center justify-center">
+                          <Sparkles className="w-3 h-3 text-purple-700" />
+                        </div>
+                        <span>Let AI choose the perfect CTA</span>
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="custom" className="bg-gradient-to-r from-amber-100 to-orange-100 border border-amber-300 text-amber-800 font-medium rounded-md my-1 mx-1">
+                      Custom CTA
+                    </SelectItem>
+                    <SelectItem value="no-cta" className="bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600 text-gray-800 dark:text-gray-200 font-medium rounded-md my-1 mx-1">
+                      Generate without CTA
+                    </SelectItem>
+                    {ctaOptions.map((cta) => (
+                      <SelectItem key={cta} value={cta}>{cta}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {formData.cta === 'custom' && (
+                  <Input
+                    placeholder="Enter your custom CTA"
+                    value={formData.customCta}
+                    onChange={(e) => setFormData(prev => ({ ...prev, customCta: e.target.value }))}
                     className="mt-2 border-amber-200 focus:border-amber-400 dark:border-amber-600 dark:focus:border-amber-500 bg-background dark:bg-slate-900/50"
                   />
                 )}

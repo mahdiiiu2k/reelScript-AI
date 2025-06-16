@@ -1,3 +1,4 @@
+
 interface FormData {
   title: string;
   description: string;
@@ -9,6 +10,10 @@ interface FormData {
   customTone: string;
   structure: string;
   customStructure: string;
+  hook: string;
+  customHook: string;
+  cta: string;
+  customCta: string;
   goal: string;
   customGoal: string;
   targetAudience: string;
@@ -38,7 +43,7 @@ export const generateScript = async (formData: FormData): Promise<string> => {
         messages: [
           {
             role: 'system',
-            content: 'You are an expert Instagram reel script writer. Generate natural, engaging spoken scripts that creators would say aloud. Do not include scene directions, visual cues, or formatting instructions. Focus only on the spoken content that follows the specified tone, structure, and goals.'
+            content: 'You are a professional Instagram Reel scriptwriter. Generate a high-quality, time-stamped script based on the user\'s selected options. Follow the exact format provided in the prompt structure.'
           },
           {
             role: 'user',
@@ -69,63 +74,96 @@ export const generateScript = async (formData: FormData): Promise<string> => {
 };
 
 const buildPrompt = (formData: FormData): string => {
-  let prompt = `Based on the following inputs, generate a natural, engaging spoken script for an Instagram reel. Only include what the creator would say aloud — no scene directions, no visuals, no formatting. The script should follow the chosen tone, structure, and goal, and be suitable for the selected reel length.
+  let prompt = `You are a professional Instagram Reel scriptwriter. Generate a high-quality, time-stamped script based on the user's selected options.
 
-Inputs:`;
+Use the following structure:
 
-  if (formData.title) {
-    prompt += `\nTitle: ${formData.title}`;
-  }
+---
 
-  prompt += `\nDescription: ${formData.description}`;
+🎬 Reel Title (optional): ${formData.title || 'N/A'}
+📝 Reel Description / Topic: ${formData.description}`;
 
   // Length
   if (formData.length && formData.length !== 'ai-choose') {
     if (formData.length === 'custom' && formData.customLength) {
-      prompt += `\nLength: ${formData.customLength}`;
+      prompt += `\n⏱️ Length: ${formData.customLength}`;
     } else {
-      prompt += `\nLength: ${formData.length}`;
+      prompt += `\n⏱️ Length: ${formData.length}`;
     }
-  }
-
-  // Tone
-  if (formData.tones.length > 0 || formData.customTone) {
-    prompt += `\nTone: `;
-    const tones = [...formData.tones];
-    if (formData.customTone) {
-      tones.push(formData.customTone);
-    }
-    prompt += tones.join(', ');
-  }
-
-  // Structure
-  if (formData.structure && formData.structure !== 'ai-choose') {
-    const structure = formData.structure === 'custom' ? formData.customStructure : formData.structure;
-    prompt += `\nStructure: ${structure}`;
-  }
-
-  // Goal
-  if (formData.goal && formData.goal !== 'ai-choose') {
-    const goal = formData.goal === 'custom' ? formData.customGoal : formData.goal;
-    prompt += `\nGoal: ${goal}`;
-  }
-
-  // Target Audience
-  if (formData.targetAudience && formData.targetAudience !== 'ai-choose') {
-    const audience = formData.targetAudience === 'custom' ? formData.customAudience : formData.targetAudience;
-    prompt += `\nTarget Audience: ${audience}`;
+  } else {
+    prompt += `\n⏱️ Length: AI will choose optimal length`;
   }
 
   // Language
   const language = formData.language === 'custom' ? formData.customLanguage : formData.language;
   if (language && language !== 'English') {
-    prompt += `\nLanguage: ${language}`;
+    prompt += `\n🌐 Language / Dialect: ${language}`;
+  } else {
+    prompt += `\n🌐 Language / Dialect: English`;
+  }
+
+  // Tone
+  if (formData.tones.length > 0 || formData.customTone) {
+    prompt += `\n🎭 Tone(s): `;
+    const tones = [...formData.tones];
+    if (formData.customTone) {
+      tones.push(formData.customTone);
+    }
+    prompt += tones.join(', ');
+  } else {
+    prompt += `\n🎭 Tone(s): AI will choose optimal tone`;
+  }
+
+  // Structure
+  if (formData.structure && formData.structure !== 'ai-choose') {
+    const structure = formData.structure === 'custom' ? formData.customStructure : formData.structure;
+    prompt += `\n🧱 Script Structure: ${structure}`;
+  } else {
+    prompt += `\n🧱 Script Structure: AI will choose optimal structure`;
+  }
+
+  // Hook
+  if (formData.hook && formData.hook !== 'ai-choose') {
+    const hook = formData.hook === 'custom' ? formData.customHook : formData.hook;
+    prompt += `\n🧲 Hook: ${hook}`;
+  } else {
+    prompt += `\n🧲 Hook: AI will choose optimal hook`;
+  }
+
+  // CTA
+  if (formData.cta && formData.cta !== 'ai-choose') {
+    if (formData.cta === 'no-cta') {
+      prompt += `\n📢 CTA: No CTA - generate without call to action`;
+    } else {
+      const cta = formData.cta === 'custom' ? formData.customCta : formData.cta;
+      prompt += `\n📢 CTA: ${cta}`;
+    }
+  } else {
+    prompt += `\n📢 CTA: AI will choose optimal CTA`;
+  }
+
+  // Goal
+  if (formData.goal && formData.goal !== 'ai-choose') {
+    const goal = formData.goal === 'custom' ? formData.customGoal : formData.goal;
+    prompt += `\n🎯 Reel Goal: ${goal}`;
+  } else {
+    prompt += `\n🎯 Reel Goal: AI will choose optimal goal`;
+  }
+
+  // Target Audience
+  if (formData.targetAudience && formData.targetAudience !== 'ai-choose') {
+    const audience = formData.targetAudience === 'custom' ? formData.customAudience : formData.targetAudience;
+    prompt += `\n👥 Target Audience: ${audience}`;
+  } else {
+    prompt += `\n👥 Target Audience: AI will choose optimal audience`;
   }
 
   // Audience Age
   if (formData.audienceAge) {
-    prompt += `\nAudience Age: ${formData.audienceAge}`;
+    prompt += `\n👶 Audience Age (optional): ${formData.audienceAge}`;
   }
+
+  prompt += `\n\n---\n\n📜 Output Format (Final Script Structure):\n\n🧲 Hook: (0s to Xs)\n\n"Write the hook here,"\n\n🧠 Script Content:\n\n"don't forget the timed segments"\n\n📢 CTA (optional): (Final 3–5s)\n\n"Write a goal-based call to action"`;
 
   // Insert previous reel scripts/patterns, if provided
   if (formData.previousScripts && formData.previousScripts.length > 0) {
@@ -135,7 +173,7 @@ Inputs:`;
     });
   }
 
-  prompt += `\n\nOutput:\nA fluent, engaging monologue or voiceover script for the reel.`;
+  prompt += `\n\nGenerate a professional, engaging script that follows the exact format above. Make sure to include time stamps and follow the specified structure, hook, and CTA requirements.`;
 
   return prompt;
 };
