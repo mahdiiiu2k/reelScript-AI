@@ -33,6 +33,7 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
     customLanguage: '',
     tones: [] as string[],
     customTone: '',
+    isAIChosenTone: false,
     structure: '',
     customStructure: '',
     hook: '',
@@ -178,7 +179,8 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
       ...prev,
       tones: prev.tones.includes(tone)
         ? prev.tones.filter(t => t !== tone)
-        : [...prev.tones, tone]
+        : [...prev.tones, tone],
+      isAIChosenTone: false
     }));
   }, []);
 
@@ -200,7 +202,11 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
   const handleLetAIChooseTone = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    setFormData(prev => ({ ...prev, tones: [] }));
+    setFormData(prev => ({ 
+      ...prev, 
+      tones: [],
+      isAIChosenTone: true
+    }));
     setIsToneDropdownOpen(false);
   }, []);
 
@@ -220,7 +226,8 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
           return { 
             ...prev, 
             tones: [...prev.tones, customToneValue],
-            customTone: ''
+            customTone: '',
+            isAIChosenTone: false
           };
         }
         return { ...prev, customTone: '' };
@@ -422,7 +429,14 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                     onClick={handleToneDropdownToggle}
                   >
                     <div className="flex flex-wrap gap-1">
-                      {formData.tones.length === 0 ? (
+                      {formData.isAIChosenTone ? (
+                        <Badge variant="secondary" className="bg-purple-100 dark:bg-purple-900/50 text-purple-800 dark:text-purple-200">
+                          <div className="flex items-center gap-1">
+                            <Sparkles className="w-3 h-3" />
+                            AI will choose
+                          </div>
+                        </Badge>
+                      ) : formData.tones.length === 0 ? (
                         <span className="text-muted-foreground">Select tones...</span>
                       ) : (
                         formData.tones.map((tone) => (

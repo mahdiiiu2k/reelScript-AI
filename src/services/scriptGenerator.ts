@@ -8,6 +8,7 @@ interface FormData {
   customLanguage: string;
   tones: string[];
   customTone: string;
+  isAIChosenTone: boolean;
   structure: string;
   customStructure: string;
   hook: string;
@@ -43,7 +44,7 @@ export const generateScript = async (formData: FormData): Promise<string> => {
         messages: [
           {
             role: 'system',
-            content: 'You are a professional Instagram Reel scriptwriter. Generate a high-quality, time-stamped script based on the user\'s selected options. Follow the exact format provided in the prompt structure.'
+            content: 'You are a professional Instagram Reel scriptwriter. Generate a high-quality, time-stamped script based on the user\'s selected options. The script should contain the exact words the creator will say in the reel. Follow the exact format provided in the prompt structure.'
           },
           {
             role: 'user',
@@ -74,7 +75,7 @@ export const generateScript = async (formData: FormData): Promise<string> => {
 };
 
 const buildPrompt = (formData: FormData): string => {
-  let prompt = `You are a professional Instagram Reel scriptwriter. Generate a high-quality, time-stamped script based on the user's selected options.
+  let prompt = `You are a professional Instagram Reel scriptwriter. Generate a high-quality, time-stamped script based on the user's selected options. The script should contain the exact words the creator will say in the reel.
 
 Use the following structure:
 
@@ -103,7 +104,9 @@ Use the following structure:
   }
 
   // Tone
-  if (formData.tones.length > 0 || formData.customTone) {
+  if (formData.isAIChosenTone) {
+    prompt += `\n🎭 Tone(s): AI will choose optimal tone`;
+  } else if (formData.tones.length > 0 || formData.customTone) {
     prompt += `\n🎭 Tone(s): `;
     const tones = [...formData.tones];
     if (formData.customTone) {
@@ -173,7 +176,7 @@ Use the following structure:
     });
   }
 
-  prompt += `\n\nGenerate a professional, engaging script that follows the exact format above. Make sure to include time stamps and follow the specified structure, hook, and CTA requirements.`;
+  prompt += `\n\nGenerate a professional, engaging script that follows the exact format above. Make sure to include time stamps and follow the specified structure, hook, and CTA requirements. The script should contain the exact words the creator will say in the reel.`;
 
   return prompt;
 };
