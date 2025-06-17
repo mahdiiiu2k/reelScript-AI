@@ -36,28 +36,28 @@ const Landing = () => {
           </div>
 
           {/* Subscription Card */}
-          <Card className="bg-white/95 backdrop-blur-md border-0 shadow-2xl">
+          <Card className="bg-slate-800/90 border-purple-500/30 backdrop-blur-md shadow-2xl">
             <CardHeader className="text-center">
               <div className="flex items-center justify-center space-x-2 mb-2">
-                <Crown className="h-6 w-6 text-purple-600" />
-                <Badge className="bg-purple-100 text-purple-800 border-purple-200">
+                <Crown className="h-6 w-6 text-purple-400" />
+                <Badge className="bg-purple-600/20 text-purple-300 border-purple-500/50">
                   Premium
                 </Badge>
               </div>
-              <CardTitle className="text-2xl text-purple-600">
+              <CardTitle className="text-2xl text-purple-400">
                 Get Full Access Now
               </CardTitle>
-              <CardDescription className="text-lg text-gray-700">
-                <span className="text-3xl font-bold text-purple-600">$5</span>
-                <span className="text-sm text-gray-600">/month</span>
+              <CardDescription className="text-lg text-slate-300">
+                <span className="text-3xl font-bold text-purple-400">$5</span>
+                <span className="text-sm text-slate-400">/month</span>
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <ul className="space-y-3">
                 {features.map((feature, index) => (
                   <li key={index} className="flex items-center space-x-3">
-                    <Check className="h-5 w-5 text-green-500 flex-shrink-0" />
-                    <span className="text-gray-700">{feature}</span>
+                    <Check className="h-5 w-5 text-green-400 flex-shrink-0" />
+                    <span className="text-slate-300">{feature}</span>
                   </li>
                 ))}
               </ul>
@@ -70,7 +70,7 @@ const Landing = () => {
                 Sign In to Subscribe
               </Button>
               
-              <p className="text-center text-sm text-gray-500">
+              <p className="text-center text-sm text-slate-400">
                 Sign in with Google to get started
               </p>
             </CardContent>
