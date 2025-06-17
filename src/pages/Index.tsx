@@ -7,13 +7,27 @@ import { SubscriptionCard } from '@/components/SubscriptionCard';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
 
 const Index = () => {
   const [generatedScript, setGeneratedScript] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const { user, subscription, loading } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
+    // Redirect to landing if not authenticated
+    if (!loading && !user) {
+      navigate('/');
+      return;
+    }
+
+    // Redirect to checkout if authenticated but not subscribed
+    if (!loading && user && !subscription.subscribed) {
+      navigate('/checkout');
+      return;
+    }
+
     // Check for success/cancel URL parameters
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('success') === 'true') {
@@ -24,8 +38,10 @@ const Index = () => {
       toast.info('Subscription canceled. You can try again anytime.');
       // Clean up URL
       window.history.replaceState({}, document.title, window.location.pathname);
+      // Redirect back to checkout
+      navigate('/checkout');
     }
-  }, []);
+  }, [user, subscription.subscribed, loading, navigate]);
 
   const handleScriptGenerated = (script: string) => {
     setGeneratedScript(script);
@@ -48,6 +64,11 @@ const Index = () => {
         </main>
       </div>
     );
+  }
+
+  // Don't render anything if redirecting
+  if (!user || !subscription.subscribed) {
+    return null;
   }
 
   return (
@@ -76,19 +97,6 @@ const Index = () => {
           {/* Sidebar */}
           <div className="lg:col-span-1 space-y-6">
             <SubscriptionCard />
-            
-            {user && !subscription.subscribed && (
-              <Card className="bg-yellow-50/70 dark:bg-yellow-900/30 backdrop-blur-md border-yellow-200/50 dark:border-yellow-700/50">
-                <CardContent className="pt-6">
-                  <h4 className="font-semibold text-yellow-900 dark:text-yellow-200 mb-2">⚡ Free User Limits</h4>
-                  <ul className="text-yellow-800 dark:text-yellow-100 space-y-1 text-sm">
-                    <li>• Limited to 5 scripts per day</li>
-                    <li>• Basic hooks and CTAs only</li>
-                    <li>• Standard tone options</li>
-                  </ul>
-                </CardContent>
-              </Card>
-            )}
           </div>
         </div>
       </main>
