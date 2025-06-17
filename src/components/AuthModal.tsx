@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { Chrome } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -15,14 +14,12 @@ interface AuthModalProps {
 export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
   const { signInWithGoogle } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
 
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
     try {
       await signInWithGoogle();
       toast.success('Redirecting to Google...');
-      // The redirect will be handled by the auth state change
     } catch (error) {
       toast.error('Failed to sign in with Google');
       console.error('Google sign in error:', error);
@@ -33,12 +30,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md bg-slate-800 border-slate-700">
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-center text-2xl bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+          <DialogTitle className="text-center text-2xl bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
             Welcome to Reel Script AI
           </DialogTitle>
-          <DialogDescription className="text-center text-slate-300">
+          <DialogDescription className="text-center text-gray-600 dark:text-gray-300">
             Sign in to access premium features and save your scripts
           </DialogDescription>
         </DialogHeader>
@@ -47,14 +44,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
           <Button
             onClick={handleGoogleSignIn}
             disabled={isLoading}
-            className="w-full bg-slate-700 hover:bg-slate-600 text-white border border-slate-600"
+            className="w-full bg-white hover:bg-gray-50 text-gray-900 border border-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-white dark:border-gray-600"
             size="lg"
           >
             <Chrome className="w-5 h-5 mr-2" />
             {isLoading ? 'Connecting...' : 'Continue with Google'}
           </Button>
           
-          <div className="text-center text-sm text-slate-400">
+          <div className="text-center text-sm text-gray-500 dark:text-gray-400">
             By signing in, you agree to our Terms of Service and Privacy Policy
           </div>
         </div>

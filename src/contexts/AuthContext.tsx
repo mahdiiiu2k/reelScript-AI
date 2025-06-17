@@ -2,7 +2,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
-import { useNavigate, useLocation } from 'react-router-dom';
 
 interface SubscriptionInfo {
   subscribed: boolean;
@@ -35,8 +34,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [session, setSession] = useState<Session | null>(null);
   const [subscription, setSubscription] = useState<SubscriptionInfo>({ subscribed: false });
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
-  const location = useLocation();
 
   const checkSubscription = async () => {
     if (!session) return;
@@ -57,7 +54,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const signInWithGoogle = async () => {
-    const redirectUrl = `${window.location.origin}/checkout`;
+    const redirectUrl = `${window.location.origin}/`;
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
@@ -73,7 +70,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUser(null);
     setSession(null);
     setSubscription({ subscribed: false });
-    navigate('/');
   };
 
   useEffect(() => {
@@ -84,19 +80,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setUser(session?.user ?? null);
         setLoading(false);
 
-        // Handle auth state changes and redirects
+        // Check subscription after authentication
         if (session?.user) {
           setTimeout(() => {
             checkSubscription();
           }, 0);
-
-          // Only redirect on sign in event, not on initial load
-          if (event === 'SIGNED_IN') {
-            navigate('/checkout');
-          }
         } else {
           setSubscription({ subscribed: false });
-          // Don't automatically redirect on sign out - let the user stay where they are
         }
       }
     );
@@ -115,17 +105,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
 
     return () => authSubscription.unsubscribe();
-  }, [navigate]);
-
-  // Handle subscription-based redirects only for authenticated users
-  useEffect(() => {
-    if (!loading && user) {
-      // Redirect to main app if user is subscribed and on checkout page
-      if (subscription.subscribed && location.pathname === '/checkout') {
-        navigate('/app');
-      }
-    }
-  }, [subscription.subscribed, location.pathname, navigate, user, loading]);
+  }, []);
 
   const value = {
     user,
