@@ -90,14 +90,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             checkSubscription();
           }, 0);
 
-          // Redirect logic after successful authentication
-          if (event === 'SIGNED_IN' && location.pathname === '/') {
+          // Only redirect on sign in event, not on initial load
+          if (event === 'SIGNED_IN') {
             navigate('/checkout');
           }
         } else {
           setSubscription({ subscribed: false });
-          // Redirect to landing if user logs out and is on protected routes
-          if (location.pathname === '/checkout' || location.pathname === '/app') {
+          // Only redirect to landing if user logs out from protected routes
+          if (event === 'SIGNED_OUT' && (location.pathname === '/checkout' || location.pathname === '/app')) {
             navigate('/');
           }
         }
@@ -120,7 +120,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return () => authSubscription.unsubscribe();
   }, [navigate, location.pathname]);
 
-  // Handle subscription-based redirects
+  // Handle subscription-based redirects only for authenticated users
   useEffect(() => {
     if (!loading && user) {
       // Redirect to main app if user is subscribed and on checkout page

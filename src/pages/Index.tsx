@@ -16,14 +16,17 @@ const Index = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Only redirect if not loading and conditions are met
+    if (loading) return;
+
     // Redirect to landing if not authenticated
-    if (!loading && !user) {
+    if (!user) {
       navigate('/');
       return;
     }
 
     // Redirect to checkout if authenticated but not subscribed
-    if (!loading && user && !subscription.subscribed) {
+    if (user && !subscription.subscribed) {
       navigate('/checkout');
       return;
     }

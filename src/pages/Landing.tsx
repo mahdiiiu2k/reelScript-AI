@@ -26,38 +26,38 @@ const Landing = () => {
               <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-blue-600 shadow-lg">
                 <Bot className="h-7 w-7 text-white" />
               </div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+              <h1 className="text-3xl font-bold text-white">
                 Reel Script AI
               </h1>
             </div>
-            <p className="text-slate-400 text-lg">
+            <p className="text-slate-300 text-lg">
               Generate viral Instagram scripts instantly
             </p>
           </div>
 
           {/* Subscription Card */}
-          <Card className="bg-gradient-to-br from-purple-900/20 to-blue-900/20 border-purple-700/50 backdrop-blur-md">
+          <Card className="bg-white/95 backdrop-blur-md border-0 shadow-2xl">
             <CardHeader className="text-center">
               <div className="flex items-center justify-center space-x-2 mb-2">
-                <Crown className="h-6 w-6 text-purple-400" />
-                <Badge variant="secondary" className="bg-purple-900/70 text-purple-300 border-purple-700">
+                <Crown className="h-6 w-6 text-purple-600" />
+                <Badge className="bg-purple-100 text-purple-800 border-purple-200">
                   Premium
                 </Badge>
               </div>
-              <CardTitle className="text-2xl bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+              <CardTitle className="text-2xl text-purple-600">
                 Get Full Access Now
               </CardTitle>
-              <CardDescription className="text-lg text-slate-300">
-                <span className="text-3xl font-bold text-purple-400">$5</span>
-                <span className="text-sm">/month</span>
+              <CardDescription className="text-lg text-gray-700">
+                <span className="text-3xl font-bold text-purple-600">$5</span>
+                <span className="text-sm text-gray-600">/month</span>
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <ul className="space-y-3">
                 {features.map((feature, index) => (
                   <li key={index} className="flex items-center space-x-3">
-                    <Check className="h-5 w-5 text-green-400 flex-shrink-0" />
-                    <span className="text-slate-300">{feature}</span>
+                    <Check className="h-5 w-5 text-green-500 flex-shrink-0" />
+                    <span className="text-gray-700">{feature}</span>
                   </li>
                 ))}
               </ul>
@@ -70,7 +70,7 @@ const Landing = () => {
                 Sign In to Subscribe
               </Button>
               
-              <p className="text-center text-sm text-slate-400">
+              <p className="text-center text-sm text-gray-500">
                 Sign in with Google to get started
               </p>
             </CardContent>
