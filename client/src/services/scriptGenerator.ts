@@ -24,50 +24,23 @@ interface FormData {
 }
 
 export const generateScript = async (formData: FormData): Promise<string> => {
-  const API_KEY = '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';
-  const API_URL = 'https://openrouter.ai/api/v1/chat/completions';
-
-  // Build the prompt based on form data
-  const prompt = buildPrompt(formData);
-
   try {
-    const response = await fetch(API_URL, {
+    const response = await fetch('/api/generate-script', {
       method: 'POST',
+      credentials: 'include',
       headers: {
-        'Authorization': `Bearer ${API_KEY}`,
         'Content-Type': 'application/json',
-        'HTTP-Referer': window.location.origin,
-        'X-Title': 'Reel Script AI'
       },
-      body: JSON.stringify({
-        model: 'deepseek/deepseek-r1-0528:free',
-        messages: [
-          {
-            role: 'system',
-            content: 'You are a professional Instagram Reel scriptwriter. Generate a high-quality, time-stamped script based on the user\'s selected options. The script should contain the exact words the creator will say in the reel. Follow the exact format provided in the prompt structure.'
-          },
-          {
-            role: 'user',
-            content: prompt
-          }
-        ],
-        temperature: 0.8,
-        max_tokens: 2000,
-        top_p: 0.9
-      })
+      body: JSON.stringify(formData),
     });
 
     if (!response.ok) {
-      throw new Error(`API request failed: ${response.status}`);
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Failed to generate script');
     }
 
     const data = await response.json();
-    
-    if (!data.choices || !data.choices[0] || !data.choices[0].message) {
-      throw new Error('Invalid response format from API');
-    }
-
-    return data.choices[0].message.content;
+    return data.script;
   } catch (error) {
     console.error('Error generating script:', error);
     throw new Error('Failed to generate script. Please try again.');

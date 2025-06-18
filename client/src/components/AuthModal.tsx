@@ -15,17 +15,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
   const { signInWithGoogle } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleGoogleSignIn = async () => {
+  const handleGoogleSignIn = () => {
     setIsLoading(true);
-    try {
-      await signInWithGoogle();
-      toast.success('Redirecting to Google...');
-    } catch (error) {
-      toast.error('Failed to sign in with Google');
-      console.error('Google sign in error:', error);
-    } finally {
-      setIsLoading(false);
-    }
+    toast.success('Redirecting to Google...');
+    signInWithGoogle();
   };
 
   return (

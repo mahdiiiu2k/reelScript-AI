@@ -4,29 +4,31 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/contexts/AuthContext';
-import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Crown, Check, Sparkles } from 'lucide-react';
 
 export const SubscriptionCard: React.FC = () => {
-  const { user, session, subscription, checkSubscription } = useAuth();
+  const { user, subscription, checkSubscription } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubscribe = async () => {
-    if (!session) {
+    if (!user) {
       toast.error('Please sign in first');
       return;
     }
 
     setIsLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke('create-checkout', {
-        headers: {
-          Authorization: `Bearer ${session.access_token}`,
-        },
+      const response = await fetch('/api/subscription/create-checkout', {
+        method: 'POST',
+        credentials: 'include',
       });
 
-      if (error) throw error;
+      if (!response.ok) {
+        throw new Error('Failed to create checkout session');
+      }
+
+      const data = await response.json();
       
       if (data?.url) {
         window.location.href = data.url;
@@ -40,17 +42,20 @@ export const SubscriptionCard: React.FC = () => {
   };
 
   const handleManageSubscription = async () => {
-    if (!session) return;
+    if (!user) return;
 
     setIsLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke('customer-portal', {
-        headers: {
-          Authorization: `Bearer ${session.access_token}`,
-        },
+      const response = await fetch('/api/subscription/customer-portal', {
+        method: 'POST',
+        credentials: 'include',
       });
 
-      if (error) throw error;
+      if (!response.ok) {
+        throw new Error('Failed to create customer portal session');
+      }
+
+      const data = await response.json();
       
       if (data?.url) {
         window.location.href = data.url;
