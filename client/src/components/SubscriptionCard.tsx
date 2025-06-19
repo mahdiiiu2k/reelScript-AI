@@ -128,7 +128,7 @@ export const SubscriptionCard: React.FC = () => {
             Premium
           </Badge>
         </div>
-        <CardTitle className="text-2xl bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+        <CardTitle className="font-semibold tracking-tight bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent text-[35px]">
           Get Full Access
         </CardTitle>
         <CardDescription className="text-lg text-gray-600 dark:text-gray-300">
