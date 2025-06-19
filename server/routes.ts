@@ -254,21 +254,160 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // For now, we'll allow generation but with basic features
       }
 
-      // Here you would integrate with OpenRouter API
-      // For now, return a placeholder response
       if (!process.env.OPENROUTER_API_KEY) {
-        return res.status(500).json({ error: "AI service not configured" });
+        return res.status(500).json({ error: "AI service not configured. Please provide OpenRouter API key." });
       }
 
-      // This would be the actual OpenRouter integration
-      const script = "This is a placeholder script. Please configure OpenRouter API key for actual AI generation.";
+      const formData = req.body;
+      const prompt = buildPrompt(formData);
+
+      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
+          'Content-Type': 'application/json',
+          'HTTP-Referer': process.env.REPLIT_DEV_DOMAIN || 'http://localhost:5000',
+          'X-Title': 'Reel Script AI'
+        },
+        body: JSON.stringify({
+          model: 'deepseek/deepseek-r1-0528:free',
+          messages: [
+            {
+              role: 'system',
+              content: 'You are a professional Instagram Reel scriptwriter. Generate a high-quality, time-stamped script based on the user\'s selected options. The script should contain the exact words the creator will say in the reel. Follow the exact format provided in the prompt structure.'
+            },
+            {
+              role: 'user',
+              content: prompt
+            }
+          ],
+          temperature: 0.8,
+          max_tokens: 2000,
+          top_p: 0.9
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`OpenRouter API request failed: ${response.status}`);
+      }
+
+      const data = await response.json();
       
-      res.json({ script });
+      if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+        throw new Error('Invalid response format from OpenRouter API');
+      }
+
+      res.json({ script: data.choices[0].message.content });
     } catch (error) {
       console.error('Script generation error:', error);
       res.status(500).json({ error: "Failed to generate script" });
     }
   });
+
+  // Helper function to build prompt
+  const buildPrompt = (formData: any): string => {
+    let prompt = `You are a professional Instagram Reel scriptwriter. Generate a high-quality, time-stamped script based on the user's selected options. The script should contain the exact words the creator will say in the reel.
+
+Use the following structure:
+
+---
+
+🎬 Reel Title (optional): ${formData.title || 'N/A'}
+📝 Reel Description / Topic: ${formData.description}`;
+
+    // Length
+    if (formData.length && formData.length !== 'ai-choose') {
+      if (formData.length === 'custom' && formData.customLength) {
+        prompt += `\n⏱️ Length: ${formData.customLength}`;
+      } else {
+        prompt += `\n⏱️ Length: ${formData.length}`;
+      }
+    } else {
+      prompt += `\n⏱️ Length: AI will choose optimal length`;
+    }
+
+    // Language
+    const language = formData.language === 'custom' ? formData.customLanguage : formData.language;
+    if (language && language !== 'English') {
+      prompt += `\n🌐 Language / Dialect: ${language}`;
+    } else {
+      prompt += `\n🌐 Language / Dialect: English`;
+    }
+
+    // Tone
+    if (formData.isAIChosenTone) {
+      prompt += `\n🎭 Tone: AI will choose optimal tone`;
+    } else if (formData.tones && formData.tones.length > 0) {
+      const toneList = formData.tones.includes('custom') && formData.customTone 
+        ? [...formData.tones.filter((t: string) => t !== 'custom'), formData.customTone]
+        : formData.tones;
+      prompt += `\n🎭 Tone: ${toneList.join(', ')}`;
+    }
+
+    // Structure
+    const structure = formData.structure === 'custom' ? formData.customStructure : formData.structure;
+    if (structure && structure !== 'ai-choose') {
+      prompt += `\n📋 Structure: ${structure}`;
+    } else {
+      prompt += `\n📋 Structure: AI will choose optimal structure`;
+    }
+
+    // Hook
+    const hook = formData.hook === 'custom' ? formData.customHook : formData.hook;
+    if (hook && hook !== 'ai-choose') {
+      prompt += `\n🎣 Hook Style: ${hook}`;
+    } else {
+      prompt += `\n🎣 Hook Style: AI will choose optimal hook`;
+    }
+
+    // CTA
+    const cta = formData.cta === 'custom' ? formData.customCta : formData.cta;
+    if (cta && cta !== 'ai-choose') {
+      prompt += `\n📢 Call-to-Action: ${cta}`;
+    } else {
+      prompt += `\n📢 Call-to-Action: AI will choose optimal CTA`;
+    }
+
+    // Goal
+    const goal = formData.goal === 'custom' ? formData.customGoal : formData.goal;
+    if (goal && goal !== 'ai-choose') {
+      prompt += `\n🎯 Goal: ${goal}`;
+    } else {
+      prompt += `\n🎯 Goal: AI will choose optimal goal`;
+    }
+
+    // Target Audience
+    const audience = formData.targetAudience === 'custom' ? formData.customAudience : formData.targetAudience;
+    if (audience && audience !== 'ai-choose') {
+      prompt += `\n👥 Target Audience: ${audience}`;
+      if (formData.audienceAge && formData.audienceAge !== 'all-ages') {
+        prompt += ` (${formData.audienceAge})`;
+      }
+    } else {
+      prompt += `\n👥 Target Audience: AI will choose optimal audience`;
+    }
+
+    // Previous Scripts
+    if (formData.previousScripts && formData.previousScripts.length > 0) {
+      prompt += `\n\n📚 Previous Scripts (for reference, create something different):\n${formData.previousScripts.map((script: string, index: number) => `${index + 1}. ${script.substring(0, 200)}...`).join('\n')}`;
+    }
+
+    prompt += `\n\n---
+
+Please generate a professional Instagram Reel script following these guidelines:
+
+1. Start with a compelling hook in the first 3 seconds
+2. Include time stamps (e.g., [0:00-0:03])
+3. Keep the language conversational and engaging
+4. Include visual cues where appropriate (e.g., [Show example on screen])
+5. End with a strong call-to-action
+6. Make sure the script flows naturally and sounds authentic
+7. Keep the total length appropriate for Instagram Reels (15-90 seconds)
+
+Format the script clearly with timestamps and include any relevant visual directions in brackets.`;
+
+    return prompt;
+  };
 
   const httpServer = createServer(app);
   return httpServer;
