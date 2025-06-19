@@ -4,16 +4,18 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/contexts/AuthContext';
+import { AuthModal } from '@/components/AuthModal';
 import { toast } from 'sonner';
 import { Crown, Check, Sparkles } from 'lucide-react';
 
 export const SubscriptionCard: React.FC = () => {
   const { user, subscription, checkSubscription } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
   const handleSubscribe = async () => {
     if (!user) {
-      toast.error('Please sign in first');
+      setShowAuthModal(true);
       return;
     }
 
@@ -72,7 +74,6 @@ export const SubscriptionCard: React.FC = () => {
     'Unlimited script generation',
     'Access to all premium hooks and CTAs',
     'Advanced tone customization',
-    'Priority customer support',
     'No daily limits'
   ];
 
@@ -128,7 +129,7 @@ export const SubscriptionCard: React.FC = () => {
           </Badge>
         </div>
         <CardTitle className="text-2xl bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-          Unlock Premium Features
+          Get Full Access
         </CardTitle>
         <CardDescription className="text-lg text-gray-600 dark:text-gray-300">
           <span className="text-3xl font-bold text-purple-600 dark:text-purple-400">$5</span>
@@ -147,11 +148,11 @@ export const SubscriptionCard: React.FC = () => {
         
         <Button 
           onClick={handleSubscribe}
-          disabled={isLoading || !user}
+          disabled={isLoading}
           className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white"
           size="lg"
         >
-          {isLoading ? 'Processing...' : user ? 'Subscribe Now' : 'Sign In to Subscribe'}
+          {isLoading ? 'Processing...' : user ? 'Get Full Access' : 'Sign In'}
         </Button>
         
         {!user && (
@@ -160,6 +161,7 @@ export const SubscriptionCard: React.FC = () => {
           </p>
         )}
       </CardContent>
+      <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />
     </Card>
   );
 };

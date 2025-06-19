@@ -97,6 +97,15 @@ The application is configured for deployment on Replit with the following setup:
 
 ```
 Changelog:
+- June 19, 2025. Successfully migrated from Lovable to Replit
+  - Replaced Supabase with PostgreSQL/Drizzle ORM
+  - Implemented server-side Google OAuth authentication
+  - Added secure session management with HTTP-only cookies
+  - Migrated Stripe subscription handling to server routes
+  - Moved OpenRouter AI integration to secure server-side API
+  - Updated UI layout for mobile-first subscription card placement
+  - Enhanced authentication modal with email/password options
+  - Removed all Supabase dependencies for improved security
 - June 18, 2025. Initial setup
 ```
 
