@@ -152,7 +152,7 @@ export const SubscriptionCard: React.FC = () => {
           className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white text-[18px]"
           size="lg"
         >
-          {isLoading ? 'Processing...' : user ? 'Get Full Access' : 'Sign In'}
+          {isLoading ? 'Processing...' : user ? 'Subscribe Now' : 'Sign In'}
         </Button>
         
         {!user && (

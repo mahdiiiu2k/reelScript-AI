@@ -52,8 +52,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-center text-2xl bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-            Welcome to Reel Script AI
+          <DialogTitle className="text-center text-2xl bg-gradient-to-r from-sky-500 to-cyan-600 bg-clip-text text-transparent">
+            Welcome to Script Expert
           </DialogTitle>
           <DialogDescription className="text-center text-gray-600 dark:text-gray-300">
             {isSignUp ? 'Create an account to get started' : 'Sign in to access premium features and save your scripts'}

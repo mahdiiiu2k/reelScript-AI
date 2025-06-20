@@ -1,6 +1,6 @@
 # Overview
 
-This is a full-stack web application called "Reel Script AI" that generates Instagram Reel scripts using AI. The application features a React frontend with TypeScript, a Node.js/Express backend, PostgreSQL database with Drizzle ORM, and Supabase for authentication and subscription management with Stripe integration.
+This is a full-stack web application called "Script Expert" that generates viral Instagram Reel scripts using AI. The application features a React frontend with TypeScript, a Node.js/Express backend, PostgreSQL database with Drizzle ORM, and Google OAuth authentication with Stripe subscription management.
 
 # System Architecture
 
@@ -36,9 +36,10 @@ This is a full-stack web application called "Reel Script AI" that generates Inst
 - **Integration**: Supabase Edge Functions for secure webhook handling and customer portal access
 
 ## AI Script Generation
-- **AI Provider**: OpenRouter API using DeepSeek R1 model
-- **Service Architecture**: Dedicated script generation service with form data processing
+- **AI Provider**: OpenRouter API using DeepSeek V3 model
+- **Service Architecture**: Dedicated script generation service with advanced viral script prompting
 - **User Input**: Comprehensive form with customizable script parameters (tone, length, audience, etc.)
+- **Script Format**: Single paragraph viral script output using Callaway's 3-step hook formula
 
 ## UI/UX Design
 - **Design System**: Consistent component library with shadcn/ui
@@ -97,6 +98,16 @@ The application is configured for deployment on Replit with the following setup:
 
 ```
 Changelog:
+- June 20, 2025. Complete rebranding to "Script Expert"
+  - Updated AI model from DeepSeek R1 to DeepSeek V3 for improved script generation
+  - Implemented advanced viral script prompt using Callaway's 3-step hook formula
+  - Rebranded application from "Reel Script AI" to "Script Expert"
+  - Created custom feather logo design matching brand identity
+  - Updated color scheme to sky/cyan gradients throughout UI
+  - Added Stripe price ID (price_1Rc7AvEHEdRuv5DaPBQ7xjC2) for $5/month subscription
+  - Enhanced subscription button text: "Subscribe Now" when authenticated, "Sign In" when not
+  - Updated page title and meta description for SEO optimization
+  - Confirmed mobile-first layout with subscription card above form
 - June 19, 2025. Successfully migrated from Lovable to Replit
   - Replaced Supabase with PostgreSQL/Drizzle ORM
   - Implemented server-side Google OAuth authentication

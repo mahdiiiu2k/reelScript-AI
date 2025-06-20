@@ -140,12 +140,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         customer_email: customerId ? undefined : req.user.email,
         line_items: [
           {
-            price_data: {
-              currency: "usd",
-              product_data: { name: "Premium Subscription - Reel Script AI" },
-              unit_amount: 500, // $5.00 in cents
-              recurring: { interval: "month" },
-            },
+            price: "price_1Rc7AvEHEdRuv5DaPBQ7xjC2",
             quantity: 1,
           },
         ],
@@ -270,11 +265,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
           'X-Title': 'Reel Script AI'
         },
         body: JSON.stringify({
-          model: 'deepseek/deepseek-r1-0528:free',
+          model: 'deepseek/deepseek-v3:free',
           messages: [
             {
               role: 'system',
-              content: 'You are a professional Instagram Reel scriptwriter. Generate a high-quality, time-stamped script based on the user\'s selected options. The script should contain the exact words the creator will say in the reel. Follow the exact format provided in the prompt structure.'
+              content: 'You are an elite short-form video scriptwriter. Your job is to write a compelling spoken script (what the creator says) that makes a reel go viral using the best storytelling and hook psychology available. Output just the final script paragraph. No explanations, no headings, no labels, no formatting. Use commas and periods where appropriate. The paragraph should feel natural, rhythmic, personal, and visually supported.'
             },
             {
               role: 'user',
@@ -306,105 +301,85 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Helper function to build prompt
   const buildPrompt = (formData: any): string => {
-    let prompt = `You are a professional Instagram Reel scriptwriter. Generate a high-quality, time-stamped script based on the user's selected options. The script should contain the exact words the creator will say in the reel.
+    let prompt = `You are an elite short-form video scriptwriter. Your job is to write a compelling spoken script (what the creator says) that makes a reel go viral using the best storytelling and hook psychology available.
 
-Use the following structure:
+Your output should be:
 
----
+A single paragraph (natural for a creator to speak)
 
-🎬 Reel Title (optional): ${formData.title || 'N/A'}
-📝 Reel Description / Topic: ${formData.description}`;
+No headings, no labels, no formatting
 
-    // Length
-    if (formData.length && formData.length !== 'ai-choose') {
-      if (formData.length === 'custom' && formData.customLength) {
-        prompt += `\n⏱️ Length: ${formData.customLength}`;
-      } else {
-        prompt += `\n⏱️ Length: ${formData.length}`;
-      }
-    } else {
-      prompt += `\n⏱️ Length: AI will choose optimal length`;
-    }
+Use commas and periods where appropriate
 
-    // Language
-    const language = formData.language === 'custom' ? formData.customLanguage : formData.language;
-    if (language && language !== 'English') {
-      prompt += `\n🌐 Language / Dialect: ${language}`;
-    } else {
-      prompt += `\n🌐 Language / Dialect: English`;
-    }
+The paragraph should feel natural, rhythmic, personal, and visually supported
 
-    // Tone
-    if (formData.isAIChosenTone) {
-      prompt += `\n🎭 Tone: AI will choose optimal tone`;
-    } else if (formData.tones && formData.tones.length > 0) {
-      const toneList = formData.tones.includes('custom') && formData.customTone 
-        ? [...formData.tones.filter((t: string) => t !== 'custom'), formData.customTone]
-        : formData.tones;
-      prompt += `\n🎭 Tone: ${toneList.join(', ')}`;
-    }
+Follow this structure and logic in your writing:
 
-    // Structure
-    const structure = formData.structure === 'custom' ? formData.customStructure : formData.structure;
-    if (structure && structure !== 'ai-choose') {
-      prompt += `\n📋 Structure: ${structure}`;
-    } else {
-      prompt += `\n📋 Structure: AI will choose optimal structure`;
-    }
+Use Callaway's 3-step hook formula at the start:
 
-    // Hook
-    const hook = formData.hook === 'custom' ? formData.customHook : formData.hook;
-    if (hook && hook !== 'ai-choose') {
-      prompt += `\n🎣 Hook Style: ${hook}`;
-    } else {
-      prompt += `\n🎣 Hook Style: AI will choose optimal hook`;
-    }
+Context Lean: Be ultra-clear about the topic and create immediate interest by referencing a benefit, pain point, mind-blowing stat, or metaphor
 
-    // CTA
-    const cta = formData.cta === 'custom' ? formData.customCta : formData.cta;
-    if (cta && cta !== 'ai-choose') {
-      prompt += `\n📢 Call-to-Action: ${cta}`;
-    } else {
-      prompt += `\n📢 Call-to-Action: AI will choose optimal CTA`;
-    }
+Scroll-Stop Interjection: Use a word like "but", "yet", or "however" to deliver a surprising contrast
 
-    // Goal
-    const goal = formData.goal === 'custom' ? formData.customGoal : formData.goal;
-    if (goal && goal !== 'ai-choose') {
-      prompt += `\n🎯 Goal: ${goal}`;
-    } else {
-      prompt += `\n🎯 Goal: AI will choose optimal goal`;
-    }
+Contrarian Snapback: Flip expectations in a direction that opens a curiosity loop and teases deeper insight
 
-    // Target Audience
-    const audience = formData.targetAudience === 'custom' ? formData.customAudience : formData.targetAudience;
-    if (audience && audience !== 'ai-choose') {
-      prompt += `\n👥 Target Audience: ${audience}`;
-      if (formData.audienceAge && formData.audienceAge !== 'all-ages') {
-        prompt += ` (${formData.audienceAge})`;
-      }
-    } else {
-      prompt += `\n👥 Target Audience: AI will choose optimal audience`;
-    }
+Build the rest of the script using:
 
-    // Previous Scripts
-    if (formData.previousScripts && formData.previousScripts.length > 0) {
-      prompt += `\n\n📚 Previous Scripts (for reference, create something different):\n${formData.previousScripts.map((script: string, index: number) => `${index + 1}. ${script.substring(0, 200)}...`).join('\n')}`;
-    }
+The Dance (alternating conflict and context beats)
 
-    prompt += `\n\n---
+Rhythm (sentence variety: short, medium, long, staccato when needed)
 
-Please generate a professional Instagram Reel script following these guidelines:
+Conversational Tone (as if the creator is talking to one close friend)
 
-1. Start with a compelling hook in the first 3 seconds
-2. Include time stamps (e.g., [0:00-0:03])
-3. Keep the language conversational and engaging
-4. Include visual cues where appropriate (e.g., [Show example on screen])
-5. End with a strong call-to-action
-6. Make sure the script flows naturally and sounds authentic
-7. Keep the total length appropriate for Instagram Reels (15-90 seconds)
+Clear Direction (start with the end in mind, loop final line to intro if possible)
 
-Format the script clearly with timestamps and include any relevant visual directions in brackets.`;
+Unique Story Lens (an unexpected or niche perspective that makes the take feel fresh)
+
+CTA (naturally integrate this toward the end if provided)
+
+Assume a strong visual hook will be shown on-screen during the first 2 seconds. Do not mention visuals in the script — just write the spoken part.
+
+Output just the final script paragraph. No explanations.
+
+🔽 USER INPUT VARIABLES:
+
+Reel Description: ${formData.description}
+
+Reel Title (Optional): ${formData.title || 'N/A'}
+
+Reel Length: ${formData.length && formData.length !== 'ai-choose' ? 
+  (formData.length === 'custom' && formData.customLength ? formData.customLength : formData.length) : 
+  'AI will choose optimal length'}
+
+Language / Dialect: ${formData.language === 'custom' ? formData.customLanguage : (formData.language || 'English')}
+
+Tone (Multiple Selection): ${formData.isAIChosenTone ? 'AI will choose optimal tone' : 
+  (formData.tones && formData.tones.length > 0 ? 
+    (formData.tones.includes('custom') && formData.customTone ? 
+      [...formData.tones.filter((t: string) => t !== 'custom'), formData.customTone].join(', ') : 
+      formData.tones.join(', ')) : 
+    'Not specified')}
+
+Script Structure: ${formData.structure === 'custom' ? formData.customStructure : 
+  (formData.structure && formData.structure !== 'ai-choose' ? formData.structure : 'AI will choose optimal structure')}
+
+Hook: ${formData.hook === 'custom' ? formData.customHook : 
+  (formData.hook && formData.hook !== 'ai-choose' ? formData.hook : 'AI will choose optimal hook')}
+
+Previous Reel Scripts (Optional): ${formData.previousScripts && formData.previousScripts.length > 0 ? 
+  formData.previousScripts.map((script: string, index: number) => `${index + 1}. ${script.substring(0, 200)}...`).join('\n') : 
+  'None provided'}
+
+Reel Goal: ${formData.goal === 'custom' ? formData.customGoal : 
+  (formData.goal && formData.goal !== 'ai-choose' ? formData.goal : 'AI will choose optimal goal')}
+
+Target Audience: ${formData.targetAudience === 'custom' ? formData.customAudience : 
+  (formData.targetAudience && formData.targetAudience !== 'ai-choose' ? formData.targetAudience : 'AI will choose optimal audience')}
+
+Call to Action (CTA): ${formData.cta === 'custom' ? formData.customCta : 
+  (formData.cta && formData.cta !== 'ai-choose' ? formData.cta : 'AI will choose optimal CTA')}
+
+Audience Age (Optional): ${formData.audienceAge && formData.audienceAge !== 'all-ages' ? formData.audienceAge : 'Not specified'}`;
 
     return prompt;
   };
