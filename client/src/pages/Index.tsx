@@ -54,20 +54,23 @@ const Index = () => {
     <div className="min-h-screen bg-gradient-to-br from-sky-50 via-cyan-50 to-blue-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 transition-all duration-500">
       <Header />
       <main className="container mx-auto px-4 py-8 max-w-6xl">
-        <div className="flex flex-col lg:grid lg:grid-cols-3 gap-8">
-          {/* Subscription Card - Mobile First */}
-          <div className="lg:hidden">
-            <SubscriptionCard />
-          </div>
+        <div className={`grid gap-8 ${subscription.subscribed ? 'grid-cols-1 max-w-4xl mx-auto' : 'grid-cols-1 lg:grid-cols-3'}`}>
+          {/* Subscription Card - Only show for non-subscribers */}
+          {!subscription.subscribed && (
+            <div className="lg:col-span-1">
+              <SubscriptionCard />
+            </div>
+          )}
 
           {/* Main content */}
-          <div className="lg:col-span-2">
+          <div className={subscription.subscribed ? 'col-span-1' : 'lg:col-span-2'}>
             <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-md rounded-2xl shadow-xl border border-gray-200/50 dark:border-slate-700/50 p-6 md:p-8">
               {!generatedScript ? (
                 <ScriptForm 
                   onScriptGenerated={handleScriptGenerated}
                   isGenerating={isGenerating}
                   setIsGenerating={setIsGenerating}
+                  hasActiveSubscription={subscription.subscribed}
                 />
               ) : (
                 <ScriptResult 
@@ -76,24 +79,6 @@ const Index = () => {
                 />
               )}
             </div>
-          </div>
-
-          {/* Sidebar - Desktop Only */}
-          <div className="hidden lg:block lg:col-span-1 space-y-6">
-            <SubscriptionCard />
-            
-            {user && !subscription.subscribed && (
-              <Card className="bg-yellow-50/70 dark:bg-yellow-900/30 backdrop-blur-md border-yellow-200/50 dark:border-yellow-700/50">
-                <CardContent className="pt-6">
-                  <h4 className="font-semibold text-yellow-900 dark:text-yellow-200 mb-2">⚡ Free User Limits</h4>
-                  <ul className="text-yellow-800 dark:text-yellow-100 space-y-1 text-sm">
-                    <li>• Limited to 5 scripts per day</li>
-                    <li>• Basic hooks and CTAs only</li>
-                    <li>• Standard tone options</li>
-                  </ul>
-                </CardContent>
-              </Card>
-            )}
           </div>
         </div>
       </main>

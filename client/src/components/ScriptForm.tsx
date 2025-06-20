@@ -17,12 +17,14 @@ interface ScriptFormProps {
   onScriptGenerated: (script: string) => void;
   isGenerating: boolean;
   setIsGenerating: (generating: boolean) => void;
+  hasActiveSubscription: boolean;
 }
 
 export const ScriptForm: React.FC<ScriptFormProps> = ({ 
   onScriptGenerated, 
   isGenerating, 
-  setIsGenerating 
+  setIsGenerating,
+  hasActiveSubscription
 }) => {
   const [formData, setFormData] = useState({
     title: '',
@@ -263,6 +265,11 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    if (!hasActiveSubscription) {
+      toast.error('Subscribe to get full access');
+      return;
+    }
+    
     if (!formData.description.trim()) {
       toast.error('Please provide a reel description');
       return;
@@ -279,6 +286,12 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
       console.error('Script generation error:', error);
     } finally {
       setIsGenerating(false);
+    }
+  };
+
+  const handleInputClick = () => {
+    if (!hasActiveSubscription) {
+      toast.error('Subscribe to get full access');
     }
   };
 
@@ -304,26 +317,44 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
             </h3>
             
             <div className="space-y-2">
-              <Label htmlFor="description" className="text-base font-medium">Reel Description *</Label>
+              <Label htmlFor="description" className="text-base font-medium flex items-center gap-2">
+                Reel Description *
+                {!hasActiveSubscription && (
+                  <span className="text-sm text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20 px-2 py-1 rounded">
+                    Subscribe to get full access
+                  </span>
+                )}
+              </Label>
               <Textarea
                 id="description"
                 placeholder="Describe what your reel should be about, the main message, or key points you want to cover..."
                 value={formData.description}
-                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                onChange={(e) => hasActiveSubscription ? setFormData(prev => ({ ...prev, description: e.target.value })) : handleInputClick()}
+                onClick={handleInputClick}
                 rows={4}
                 required
-                className="border-2 focus:border-purple-300 dark:focus:border-purple-500 transition-colors bg-background dark:bg-slate-900/50"
+                disabled={!hasActiveSubscription}
+                className={`border-2 transition-colors ${hasActiveSubscription ? 'focus:border-purple-300 dark:focus:border-purple-500 bg-background dark:bg-slate-900/50' : 'bg-gray-100 dark:bg-gray-800 opacity-60 cursor-not-allowed'}`}
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="title" className="text-base font-medium">Reel Title (Optional)</Label>
+              <Label htmlFor="title" className="text-base font-medium flex items-center gap-2">
+                Reel Title (Optional)
+                {!hasActiveSubscription && (
+                  <span className="text-sm text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20 px-2 py-1 rounded">
+                    Subscribe to get full access
+                  </span>
+                )}
+              </Label>
               <Input
                 id="title"
                 placeholder="Enter a catchy title for your reel"
                 value={formData.title}
-                onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                className="border-2 focus:border-purple-300 dark:focus:border-purple-500 transition-colors bg-background dark:bg-slate-900/50"
+                onChange={(e) => hasActiveSubscription ? setFormData(prev => ({ ...prev, title: e.target.value })) : handleInputClick()}
+                onClick={handleInputClick}
+                disabled={!hasActiveSubscription}
+                className={`border-2 transition-colors ${hasActiveSubscription ? 'focus:border-purple-300 dark:focus:border-purple-500 bg-background dark:bg-slate-900/50' : 'bg-gray-100 dark:bg-gray-800 opacity-60 cursor-not-allowed'}`}
               />
             </div>
           </div>
@@ -341,9 +372,16 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label className="text-base font-medium">Reel Length</Label>
-                <Select value={formData.length} onValueChange={(value) => setFormData(prev => ({ ...prev, length: value }))}>
-                  <SelectTrigger className="border-2 focus:border-purple-300 dark:focus:border-purple-500 bg-background dark:bg-slate-900/50">
+                <Label className="text-base font-medium flex items-center gap-2">
+                  Reel Length
+                  {!hasActiveSubscription && (
+                    <span className="text-sm text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20 px-2 py-1 rounded">
+                      Subscribe to get full access
+                    </span>
+                  )}
+                </Label>
+                <Select value={formData.length} onValueChange={(value) => hasActiveSubscription ? setFormData(prev => ({ ...prev, length: value })) : handleInputClick()} disabled={!hasActiveSubscription}>
+                  <SelectTrigger className={`border-2 transition-colors ${hasActiveSubscription ? 'focus:border-purple-300 dark:focus:border-purple-500 bg-background dark:bg-slate-900/50' : 'bg-gray-100 dark:bg-gray-800 opacity-60 cursor-not-allowed'}`} onClick={handleInputClick}>
                     <SelectValue placeholder="Select duration" />
                   </SelectTrigger>
                   <SelectContent>
@@ -758,19 +796,25 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
           {/* Submit Button */}
           <Button 
             type="submit" 
-            className="w-full bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 hover:from-purple-700 hover:via-blue-700 hover:to-indigo-700 text-white py-6 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]"
-            disabled={isGenerating}
+            className={`w-full py-6 text-lg font-semibold shadow-lg transition-all duration-300 ${
+              hasActiveSubscription 
+                ? 'bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 hover:from-purple-700 hover:via-blue-700 hover:to-indigo-700 text-white hover:shadow-xl transform hover:scale-[1.02]'
+                : 'bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed'
+            }`}
+            disabled={isGenerating || !hasActiveSubscription}
           >
             {isGenerating ? (
               <div className="flex items-center space-x-2">
                 <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
                 <span>Generating Script...</span>
               </div>
-            ) : (
+            ) : hasActiveSubscription ? (
               <div className="flex items-center space-x-2">
                 <Play className="h-5 w-5" />
                 <span>Generate Script</span>
               </div>
+            ) : (
+              <span>Subscribe to generate scripts</span>
             )}
           </Button>
         </form>
