@@ -238,17 +238,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Script generation route
-  app.post('/api/generate-script', requireAuth, async (req: any, res) => {
+  // Script generation route - No authentication required
+  app.post('/api/generate-script', async (req: any, res) => {
     try {
-      const subscription = await storage.getSubscription(req.user.id);
-      
-      // Check if user has premium access or implement rate limiting for free users
-      if (!subscription?.subscribed) {
-        // You can implement daily limits here for free users
-        // For now, we'll allow generation but with basic features
-      }
-
       if (!process.env.OPENROUTER_API_KEY) {
         return res.status(500).json({ error: "AI service not configured. Please provide OpenRouter API key." });
       }
