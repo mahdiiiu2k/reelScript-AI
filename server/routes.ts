@@ -246,7 +246,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const formData = req.body;
-      const prompt = buildPrompt(formData);
 
       const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
         method: 'POST',
@@ -257,24 +256,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
           'X-Title': 'Reel Script AI'
         },
         body: JSON.stringify({
-          model: 'deepseek/deepseek-v3:free',
+          model: 'meta-llama/llama-3.2-3b-instruct:free',
           messages: [
             {
               role: 'system',
-              content: 'You are an elite short-form video scriptwriter. Your job is to write a compelling spoken script (what the creator says) that makes a reel go viral using the best storytelling and hook psychology available. Output just the final script paragraph. No explanations, no headings, no labels, no formatting. Use commas and periods where appropriate. The paragraph should feel natural, rhythmic, personal, and visually supported.'
+              content: 'You are a viral short-form video scriptwriter. Write engaging, natural-sounding scripts for social media reels. Output only the spoken script as a single paragraph, no headings or formatting.'
             },
             {
               role: 'user',
-              content: prompt
+              content: `Write a ${formData.length || '30-60 second'} viral script about: ${formData.description}. Target audience: ${formData.targetAudience || 'general'}. Tone: ${formData.tones?.join(', ') || 'engaging'}. Include a hook, main content, and call-to-action.`
             }
           ],
           temperature: 0.8,
-          max_tokens: 2000,
+          max_tokens: 500,
           top_p: 0.9
         })
       });
 
       if (!response.ok) {
+        const errorText = await response.text();
         throw new Error(`OpenRouter API request failed: ${response.status}`);
       }
 
