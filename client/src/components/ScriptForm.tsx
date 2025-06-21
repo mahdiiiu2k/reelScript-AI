@@ -50,6 +50,7 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
     previousScripts: [] as string[],
   });
   const [previousScriptInput, setPreviousScriptInput] = useState("");
+  const [showSubscriptionMessage, setShowSubscriptionMessage] = useState<string | null>(null);
   const [isToneDropdownOpen, setIsToneDropdownOpen] = useState(false);
 
   const toneOptions = [
@@ -289,9 +290,10 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
     }
   };
 
-  const handleInputClick = () => {
+  const handleInputClick = (elementId: string) => {
     if (!hasActiveSubscription) {
-      toast.error('Subscribe to get full access');
+      setShowSubscriptionMessage(elementId);
+      setTimeout(() => setShowSubscriptionMessage(null), 3000);
     }
   };
 
@@ -316,30 +318,42 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
               Basic Information
             </h3>
             
-            <div className="space-y-2">
+            <div className="space-y-2 relative">
               <Label htmlFor="description" className="text-base font-medium">Reel Description *</Label>
               <Textarea
                 id="description"
                 placeholder="Describe what your reel should be about, the main message, or key points you want to cover..."
                 value={formData.description}
-                onChange={(e) => hasActiveSubscription ? setFormData(prev => ({ ...prev, description: e.target.value })) : handleInputClick()}
-                onClick={hasActiveSubscription ? undefined : handleInputClick}
+                onChange={(e) => hasActiveSubscription ? setFormData(prev => ({ ...prev, description: e.target.value })) : handleInputClick('description')}
+                onClick={hasActiveSubscription ? undefined : () => handleInputClick('description')}
                 rows={4}
                 required
                 className="border-2 focus:border-purple-300 dark:focus:border-purple-500 transition-colors bg-background dark:bg-slate-900/50"
               />
+              {showSubscriptionMessage === 'description' && (
+                <div className="absolute right-2 top-8 bg-orange-100 dark:bg-orange-900/80 text-orange-800 dark:text-orange-200 px-3 py-2 rounded-lg shadow-lg text-sm font-medium z-10 border border-orange-200 dark:border-orange-700">
+                  Subscribe to get full access
+                  <div className="absolute left-3 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-orange-100 dark:border-t-orange-900/80"></div>
+                </div>
+              )}
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-2 relative">
               <Label htmlFor="title" className="text-base font-medium">Reel Title (Optional)</Label>
               <Input
                 id="title"
                 placeholder="Enter a catchy title for your reel"
                 value={formData.title}
-                onChange={(e) => hasActiveSubscription ? setFormData(prev => ({ ...prev, title: e.target.value })) : handleInputClick()}
-                onClick={hasActiveSubscription ? undefined : handleInputClick}
+                onChange={(e) => hasActiveSubscription ? setFormData(prev => ({ ...prev, title: e.target.value })) : handleInputClick('title')}
+                onClick={hasActiveSubscription ? undefined : () => handleInputClick('title')}
                 className="border-2 focus:border-purple-300 dark:focus:border-purple-500 transition-colors bg-background dark:bg-slate-900/50"
               />
+              {showSubscriptionMessage === 'title' && (
+                <div className="absolute right-2 top-8 bg-orange-100 dark:bg-orange-900/80 text-orange-800 dark:text-orange-200 px-3 py-2 rounded-lg shadow-lg text-sm font-medium z-10 border border-orange-200 dark:border-orange-700">
+                  Subscribe to get full access
+                  <div className="absolute left-3 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-orange-100 dark:border-t-orange-900/80"></div>
+                </div>
+              )}
             </div>
           </div>
 
@@ -355,10 +369,10 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
             </h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
+              <div className="space-y-2 relative">
                 <Label className="text-base font-medium">Reel Length</Label>
-                <Select value={formData.length} onValueChange={(value) => hasActiveSubscription ? setFormData(prev => ({ ...prev, length: value })) : handleInputClick()}>
-                  <SelectTrigger className="border-2 focus:border-purple-300 dark:focus:border-purple-500 bg-background dark:bg-slate-900/50" onClick={hasActiveSubscription ? undefined : handleInputClick}>
+                <Select value={formData.length} onValueChange={(value) => hasActiveSubscription ? setFormData(prev => ({ ...prev, length: value })) : handleInputClick('length')} open={hasActiveSubscription ? undefined : false}>
+                  <SelectTrigger className="border-2 focus:border-purple-300 dark:focus:border-purple-500 bg-background dark:bg-slate-900/50" onClick={hasActiveSubscription ? undefined : () => handleInputClick('length')}>
                     <SelectValue placeholder="Select duration" />
                   </SelectTrigger>
                   <SelectContent>
@@ -378,21 +392,27 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                     <SelectItem value="90s">90 seconds</SelectItem>
                   </SelectContent>
                 </Select>
+                {showSubscriptionMessage === 'length' && (
+                  <div className="absolute right-2 top-8 bg-orange-100 dark:bg-orange-900/80 text-orange-800 dark:text-orange-200 px-3 py-2 rounded-lg shadow-lg text-sm font-medium z-10 border border-orange-200 dark:border-orange-700">
+                    Subscribe to get full access
+                    <div className="absolute left-3 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-orange-100 dark:border-t-orange-900/80"></div>
+                  </div>
+                )}
                 {formData.length === 'custom' && (
                   <Input
                     placeholder="Enter specific length (e.g., 45 seconds)"
                     value={formData.customLength}
-                    onChange={(e) => hasActiveSubscription ? setFormData(prev => ({ ...prev, customLength: e.target.value })) : handleInputClick()}
-                    onClick={hasActiveSubscription ? undefined : handleInputClick}
+                    onChange={(e) => hasActiveSubscription ? setFormData(prev => ({ ...prev, customLength: e.target.value })) : handleInputClick('customLength')}
+                    onClick={hasActiveSubscription ? undefined : () => handleInputClick('customLength')}
                     className="mt-2 border-amber-200 focus:border-amber-400 dark:border-amber-600 dark:focus:border-amber-500 bg-background dark:bg-slate-900/50"
                   />
                 )}
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-2 relative">
                 <Label className="text-base font-medium">Language / Dialect</Label>
-                <Select value={formData.language} onValueChange={(value) => hasActiveSubscription ? setFormData(prev => ({ ...prev, language: value })) : handleInputClick()}>
-                  <SelectTrigger className="border-2 focus:border-purple-300 dark:focus:border-purple-500 bg-background dark:bg-slate-900/50" onClick={hasActiveSubscription ? undefined : handleInputClick}>
+                <Select value={formData.language} onValueChange={(value) => hasActiveSubscription ? setFormData(prev => ({ ...prev, language: value })) : handleInputClick('language')} open={hasActiveSubscription ? undefined : false}>
+                  <SelectTrigger className="border-2 focus:border-purple-300 dark:focus:border-purple-500 bg-background dark:bg-slate-900/50" onClick={hasActiveSubscription ? undefined : () => handleInputClick('language')}>
                     <SelectValue placeholder="Select language" />
                   </SelectTrigger>
                   <SelectContent className="max-h-60">
@@ -412,14 +432,28 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                     ))}
                   </SelectContent>
                 </Select>
+                {showSubscriptionMessage === 'language' && (
+                  <div className="absolute right-2 top-8 bg-orange-100 dark:bg-orange-900/80 text-orange-800 dark:text-orange-200 px-3 py-2 rounded-lg shadow-lg text-sm font-medium z-10 border border-orange-200 dark:border-orange-700">
+                    Subscribe to get full access
+                    <div className="absolute left-3 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-orange-100 dark:border-t-orange-900/80"></div>
+                  </div>
+                )}
                 {formData.language === 'custom' && (
-                  <Input
-                    placeholder="Enter custom language or dialect"
-                    value={formData.customLanguage}
-                    onChange={(e) => hasActiveSubscription ? setFormData(prev => ({ ...prev, customLanguage: e.target.value })) : handleInputClick()}
-                    onClick={hasActiveSubscription ? undefined : handleInputClick}
-                    className="mt-2 border-amber-200 focus:border-amber-400 dark:border-amber-600 dark:focus:border-amber-500 bg-background dark:bg-slate-900/50"
-                  />
+                  <div className="relative">
+                    <Input
+                      placeholder="Enter custom language or dialect"
+                      value={formData.customLanguage}
+                      onChange={(e) => hasActiveSubscription ? setFormData(prev => ({ ...prev, customLanguage: e.target.value })) : handleInputClick('customLanguage')}
+                      onClick={hasActiveSubscription ? undefined : () => handleInputClick('customLanguage')}
+                      className="mt-2 border-amber-200 focus:border-amber-400 dark:border-amber-600 dark:focus:border-amber-500 bg-background dark:bg-slate-900/50"
+                    />
+                    {showSubscriptionMessage === 'customLanguage' && (
+                      <div className="absolute right-2 top-1 bg-orange-100 dark:bg-orange-900/80 text-orange-800 dark:text-orange-200 px-3 py-2 rounded-lg shadow-lg text-sm font-medium z-10 border border-orange-200 dark:border-orange-700">
+                        Subscribe to get full access
+                        <div className="absolute left-3 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-orange-100 dark:border-t-orange-900/80"></div>
+                      </div>
+                    )}
+                  </div>
                 )}
               </div>
             </div>
@@ -438,12 +472,12 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Tone Selection */}
-              <div className="space-y-2">
+              <div className="space-y-2 relative">
                 <Label className="text-base font-medium">Tone (Multiple Selection)</Label>
                 <div className="relative">
                   <div 
                     className="border-2 focus:border-purple-300 dark:focus:border-purple-500 rounded-md p-3 cursor-pointer bg-background dark:bg-slate-900/50 hover:bg-accent/50 transition-colors min-h-[40px] flex items-center justify-between"
-                    onClick={hasActiveSubscription ? handleToneDropdownToggle : handleInputClick}
+                    onClick={hasActiveSubscription ? handleToneDropdownToggle : () => handleInputClick('tone')}
                   >
                     <div className="flex flex-wrap gap-1">
                       {formData.isAIChosenTone ? (
@@ -473,8 +507,14 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                     </div>
                     <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform ${isToneDropdownOpen ? 'rotate-180' : ''}`} />
                   </div>
+                  {showSubscriptionMessage === 'tone' && (
+                    <div className="absolute right-2 top-1 bg-orange-100 dark:bg-orange-900/80 text-orange-800 dark:text-orange-200 px-3 py-2 rounded-lg shadow-lg text-sm font-medium z-10 border border-orange-200 dark:border-orange-700">
+                      Subscribe to get full access
+                      <div className="absolute left-3 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-orange-100 dark:border-t-orange-900/80"></div>
+                    </div>
+                  )}
                   
-                  {isToneDropdownOpen && (
+                  {isToneDropdownOpen && hasActiveSubscription && (
                     <div className="absolute top-full left-0 right-0 z-50 mt-1 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-md shadow-lg max-h-60 overflow-y-auto">
                       <div className="p-2">
                         <div 
@@ -530,10 +570,10 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
               </div>
 
               {/* Script Structure */}
-              <div className="space-y-2">
+              <div className="space-y-2 relative">
                 <Label className="text-base font-medium">Script Structure</Label>
-                <Select value={formData.structure} onValueChange={(value) => hasActiveSubscription ? setFormData(prev => ({ ...prev, structure: value })) : handleInputClick()}>
-                  <SelectTrigger className="border-2 focus:border-purple-300 dark:focus:border-purple-500 bg-background dark:bg-slate-900/50" onClick={hasActiveSubscription ? undefined : handleInputClick}>
+                <Select value={formData.structure} onValueChange={(value) => hasActiveSubscription ? setFormData(prev => ({ ...prev, structure: value })) : handleInputClick('structure')} open={hasActiveSubscription ? undefined : false}>
+                  <SelectTrigger className="border-2 focus:border-purple-300 dark:focus:border-purple-500 bg-background dark:bg-slate-900/50" onClick={hasActiveSubscription ? undefined : () => handleInputClick('structure')}>
                     <SelectValue placeholder="Choose structure" />
                   </SelectTrigger>
                   <SelectContent>
@@ -553,24 +593,38 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                     ))}
                   </SelectContent>
                 </Select>
+                {showSubscriptionMessage === 'structure' && (
+                  <div className="absolute right-2 top-8 bg-orange-100 dark:bg-orange-900/80 text-orange-800 dark:text-orange-200 px-3 py-2 rounded-lg shadow-lg text-sm font-medium z-10 border border-orange-200 dark:border-orange-700">
+                    Subscribe to get full access
+                    <div className="absolute left-3 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-orange-100 dark:border-t-orange-900/80"></div>
+                  </div>
+                )}
                 {formData.structure === 'custom' && (
-                  <Input
-                    placeholder="Describe your custom structure"
-                    value={formData.customStructure}
-                    onChange={(e) => hasActiveSubscription ? setFormData(prev => ({ ...prev, customStructure: e.target.value })) : handleInputClick()}
-                    onClick={hasActiveSubscription ? undefined : handleInputClick}
-                    className="mt-2 border-amber-200 focus:border-amber-400 dark:border-amber-600 dark:focus:border-amber-500 bg-background dark:bg-slate-900/50"
-                  />
+                  <div className="relative">
+                    <Input
+                      placeholder="Describe your custom structure"
+                      value={formData.customStructure}
+                      onChange={(e) => hasActiveSubscription ? setFormData(prev => ({ ...prev, customStructure: e.target.value })) : handleInputClick('customStructure')}
+                      onClick={hasActiveSubscription ? undefined : () => handleInputClick('customStructure')}
+                      className="mt-2 border-amber-200 focus:border-amber-400 dark:border-amber-600 dark:focus:border-amber-500 bg-background dark:bg-slate-900/50"
+                    />
+                    {showSubscriptionMessage === 'customStructure' && (
+                      <div className="absolute right-2 top-1 bg-orange-100 dark:bg-orange-900/80 text-orange-800 dark:text-orange-200 px-3 py-2 rounded-lg shadow-lg text-sm font-medium z-10 border border-orange-200 dark:border-orange-700">
+                        Subscribe to get full access
+                        <div className="absolute left-3 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-orange-100 dark:border-t-orange-900/80"></div>
+                      </div>
+                    )}
+                  </div>
                 )}
               </div>
             </div>
 
             {/* Hook Selection */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
+              <div className="space-y-2 relative">
                 <Label className="text-base font-medium">Hook</Label>
-                <Select value={formData.hook} onValueChange={(value) => hasActiveSubscription ? setFormData(prev => ({ ...prev, hook: value })) : handleInputClick()}>
-                  <SelectTrigger className="border-2 focus:border-purple-300 dark:focus:border-purple-500 bg-background dark:bg-slate-900/50" onClick={hasActiveSubscription ? undefined : handleInputClick}>
+                <Select value={formData.hook} onValueChange={(value) => hasActiveSubscription ? setFormData(prev => ({ ...prev, hook: value })) : handleInputClick('hook')} open={hasActiveSubscription ? undefined : false}>
+                  <SelectTrigger className="border-2 focus:border-purple-300 dark:focus:border-purple-500 bg-background dark:bg-slate-900/50" onClick={hasActiveSubscription ? undefined : () => handleInputClick('hook')}>
                     <SelectValue placeholder="Choose hook" />
                   </SelectTrigger>
                   <SelectContent className="max-h-60">
@@ -590,20 +644,34 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                     ))}
                   </SelectContent>
                 </Select>
+                {showSubscriptionMessage === 'hook' && (
+                  <div className="absolute right-2 top-8 bg-orange-100 dark:bg-orange-900/80 text-orange-800 dark:text-orange-200 px-3 py-2 rounded-lg shadow-lg text-sm font-medium z-10 border border-orange-200 dark:border-orange-700">
+                    Subscribe to get full access
+                    <div className="absolute left-3 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-orange-100 dark:border-t-orange-900/80"></div>
+                  </div>
+                )}
                 {formData.hook === 'custom' && (
-                  <Input
-                    placeholder="Enter your custom hook"
-                    value={formData.customHook}
-                    onChange={(e) => hasActiveSubscription ? setFormData(prev => ({ ...prev, customHook: e.target.value })) : handleInputClick()}
-                    onClick={hasActiveSubscription ? undefined : handleInputClick}
-                    className="mt-2 border-amber-200 focus:border-amber-400 dark:border-amber-600 dark:focus:border-amber-500 bg-background dark:bg-slate-900/50"
-                  />
+                  <div className="relative">
+                    <Input
+                      placeholder="Enter your custom hook"
+                      value={formData.customHook}
+                      onChange={(e) => hasActiveSubscription ? setFormData(prev => ({ ...prev, customHook: e.target.value })) : handleInputClick('customHook')}
+                      onClick={hasActiveSubscription ? undefined : () => handleInputClick('customHook')}
+                      className="mt-2 border-amber-200 focus:border-amber-400 dark:border-amber-600 dark:focus:border-amber-500 bg-background dark:bg-slate-900/50"
+                    />
+                    {showSubscriptionMessage === 'customHook' && (
+                      <div className="absolute right-2 top-1 bg-orange-100 dark:bg-orange-900/80 text-orange-800 dark:text-orange-200 px-3 py-2 rounded-lg shadow-lg text-sm font-medium z-10 border border-orange-200 dark:border-orange-700">
+                        Subscribe to get full access
+                        <div className="absolute left-3 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-orange-100 dark:border-t-orange-900/80"></div>
+                      </div>
+                    )}
+                  </div>
                 )}
               </div>
             </div>
 
             {/* Previous Reels Scripts Input */}
-            <div className="space-y-2">
+            <div className="space-y-2 relative">
               <Label htmlFor="previousScriptInput" className="text-base font-medium">
                 Paste your previous reel scripts (optional)
               </Label>
@@ -611,16 +679,22 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                 id="previousScriptInput"
                 placeholder="Add scripts from past reels—help the AI match your unique speaking style!"
                 value={previousScriptInput}
-                onChange={(e) => hasActiveSubscription ? setPreviousScriptInput(e.target.value) : handleInputClick()}
+                onChange={(e) => hasActiveSubscription ? setPreviousScriptInput(e.target.value) : handleInputClick('previousScript')}
                 onKeyDown={hasActiveSubscription ? handlePreviousScriptKeyDown : undefined}
-                onClick={hasActiveSubscription ? undefined : handleInputClick}
+                onClick={hasActiveSubscription ? undefined : () => handleInputClick('previousScript')}
                 rows={3}
                 className="border-2 focus:border-purple-300 dark:focus:border-purple-500 transition-colors bg-background dark:bg-slate-900/50"
               />
+              {showSubscriptionMessage === 'previousScript' && (
+                <div className="absolute right-2 top-8 bg-orange-100 dark:bg-orange-900/80 text-orange-800 dark:text-orange-200 px-3 py-2 rounded-lg shadow-lg text-sm font-medium z-10 border border-orange-200 dark:border-orange-700">
+                  Subscribe to get full access
+                  <div className="absolute left-3 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-orange-100 dark:border-t-orange-900/80"></div>
+                </div>
+              )}
               <div className="flex justify-end mt-1">
                 <Button
                   type="button"
-                  onClick={hasActiveSubscription ? handleAddPreviousScript : handleInputClick}
+                  onClick={hasActiveSubscription ? handleAddPreviousScript : () => handleInputClick('addScript')}
                   className="bg-green-700 hover:bg-green-800 text-white px-3 py-1 text-sm rounded"
                   size="sm"
                   disabled={!previousScriptInput.trim() || !hasActiveSubscription}
@@ -655,10 +729,10 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
             </h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
+              <div className="space-y-2 relative">
                 <Label className="text-base font-medium">Reel Goal</Label>
-                <Select value={formData.goal} onValueChange={(value) => hasActiveSubscription ? setFormData(prev => ({ ...prev, goal: value })) : handleInputClick()}>
-                  <SelectTrigger className="border-2 focus:border-purple-300 dark:focus:border-purple-500 bg-background dark:bg-slate-900/50" onClick={hasActiveSubscription ? undefined : handleInputClick}>
+                <Select value={formData.goal} onValueChange={(value) => hasActiveSubscription ? setFormData(prev => ({ ...prev, goal: value })) : handleInputClick('goal')} open={hasActiveSubscription ? undefined : false}>
+                  <SelectTrigger className="border-2 focus:border-purple-300 dark:focus:border-purple-500 bg-background dark:bg-slate-900/50" onClick={hasActiveSubscription ? undefined : () => handleInputClick('goal')}>
                     <SelectValue placeholder="Select goal" />
                   </SelectTrigger>
                   <SelectContent>
@@ -678,21 +752,35 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                     ))}
                   </SelectContent>
                 </Select>
+                {showSubscriptionMessage === 'goal' && (
+                  <div className="absolute right-2 top-8 bg-orange-100 dark:bg-orange-900/80 text-orange-800 dark:text-orange-200 px-3 py-2 rounded-lg shadow-lg text-sm font-medium z-10 border border-orange-200 dark:border-orange-700">
+                    Subscribe to get full access
+                    <div className="absolute left-3 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-orange-100 dark:border-t-orange-900/80"></div>
+                  </div>
+                )}
                 {formData.goal === 'custom' && (
-                  <Input
-                    placeholder="Describe your custom goal"
-                    value={formData.customGoal}
-                    onChange={(e) => hasActiveSubscription ? setFormData(prev => ({ ...prev, customGoal: e.target.value })) : handleInputClick()}
-                    onClick={hasActiveSubscription ? undefined : handleInputClick}
-                    className="mt-2 border-amber-200 focus:border-amber-400 dark:border-amber-600 dark:focus:border-amber-500 bg-background dark:bg-slate-900/50"
-                  />
+                  <div className="relative">
+                    <Input
+                      placeholder="Describe your custom goal"
+                      value={formData.customGoal}
+                      onChange={(e) => hasActiveSubscription ? setFormData(prev => ({ ...prev, customGoal: e.target.value })) : handleInputClick('customGoal')}
+                      onClick={hasActiveSubscription ? undefined : () => handleInputClick('customGoal')}
+                      className="mt-2 border-amber-200 focus:border-amber-400 dark:border-amber-600 dark:focus:border-amber-500 bg-background dark:bg-slate-900/50"
+                    />
+                    {showSubscriptionMessage === 'customGoal' && (
+                      <div className="absolute right-2 top-1 bg-orange-100 dark:bg-orange-900/80 text-orange-800 dark:text-orange-200 px-3 py-2 rounded-lg shadow-lg text-sm font-medium z-10 border border-orange-200 dark:border-orange-700">
+                        Subscribe to get full access
+                        <div className="absolute left-3 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-orange-100 dark:border-t-orange-900/80"></div>
+                      </div>
+                    )}
+                  </div>
                 )}
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-2 relative">
                 <Label className="text-base font-medium">Target Audience</Label>
-                <Select value={formData.targetAudience} onValueChange={(value) => hasActiveSubscription ? setFormData(prev => ({ ...prev, targetAudience: value })) : handleInputClick()}>
-                  <SelectTrigger className="border-2 focus:border-purple-300 dark:focus:border-purple-500 bg-background dark:bg-slate-900/50" onClick={hasActiveSubscription ? undefined : handleInputClick}>
+                <Select value={formData.targetAudience} onValueChange={(value) => hasActiveSubscription ? setFormData(prev => ({ ...prev, targetAudience: value })) : handleInputClick('targetAudience')} open={hasActiveSubscription ? undefined : false}>
+                  <SelectTrigger className="border-2 focus:border-purple-300 dark:focus:border-purple-500 bg-background dark:bg-slate-900/50" onClick={hasActiveSubscription ? undefined : () => handleInputClick('targetAudience')}>
                     <SelectValue placeholder="Select audience" />
                   </SelectTrigger>
                   <SelectContent>
@@ -712,24 +800,38 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                     ))}
                   </SelectContent>
                 </Select>
+                {showSubscriptionMessage === 'targetAudience' && (
+                  <div className="absolute right-2 top-8 bg-orange-100 dark:bg-orange-900/80 text-orange-800 dark:text-orange-200 px-3 py-2 rounded-lg shadow-lg text-sm font-medium z-10 border border-orange-200 dark:border-orange-700">
+                    Subscribe to get full access
+                    <div className="absolute left-3 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-orange-100 dark:border-t-orange-900/80"></div>
+                  </div>
+                )}
                 {formData.targetAudience === 'custom' && (
-                  <Input
-                    placeholder="Describe your target audience"
-                    value={formData.customAudience}
-                    onChange={(e) => hasActiveSubscription ? setFormData(prev => ({ ...prev, customAudience: e.target.value })) : handleInputClick()}
-                    onClick={hasActiveSubscription ? undefined : handleInputClick}
-                    className="mt-2 border-amber-200 focus:border-amber-400 dark:border-amber-600 dark:focus:border-amber-500 bg-background dark:bg-slate-900/50"
-                  />
+                  <div className="relative">
+                    <Input
+                      placeholder="Describe your target audience"
+                      value={formData.customAudience}
+                      onChange={(e) => hasActiveSubscription ? setFormData(prev => ({ ...prev, customAudience: e.target.value })) : handleInputClick('customAudience')}
+                      onClick={hasActiveSubscription ? undefined : () => handleInputClick('customAudience')}
+                      className="mt-2 border-amber-200 focus:border-amber-400 dark:border-amber-600 dark:focus:border-amber-500 bg-background dark:bg-slate-900/50"
+                    />
+                    {showSubscriptionMessage === 'customAudience' && (
+                      <div className="absolute right-2 top-1 bg-orange-100 dark:bg-orange-900/80 text-orange-800 dark:text-orange-200 px-3 py-2 rounded-lg shadow-lg text-sm font-medium z-10 border border-orange-200 dark:border-orange-700">
+                        Subscribe to get full access
+                        <div className="absolute left-3 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-orange-100 dark:border-t-orange-900/80"></div>
+                      </div>
+                    )}
+                  </div>
                 )}
               </div>
             </div>
 
             {/* CTA Selection */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
+              <div className="space-y-2 relative">
                 <Label className="text-base font-medium">Call to Action (CTA)</Label>
-                <Select value={formData.cta} onValueChange={(value) => hasActiveSubscription ? setFormData(prev => ({ ...prev, cta: value })) : handleInputClick()}>
-                  <SelectTrigger className="border-2 focus:border-purple-300 dark:focus:border-purple-500 bg-background dark:bg-slate-900/50" onClick={hasActiveSubscription ? undefined : handleInputClick}>
+                <Select value={formData.cta} onValueChange={(value) => hasActiveSubscription ? setFormData(prev => ({ ...prev, cta: value })) : handleInputClick('cta')} open={hasActiveSubscription ? undefined : false}>
+                  <SelectTrigger className="border-2 focus:border-purple-300 dark:focus:border-purple-500 bg-background dark:bg-slate-900/50" onClick={hasActiveSubscription ? undefined : () => handleInputClick('cta')}>
                     <SelectValue placeholder="Choose CTA" />
                   </SelectTrigger>
                   <SelectContent className="max-h-60">
@@ -752,28 +854,48 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                     ))}
                   </SelectContent>
                 </Select>
+                {showSubscriptionMessage === 'cta' && (
+                  <div className="absolute right-2 top-8 bg-orange-100 dark:bg-orange-900/80 text-orange-800 dark:text-orange-200 px-3 py-2 rounded-lg shadow-lg text-sm font-medium z-10 border border-orange-200 dark:border-orange-700">
+                    Subscribe to get full access
+                    <div className="absolute left-3 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-orange-100 dark:border-t-orange-900/80"></div>
+                  </div>
+                )}
                 {formData.cta === 'custom' && (
-                  <Input
-                    placeholder="Enter your custom CTA"
-                    value={formData.customCta}
-                    onChange={(e) => hasActiveSubscription ? setFormData(prev => ({ ...prev, customCta: e.target.value })) : handleInputClick()}
-                    onClick={hasActiveSubscription ? undefined : handleInputClick}
-                    className="mt-2 border-amber-200 focus:border-amber-400 dark:border-amber-600 dark:focus:border-amber-500 bg-background dark:bg-slate-900/50"
-                  />
+                  <div className="relative">
+                    <Input
+                      placeholder="Enter your custom CTA"
+                      value={formData.customCta}
+                      onChange={(e) => hasActiveSubscription ? setFormData(prev => ({ ...prev, customCta: e.target.value })) : handleInputClick('customCta')}
+                      onClick={hasActiveSubscription ? undefined : () => handleInputClick('customCta')}
+                      className="mt-2 border-amber-200 focus:border-amber-400 dark:border-amber-600 dark:focus:border-amber-500 bg-background dark:bg-slate-900/50"
+                    />
+                    {showSubscriptionMessage === 'customCta' && (
+                      <div className="absolute right-2 top-1 bg-orange-100 dark:bg-orange-900/80 text-orange-800 dark:text-orange-200 px-3 py-2 rounded-lg shadow-lg text-sm font-medium z-10 border border-orange-200 dark:border-orange-700">
+                        Subscribe to get full access
+                        <div className="absolute left-3 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-orange-100 dark:border-t-orange-900/80"></div>
+                      </div>
+                    )}
+                  </div>
                 )}
               </div>
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-2 relative">
               <Label htmlFor="audienceAge" className="text-base font-medium">Audience Age (Optional)</Label>
               <Input
                 id="audienceAge"
                 placeholder="e.g., 18-25, 25-34, or specific age"
                 value={formData.audienceAge}
-                onChange={(e) => hasActiveSubscription ? setFormData(prev => ({ ...prev, audienceAge: e.target.value })) : handleInputClick()}
-                onClick={hasActiveSubscription ? undefined : handleInputClick}
+                onChange={(e) => hasActiveSubscription ? setFormData(prev => ({ ...prev, audienceAge: e.target.value })) : handleInputClick('audienceAge')}
+                onClick={hasActiveSubscription ? undefined : () => handleInputClick('audienceAge')}
                 className="border-2 focus:border-purple-300 dark:focus:border-purple-500 transition-colors bg-background dark:bg-slate-900/50"
               />
+              {showSubscriptionMessage === 'audienceAge' && (
+                <div className="absolute right-2 top-8 bg-orange-100 dark:bg-orange-900/80 text-orange-800 dark:text-orange-200 px-3 py-2 rounded-lg shadow-lg text-sm font-medium z-10 border border-orange-200 dark:border-orange-700">
+                  Subscribe to get full access
+                  <div className="absolute left-3 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-orange-100 dark:border-t-orange-900/80"></div>
+                </div>
+              )}
             </div>
           </div>
 
