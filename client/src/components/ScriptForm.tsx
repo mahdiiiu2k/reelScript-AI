@@ -331,9 +331,9 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                 className="border-2 focus:border-purple-300 dark:focus:border-purple-500 transition-colors bg-background dark:bg-slate-900/50"
               />
               {showSubscriptionMessage === 'description' && (
-                <div className="absolute right-2 -top-8 bg-black/80 text-white px-4 py-2 rounded-lg shadow-xl text-sm font-semibold z-20">
+                <div className="absolute right-2 -top-8 bg-gradient-to-r from-purple-100 to-blue-100 dark:from-purple-900/90 dark:to-blue-900/90 text-purple-800 dark:text-purple-200 px-4 py-2 rounded-lg shadow-xl text-sm font-semibold z-20 border border-purple-200 dark:border-purple-700">
                   Subscribe to get full access
-                  <div className="absolute left-4 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-black/80"></div>
+                  <div className="absolute left-4 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-purple-100 dark:border-t-purple-900/90"></div>
                 </div>
               )}
             </div>
@@ -349,9 +349,9 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                 className="border-2 focus:border-purple-300 dark:focus:border-purple-500 transition-colors bg-background dark:bg-slate-900/50"
               />
               {showSubscriptionMessage === 'title' && (
-                <div className="absolute right-2 -top-8 bg-black/80 text-white px-4 py-2 rounded-lg shadow-xl text-sm font-semibold z-20">
+                <div className="absolute right-2 -top-8 bg-gradient-to-r from-purple-100 to-blue-100 dark:from-purple-900/90 dark:to-blue-900/90 text-purple-800 dark:text-purple-200 px-4 py-2 rounded-lg shadow-xl text-sm font-semibold z-20 border border-purple-200 dark:border-purple-700">
                   Subscribe to get full access
-                  <div className="absolute left-4 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-black/80"></div>
+                  <div className="absolute left-4 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-purple-100 dark:border-t-purple-900/90"></div>
                 </div>
               )}
             </div>
@@ -393,9 +393,9 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                   </SelectContent>
                 </Select>
                 {showSubscriptionMessage === 'length' && (
-                  <div className="absolute right-2 -top-8 bg-black/80 text-white px-4 py-2 rounded-lg shadow-xl text-sm font-semibold z-20">
+                  <div className="absolute right-2 -top-8 bg-gradient-to-r from-purple-100 to-blue-100 dark:from-purple-900/90 dark:to-blue-900/90 text-purple-800 dark:text-purple-200 px-4 py-2 rounded-lg shadow-xl text-sm font-semibold z-20 border border-purple-200 dark:border-purple-700">
                     Subscribe to get full access
-                    <div className="absolute left-4 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-black/80"></div>
+                    <div className="absolute left-4 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-purple-100 dark:border-t-purple-900/90"></div>
                   </div>
                 )}
                 {formData.length === 'custom' && (
@@ -433,9 +433,9 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                   </SelectContent>
                 </Select>
                 {showSubscriptionMessage === 'language' && (
-                  <div className="absolute right-2 -top-12 bg-black/80 text-white px-4 py-2 rounded-lg shadow-xl text-sm font-semibold z-20">
+                  <div className="absolute right-2 -top-12 bg-gradient-to-r from-purple-100 to-blue-100 dark:from-purple-900/90 dark:to-blue-900/90 text-purple-800 dark:text-purple-200 px-4 py-2 rounded-lg shadow-xl text-sm font-semibold z-20 border border-purple-200 dark:border-purple-700">
                     Subscribe to get full access
-                    <div className="absolute left-4 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-black/80"></div>
+                    <div className="absolute left-4 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-purple-100 dark:border-t-purple-900/90"></div>
                   </div>
                 )}
                 {formData.language === 'custom' && (
@@ -448,9 +448,9 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                       className="mt-2 border-amber-200 focus:border-amber-400 dark:border-amber-600 dark:focus:border-amber-500 bg-background dark:bg-slate-900/50"
                     />
                     {showSubscriptionMessage === 'customLanguage' && (
-                      <div className="absolute right-2 -top-12 bg-black/80 text-white px-4 py-2 rounded-lg shadow-xl text-sm font-semibold z-20">
+                      <div className="absolute right-2 -top-12 bg-gradient-to-r from-purple-100 to-blue-100 dark:from-purple-900/90 dark:to-blue-900/90 text-purple-800 dark:text-purple-200 px-4 py-2 rounded-lg shadow-xl text-sm font-semibold z-20 border border-purple-200 dark:border-purple-700">
                         Subscribe to get full access
-                        <div className="absolute left-4 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-black/80"></div>
+                        <div className="absolute left-4 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-purple-100 dark:border-t-purple-900/90"></div>
                       </div>
                     )}
                   </div>
@@ -508,9 +508,9 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                     <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform ${isToneDropdownOpen ? 'rotate-180' : ''}`} />
                   </div>
                   {showSubscriptionMessage === 'tone' && (
-                    <div className="absolute right-2 -top-12 bg-black/80 text-white px-4 py-2 rounded-lg shadow-xl text-sm font-semibold z-20">
+                    <div className="absolute right-2 -top-12 bg-gradient-to-r from-purple-100 to-blue-100 dark:from-purple-900/90 dark:to-blue-900/90 text-purple-800 dark:text-purple-200 px-4 py-2 rounded-lg shadow-xl text-sm font-semibold z-20 border border-purple-200 dark:border-purple-700">
                       Subscribe to get full access
-                      <div className="absolute left-4 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-black/80"></div>
+                      <div className="absolute left-4 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-purple-100 dark:border-t-purple-900/90"></div>
                     </div>
                   )}
                   
@@ -594,9 +594,9 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                   </SelectContent>
                 </Select>
                 {showSubscriptionMessage === 'structure' && (
-                  <div className="absolute right-2 -top-12 bg-black/80 text-white px-4 py-2 rounded-lg shadow-xl text-sm font-semibold z-20">
+                  <div className="absolute right-2 -top-12 bg-gradient-to-r from-purple-100 to-blue-100 dark:from-purple-900/90 dark:to-blue-900/90 text-purple-800 dark:text-purple-200 px-4 py-2 rounded-lg shadow-xl text-sm font-semibold z-20 border border-purple-200 dark:border-purple-700">
                     Subscribe to get full access
-                    <div className="absolute left-4 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-black/80"></div>
+                    <div className="absolute left-4 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-purple-100 dark:border-t-purple-900/90"></div>
                   </div>
                 )}
                 {formData.structure === 'custom' && (
@@ -609,9 +609,9 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                       className="mt-2 border-amber-200 focus:border-amber-400 dark:border-amber-600 dark:focus:border-amber-500 bg-background dark:bg-slate-900/50"
                     />
                     {showSubscriptionMessage === 'customStructure' && (
-                      <div className="absolute right-2 -top-12 bg-black/80 text-white px-4 py-2 rounded-lg shadow-xl text-sm font-semibold z-20">
+                      <div className="absolute right-2 -top-12 bg-gradient-to-r from-purple-100 to-blue-100 dark:from-purple-900/90 dark:to-blue-900/90 text-purple-800 dark:text-purple-200 px-4 py-2 rounded-lg shadow-xl text-sm font-semibold z-20 border border-purple-200 dark:border-purple-700">
                         Subscribe to get full access
-                        <div className="absolute left-4 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-black/80"></div>
+                        <div className="absolute left-4 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-purple-100 dark:border-t-purple-900/90"></div>
                       </div>
                     )}
                   </div>
@@ -645,9 +645,9 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                   </SelectContent>
                 </Select>
                 {showSubscriptionMessage === 'hook' && (
-                  <div className="absolute right-2 -top-8 bg-black/80 text-white px-4 py-2 rounded-lg shadow-xl text-sm font-semibold z-20">
+                  <div className="absolute right-2 -top-8 bg-gradient-to-r from-purple-100 to-blue-100 dark:from-purple-900/90 dark:to-blue-900/90 text-purple-800 dark:text-purple-200 px-4 py-2 rounded-lg shadow-xl text-sm font-semibold z-20 border border-purple-200 dark:border-purple-700">
                     Subscribe to get full access
-                    <div className="absolute left-4 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-black/80"></div>
+                    <div className="absolute left-4 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-purple-100 dark:border-t-purple-900/90"></div>
                   </div>
                 )}
                 {formData.hook === 'custom' && (
@@ -660,9 +660,9 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                       className="mt-2 border-amber-200 focus:border-amber-400 dark:border-amber-600 dark:focus:border-amber-500 bg-background dark:bg-slate-900/50"
                     />
                     {showSubscriptionMessage === 'customHook' && (
-                      <div className="absolute right-2 -top-12 bg-black/80 text-white px-4 py-2 rounded-lg shadow-xl text-sm font-semibold z-20">
+                      <div className="absolute right-2 -top-12 bg-gradient-to-r from-purple-100 to-blue-100 dark:from-purple-900/90 dark:to-blue-900/90 text-purple-800 dark:text-purple-200 px-4 py-2 rounded-lg shadow-xl text-sm font-semibold z-20 border border-purple-200 dark:border-purple-700">
                         Subscribe to get full access
-                        <div className="absolute left-4 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-black/80"></div>
+                        <div className="absolute left-4 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-purple-100 dark:border-t-purple-900/90"></div>
                       </div>
                     )}
                   </div>
@@ -686,9 +686,9 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                 className="border-2 focus:border-purple-300 dark:focus:border-purple-500 transition-colors bg-background dark:bg-slate-900/50"
               />
               {showSubscriptionMessage === 'previousScript' && (
-                <div className="absolute right-2 -top-8 bg-black/80 text-white px-4 py-2 rounded-lg shadow-xl text-sm font-semibold z-20">
+                <div className="absolute right-2 -top-8 bg-gradient-to-r from-purple-100 to-blue-100 dark:from-purple-900/90 dark:to-blue-900/90 text-purple-800 dark:text-purple-200 px-4 py-2 rounded-lg shadow-xl text-sm font-semibold z-20 border border-purple-200 dark:border-purple-700">
                   Subscribe to get full access
-                  <div className="absolute left-4 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-black/80"></div>
+                  <div className="absolute left-4 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-purple-100 dark:border-t-purple-900/90"></div>
                 </div>
               )}
               <div className="flex justify-end mt-1">
@@ -753,9 +753,9 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                   </SelectContent>
                 </Select>
                 {showSubscriptionMessage === 'goal' && (
-                  <div className="absolute right-2 -top-8 bg-black/80 text-white px-4 py-2 rounded-lg shadow-xl text-sm font-semibold z-20">
+                  <div className="absolute right-2 -top-8 bg-gradient-to-r from-purple-100 to-blue-100 dark:from-purple-900/90 dark:to-blue-900/90 text-purple-800 dark:text-purple-200 px-4 py-2 rounded-lg shadow-xl text-sm font-semibold z-20 border border-purple-200 dark:border-purple-700">
                     Subscribe to get full access
-                    <div className="absolute left-4 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-black/80"></div>
+                    <div className="absolute left-4 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-purple-100 dark:border-t-purple-900/90"></div>
                   </div>
                 )}
                 {formData.goal === 'custom' && (
@@ -768,9 +768,9 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                       className="mt-2 border-amber-200 focus:border-amber-400 dark:border-amber-600 dark:focus:border-amber-500 bg-background dark:bg-slate-900/50"
                     />
                     {showSubscriptionMessage === 'customGoal' && (
-                      <div className="absolute right-2 -top-12 bg-black/80 text-white px-4 py-2 rounded-lg shadow-xl text-sm font-semibold z-20">
+                      <div className="absolute right-2 -top-12 bg-gradient-to-r from-purple-100 to-blue-100 dark:from-purple-900/90 dark:to-blue-900/90 text-purple-800 dark:text-purple-200 px-4 py-2 rounded-lg shadow-xl text-sm font-semibold z-20 border border-purple-200 dark:border-purple-700">
                         Subscribe to get full access
-                        <div className="absolute left-4 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-black/80"></div>
+                        <div className="absolute left-4 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-purple-100 dark:border-t-purple-900/90"></div>
                       </div>
                     )}
                   </div>
@@ -801,9 +801,9 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                   </SelectContent>
                 </Select>
                 {showSubscriptionMessage === 'targetAudience' && (
-                  <div className="absolute right-2 -top-12 bg-black/80 text-white px-4 py-2 rounded-lg shadow-xl text-sm font-semibold z-20">
+                  <div className="absolute right-2 -top-12 bg-gradient-to-r from-purple-100 to-blue-100 dark:from-purple-900/90 dark:to-blue-900/90 text-purple-800 dark:text-purple-200 px-4 py-2 rounded-lg shadow-xl text-sm font-semibold z-20 border border-purple-200 dark:border-purple-700">
                     Subscribe to get full access
-                    <div className="absolute left-4 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-black/80"></div>
+                    <div className="absolute left-4 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-purple-100 dark:border-t-purple-900/90"></div>
                   </div>
                 )}
                 {formData.targetAudience === 'custom' && (
@@ -816,9 +816,9 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                       className="mt-2 border-amber-200 focus:border-amber-400 dark:border-amber-600 dark:focus:border-amber-500 bg-background dark:bg-slate-900/50"
                     />
                     {showSubscriptionMessage === 'customAudience' && (
-                      <div className="absolute right-2 -top-12 bg-black/80 text-white px-4 py-2 rounded-lg shadow-xl text-sm font-semibold z-20">
+                      <div className="absolute right-2 -top-12 bg-gradient-to-r from-purple-100 to-blue-100 dark:from-purple-900/90 dark:to-blue-900/90 text-purple-800 dark:text-purple-200 px-4 py-2 rounded-lg shadow-xl text-sm font-semibold z-20 border border-purple-200 dark:border-purple-700">
                         Subscribe to get full access
-                        <div className="absolute left-4 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-black/80"></div>
+                        <div className="absolute left-4 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-purple-100 dark:border-t-purple-900/90"></div>
                       </div>
                     )}
                   </div>
@@ -855,9 +855,9 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                   </SelectContent>
                 </Select>
                 {showSubscriptionMessage === 'cta' && (
-                  <div className="absolute left-48 top-0 bg-black/80 text-white px-4 py-2 rounded-lg shadow-xl text-sm font-semibold z-20">
+                  <div className="absolute left-60 top-0 bg-gradient-to-r from-purple-100 to-blue-100 dark:from-purple-900/90 dark:to-blue-900/90 text-purple-800 dark:text-purple-200 px-4 py-2 rounded-lg shadow-xl text-sm font-semibold z-20 border border-purple-200 dark:border-purple-700">
                     Subscribe to get full access
-                    <div className="absolute -left-2 top-1/2 transform -translate-y-1/2 w-0 h-0 border-t-4 border-b-4 border-r-4 border-transparent border-r-black/80"></div>
+                    <div className="absolute -left-2 top-1/2 transform -translate-y-1/2 w-0 h-0 border-t-4 border-b-4 border-r-4 border-transparent border-r-purple-100 dark:border-r-purple-900/90"></div>
                   </div>
                 )}
                 {formData.cta === 'custom' && (
@@ -870,9 +870,9 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                       className="mt-2 border-amber-200 focus:border-amber-400 dark:border-amber-600 dark:focus:border-amber-500 bg-background dark:bg-slate-900/50"
                     />
                     {showSubscriptionMessage === 'customCta' && (
-                      <div className="absolute right-2 -top-12 bg-black/80 text-white px-4 py-2 rounded-lg shadow-xl text-sm font-semibold z-20">
+                      <div className="absolute right-2 -top-12 bg-gradient-to-r from-purple-100 to-blue-100 dark:from-purple-900/90 dark:to-blue-900/90 text-purple-800 dark:text-purple-200 px-4 py-2 rounded-lg shadow-xl text-sm font-semibold z-20 border border-purple-200 dark:border-purple-700">
                         Subscribe to get full access
-                        <div className="absolute left-4 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-black/80"></div>
+                        <div className="absolute left-4 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-purple-100 dark:border-t-purple-900/90"></div>
                       </div>
                     )}
                   </div>
@@ -891,9 +891,9 @@ export const ScriptForm: React.FC<ScriptFormProps> = ({
                 className="border-2 focus:border-purple-300 dark:focus:border-purple-500 transition-colors bg-background dark:bg-slate-900/50"
               />
               {showSubscriptionMessage === 'audienceAge' && (
-                <div className="absolute right-2 -top-12 bg-black/80 text-white px-4 py-2 rounded-lg shadow-xl text-sm font-semibold z-20">
+                <div className="absolute right-2 -top-12 bg-gradient-to-r from-purple-100 to-blue-100 dark:from-purple-900/90 dark:to-blue-900/90 text-purple-800 dark:text-purple-200 px-4 py-2 rounded-lg shadow-xl text-sm font-semibold z-20 border border-purple-200 dark:border-purple-700">
                   Subscribe to get full access
-                  <div className="absolute left-4 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-black/80"></div>
+                  <div className="absolute left-4 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-purple-100 dark:border-t-purple-900/90"></div>
                 </div>
               )}
             </div>
