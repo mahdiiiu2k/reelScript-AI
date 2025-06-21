@@ -38,9 +38,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
     setIsLoading(true);
     try {
-      // For now, we'll focus on Google OAuth since that's what's implemented
-      // Email/password authentication would require additional server routes
-      toast.error('Email authentication coming soon. Please use Google sign-in.');
+      // Email/password authentication is not implemented yet
+      // This would require password hashing, email verification, etc.
+      toast.info('Email authentication is not available yet. Please use Google sign-in.');
     } catch (error) {
       toast.error('Authentication failed');
     } finally {

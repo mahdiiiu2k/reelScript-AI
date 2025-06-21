@@ -8,11 +8,25 @@ import cookieParser from "cookie-parser";
 export async function registerRoutes(app: Express): Promise<Server> {
   app.use(cookieParser());
   
-  const googleClient = new OAuth2Client(
-    process.env.GOOGLE_CLIENT_ID,
-    process.env.GOOGLE_CLIENT_SECRET,
-    `${process.env.REPLIT_DEV_DOMAIN || 'http://localhost:5000'}/api/auth/google/callback`
-  );
+  // Determine the correct callback URL based on environment
+  const getCallbackUrl = () => {
+    if (process.env.NODE_ENV === 'production') {
+      // For production deployments (Render, etc.)
+      return process.env.GOOGLE_CALLBACK_URL || `${process.env.RENDER_EXTERNAL_URL || process.env.REPLIT_DEV_DOMAIN || 'http://localhost:5000'}/api/auth/google/callback`;
+    }
+    return `${process.env.REPLIT_DEV_DOMAIN || 'http://localhost:5000'}/api/auth/google/callback`;
+  };
+
+  // Initialize Google OAuth client only if credentials are available
+  let googleClient: OAuth2Client | null = null;
+  
+  if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
+    googleClient = new OAuth2Client(
+      process.env.GOOGLE_CLIENT_ID,
+      process.env.GOOGLE_CLIENT_SECRET,
+      getCallbackUrl()
+    );
+  }
 
   // Middleware to check authentication
   const requireAuth = async (req: any, res: any, next: any) => {
@@ -40,18 +54,51 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Auth routes
   app.get('/api/auth/google', (req, res) => {
-    const authUrl = googleClient.generateAuthUrl({
-      access_type: 'offline',
-      scope: ['profile', 'email'],
-      state: nanoid(),
-    });
-    res.redirect(authUrl);
+    try {
+      if (!googleClient) {
+        console.error('Google OAuth not configured');
+        return res.redirect('/?error=oauth_not_configured');
+      }
+      
+      console.log('Google OAuth Config:', {
+        clientId: process.env.GOOGLE_CLIENT_ID ? 'Set' : 'Missing',
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET ? 'Set' : 'Missing',
+        callbackUrl: getCallbackUrl()
+      });
+      
+      const authUrl = googleClient.generateAuthUrl({
+        access_type: 'offline',
+        scope: ['profile', 'email'],
+        state: nanoid(),
+      });
+      res.redirect(authUrl);
+    } catch (error) {
+      console.error('Google OAuth initiation error:', error);
+      res.redirect('/?error=oauth_config_error');
+    }
   });
 
   app.get('/api/auth/google/callback', async (req, res) => {
     try {
-      const { code } = req.query;
+      if (!googleClient) {
+        console.error('Google OAuth not configured');
+        return res.redirect('/?error=oauth_not_configured');
+      }
+      
+      console.log('Google callback received:', { 
+        code: req.query.code ? 'Present' : 'Missing',
+        error: req.query.error || 'None'
+      });
+
+      const { code, error } = req.query;
+      
+      if (error) {
+        console.error('Google OAuth error:', error);
+        return res.redirect(`/?error=oauth_${error}`);
+      }
+      
       if (!code) {
+        console.error('No authorization code received');
         return res.redirect('/?error=auth_failed');
       }
 
@@ -65,8 +112,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const payload = ticket.getPayload();
       if (!payload) {
+        console.error('Invalid JWT payload');
         return res.redirect('/?error=auth_failed');
       }
+
+      console.log('User authenticated:', { email: payload.email, name: payload.name });
 
       let user = await storage.getUserByGoogleId(payload.sub);
       if (!user) {
@@ -76,6 +126,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
           name: payload.name || null,
           avatar_url: payload.picture || null,
         });
+        console.log('New user created:', user.id);
+      } else {
+        console.log('Existing user found:', user.id);
       }
 
       // Create session
@@ -87,14 +140,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         expires_at: expiresAt,
       });
 
+      console.log('Session created:', sessionId);
+
       res.cookie('session', sessionId, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
         expires: expiresAt,
+        domain: process.env.NODE_ENV === 'production' ? undefined : undefined,
       });
 
-      res.redirect('/');
+      res.redirect('/?auth=success');
     } catch (error) {
       console.error('Auth callback error:', error);
       res.redirect('/?error=auth_failed');

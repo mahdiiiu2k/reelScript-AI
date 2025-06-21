@@ -24,6 +24,21 @@ const Index = () => {
       toast.info('Subscription canceled. You can try again anytime.');
       // Clean up URL
       window.history.replaceState({}, document.title, window.location.pathname);
+    } else if (urlParams.get('auth') === 'success') {
+      toast.success('Successfully signed in!');
+      // Clean up URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    } else if (urlParams.get('error')) {
+      const error = urlParams.get('error');
+      if (error === 'oauth_not_configured') {
+        toast.error('Google sign-in is not configured. Please contact support.');
+      } else if (error === 'auth_failed') {
+        toast.error('Sign-in failed. Please try again.');
+      } else if (error?.startsWith('oauth_')) {
+        toast.error('Sign-in was canceled or failed. Please try again.');
+      }
+      // Clean up URL
+      window.history.replaceState({}, document.title, window.location.pathname);
     }
   }, []);
 
