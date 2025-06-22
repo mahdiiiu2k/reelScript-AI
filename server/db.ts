@@ -14,23 +14,17 @@ console.log('Connecting to Supabase PostgreSQL database...');
 // Handle URL encoding for special characters in password
 let databaseUrl = process.env.DATABASE_URL;
 
-// For Supabase, construct the correct database URL from SUPABASE_URL
+// For Supabase, construct the correct database URL using the scriptExpert hostname
 if (process.env.SUPABASE_URL && databaseUrl.includes('supabase.co')) {
-  // Extract project ID from SUPABASE_URL
-  const supabaseUrl = process.env.SUPABASE_URL;
-  const projectId = supabaseUrl.match(/https:\/\/([^.]+)\.supabase\.co/)?.[1];
-  
-  if (projectId) {
-    // Use the correct Supabase database hostname format for direct connections
-    const urlParts = databaseUrl.match(/postgresql:\/\/([^:]+):([^@]+)@(.+)/);
-    if (urlParts) {
-      const [, username, password, rest] = urlParts;
-      const encodedPassword = encodeURIComponent(password);
-      // Use the correct hostname format: db.<project-id>.supabase.co
-      const correctedHost = `db.${projectId}.supabase.co:5432/postgres`;
-      databaseUrl = `postgresql://${username}:${encodedPassword}@${correctedHost}`;
-      console.log('Using Supabase database connection');
-    }
+  // Use the correct Supabase database hostname for scriptExpert project
+  const urlParts = databaseUrl.match(/postgresql:\/\/([^:]+):([^@]+)@(.+)/);
+  if (urlParts) {
+    const [, username, password, rest] = urlParts;
+    const encodedPassword = encodeURIComponent(password);
+    // Use the correct hostname: db.scriptexpert.supabase.co
+    const correctedHost = `db.scriptexpert.supabase.co:5432/postgres`;
+    databaseUrl = `postgresql://${username}:${encodedPassword}@${correctedHost}`;
+    console.log('Using Supabase database connection for scriptExpert');
   }
 } else if (databaseUrl.includes('supabase.co') && databaseUrl.includes('?')) {
   console.warn('Encoding special characters in DATABASE_URL...');
