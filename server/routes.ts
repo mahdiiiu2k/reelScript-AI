@@ -10,22 +10,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Determine the correct callback URL based on environment
   const getCallbackUrl = () => {
-    if (process.env.NODE_ENV === 'production') {
-      // For production deployments (Render, etc.)
-      return process.env.GOOGLE_CALLBACK_URL || `${process.env.RENDER_EXTERNAL_URL || process.env.REPLIT_DEV_DOMAIN || 'http://localhost:5000'}/api/auth/google/callback`;
+    // Always prioritize GOOGLE_CALLBACK_URL if explicitly set
+    if (process.env.GOOGLE_CALLBACK_URL) {
+      console.log('Using explicit GOOGLE_CALLBACK_URL:', process.env.GOOGLE_CALLBACK_URL);
+      return process.env.GOOGLE_CALLBACK_URL;
     }
-    return `${process.env.REPLIT_DEV_DOMAIN || 'http://localhost:5000'}/api/auth/google/callback`;
+    
+    // Fallback logic for different environments
+    if (process.env.NODE_ENV === 'production') {
+      const fallbackUrl = `${process.env.RENDER_EXTERNAL_URL || process.env.REPLIT_DEV_DOMAIN || 'http://localhost:5000'}/api/auth/google/callback`;
+      console.log('Using production fallback callback URL:', fallbackUrl);
+      return fallbackUrl;
+    }
+    
+    const devUrl = `${process.env.REPLIT_DEV_DOMAIN || 'http://localhost:5000'}/api/auth/google/callback`;
+    console.log('Using development callback URL:', devUrl);
+    return devUrl;
   };
 
   // Initialize Google OAuth client only if credentials are available
   let googleClient: OAuth2Client | null = null;
   
   if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
+    const callbackUrl = getCallbackUrl();
+    console.log('Initializing Google OAuth with callback URL:', callbackUrl);
+    
     googleClient = new OAuth2Client(
       process.env.GOOGLE_CLIENT_ID,
       process.env.GOOGLE_CLIENT_SECRET,
-      getCallbackUrl()
+      callbackUrl
     );
+  } else {
+    console.warn('Google OAuth credentials not found. Set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET environment variables.');
   }
 
   // Middleware to check authentication

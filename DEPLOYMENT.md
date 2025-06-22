@@ -35,15 +35,28 @@ Set these in your Render dashboard:
 ```
 GOOGLE_CLIENT_ID=your_google_client_id
 GOOGLE_CLIENT_SECRET=your_google_client_secret
-GOOGLE_CALLBACK_URL=https://your-app.onrender.com/api/auth/google/callback
+GOOGLE_CALLBACK_URL=https://your-app-name.onrender.com/api/auth/google/callback
 NODE_ENV=production
 ```
+
+**CRITICAL**: The `GOOGLE_CALLBACK_URL` must exactly match the callback URL you configured in Google Cloud Console. Replace `your-app-name` with your actual Render service name.
 
 ## Common Issues and Solutions
 
 ### 1. "redirect_uri_mismatch" Error
-- Ensure the callback URL in Google Console exactly matches your production URL
-- Check that GOOGLE_CALLBACK_URL environment variable is set correctly
+This is the most common issue. The callback URL must match exactly:
+
+**In Google Cloud Console:**
+- Authorized redirect URIs: `https://your-app-name.onrender.com/api/auth/google/callback`
+
+**In Render Environment Variables:**
+- GOOGLE_CALLBACK_URL: `https://your-app-name.onrender.com/api/auth/google/callback`
+
+**Common mistakes:**
+- Using `http://` instead of `https://` in production
+- Wrong app name in the URL
+- Missing or extra slashes
+- Different domain than what Render assigned
 
 ### 2. Cookie Issues in Production
 - Cookies are configured for cross-site compatibility in production
