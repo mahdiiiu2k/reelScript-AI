@@ -4,6 +4,7 @@ import { storage } from "./storage";
 import { OAuth2Client } from "google-auth-library";
 import { nanoid } from "nanoid";
 import cookieParser from "cookie-parser";
+import { supabase, isSupabaseConfigured } from "../lib/supabaseClient";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   app.use(cookieParser());
@@ -69,8 +70,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
   };
 
   // Auth routes
-  app.get('/api/auth/google', (req, res) => {
+  app.get('/api/auth/google', async (req, res) => {
     try {
+      // Option 1: Use Supabase Auth (recommended)
+      if (isSupabaseConfigured && supabase) {
+        const { data, error } = await supabase.auth.signInWithOAuth({
+          provider: 'google',
+          options: {
+            redirectTo: `${req.headers.origin || 'http://localhost:5000'}/api/auth/callback`
+          }
+        });
+        
+        if (error) {
+          console.error('Supabase OAuth error:', error);
+          return res.redirect('/?error=oauth_config_error');
+        }
+        
+        // Redirect to Supabase OAuth URL
+        return res.redirect(data.url);
+      }
+      
+      // Option 2: Fallback to custom Google OAuth
       if (!googleClient) {
         console.error('Google OAuth not configured');
         return res.redirect('/?error=oauth_not_configured');
@@ -94,6 +114,75 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Supabase Auth callback
+  app.get('/api/auth/callback', async (req, res) => {
+    try {
+      if (!isSupabaseConfigured) {
+        // Fallback to original Google OAuth callback
+        return res.redirect('/api/auth/google/callback?' + new URLSearchParams(req.query as any).toString());
+      }
+
+      const { access_token, refresh_token } = req.query;
+      
+      if (access_token && refresh_token && supabase) {
+        // Set the session
+        const { data, error } = await supabase.auth.setSession({
+          access_token: access_token as string,
+          refresh_token: refresh_token as string
+        });
+        
+        if (error) {
+          console.error('Supabase session error:', error);
+          return res.redirect('/?error=auth_failed');
+        }
+        
+        // Get user info
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        
+        if (userError || !user) {
+          console.error('Failed to get user:', userError);
+          return res.redirect('/?error=auth_failed');
+        }
+        
+        // Create or update user in our database
+        let dbUser = await storage.getUserByGoogleId(user.id);
+        if (!dbUser) {
+          dbUser = await storage.createUser({
+            email: user.email!,
+            google_id: user.id,
+            name: user.user_metadata?.full_name || null,
+            avatar_url: user.user_metadata?.avatar_url || null,
+          });
+        }
+        
+        // Create session
+        const sessionId = nanoid();
+        const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days
+        await storage.createSession({
+          id: sessionId,
+          user_id: dbUser.id,
+          expires_at: expiresAt,
+        });
+        
+        res.cookie('session', sessionId, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+          expires: expiresAt,
+        });
+        
+        return res.redirect('/?auth=success');
+      }
+      
+      // Fallback to original Google OAuth callback
+      return res.redirect('/api/auth/google/callback?' + new URLSearchParams(req.query as any).toString());
+    } catch (error) {
+      console.error('Supabase auth callback error:', error);
+      res.redirect('/?error=auth_failed');
+    }
+  });
+
+  // Original Google OAuth callback (fallback)
   app.get('/api/auth/google/callback', async (req, res) => {
     try {
       if (!googleClient) {

@@ -2,13 +2,15 @@
 
 ## Required Environment Variables for Production
 
-### Google OAuth Configuration
+### Supabase Configuration (Recommended)
+1. **SUPABASE_URL** - Your Supabase project URL
+2. **SUPABASE_KEY** - Your Supabase anon/public key
+3. **DATABASE_URL** - Your Supabase PostgreSQL connection string
+
+### Google OAuth Configuration (Alternative)
 1. **GOOGLE_CLIENT_ID** - Your Google OAuth client ID
 2. **GOOGLE_CLIENT_SECRET** - Your Google OAuth client secret
-3. **GOOGLE_CALLBACK_URL** - Your production callback URL (e.g., `https://your-app.onrender.com/api/auth/google/callback`)
-
-### Database Configuration
-- **DATABASE_URL** - PostgreSQL connection string (automatically provided by Render)
+3. **GOOGLE_CALLBACK_URL** - Your production callback URL (e.g., `https://your-app.onrender.com/api/auth/callback`)
 
 ### Optional Services
 - **STRIPE_SECRET_KEY** - For subscription payments
@@ -18,7 +20,28 @@
 - **NODE_ENV** - Set to `production`
 - **RENDER_EXTERNAL_URL** - Automatically provided by Render
 
-## Google OAuth Setup
+## Supabase Setup (Recommended)
+
+### 1. Create Supabase Project
+1. Go to [Supabase Dashboard](https://supabase.com/dashboard)
+2. Create a new project
+3. Wait for database to be ready
+4. Go to Settings → API to get your keys
+
+### 2. Enable Google Auth in Supabase
+1. Go to Authentication → Providers → Google
+2. Enable Google provider
+3. Add your Google OAuth credentials:
+   - Client ID: Your Google OAuth client ID
+   - Client Secret: Your Google OAuth client secret
+4. Set redirect URL: `https://your-app.onrender.com/api/auth/callback`
+
+### 3. Get Database URL
+1. Go to Settings → Database
+2. Copy the connection string under "Connection pooling"
+3. Replace `[YOUR-PASSWORD]` with your database password
+
+## Alternative: Google OAuth Setup
 
 ### 1. Create Google OAuth Application
 1. Go to [Google Cloud Console](https://console.cloud.google.com/)
@@ -27,19 +50,26 @@
 4. Go to "Credentials" → "Create Credentials" → "OAuth 2.0 Client IDs"
 5. Choose "Web application"
 6. Add authorized redirect URIs:
-   - For development: `http://localhost:5000/api/auth/google/callback`
-   - For production: `https://your-app.onrender.com/api/auth/google/callback`
+   - For development: `http://localhost:5000/api/auth/callback`
+   - For production: `https://your-app.onrender.com/api/auth/callback`
 
 ### 2. Configure Environment Variables
-Set these in your Render dashboard:
+
+**For Supabase (Recommended):**
 ```
-GOOGLE_CLIENT_ID=your_google_client_id
-GOOGLE_CLIENT_SECRET=your_google_client_secret
-GOOGLE_CALLBACK_URL=https://your-app-name.onrender.com/api/auth/google/callback
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_KEY=your_supabase_anon_key
+DATABASE_URL=postgresql://postgres:[YOUR-PASSWORD]@db.your-project.supabase.co:5432/postgres
 NODE_ENV=production
 ```
 
-**CRITICAL**: The `GOOGLE_CALLBACK_URL` must exactly match the callback URL you configured in Google Cloud Console. Replace `your-app-name` with your actual Render service name.
+**For Custom Google OAuth (Alternative):**
+```
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+GOOGLE_CALLBACK_URL=https://your-app-name.onrender.com/api/auth/callback
+NODE_ENV=production
+```
 
 ## Common Issues and Solutions
 
