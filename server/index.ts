@@ -8,15 +8,24 @@ const missingEnvVars = requiredEnvVars.filter(varName => !process.env[varName]);
 
 if (missingEnvVars.length > 0) {
   console.error('Missing required environment variables:', missingEnvVars);
+  console.error('Please ensure your Supabase DATABASE_URL is configured.');
   process.exit(1);
 }
 
-// Warn about optional but recommended environment variables
+// Check for Supabase configuration
+const hasSupabaseConfig = process.env.SUPABASE_URL && process.env.SUPABASE_KEY;
+if (hasSupabaseConfig) {
+  console.log('✅ Supabase configuration detected - enhanced auth features available');
+} else {
+  console.warn('⚠️ Supabase credentials not found - using fallback authentication');
+}
+
+// Warn about optional but recommended environment variables for fallback auth
 const recommendedEnvVars = ['GOOGLE_CLIENT_ID', 'GOOGLE_CLIENT_SECRET'];
 const missingRecommended = recommendedEnvVars.filter(varName => !process.env[varName]);
 
-if (missingRecommended.length > 0) {
-  console.warn('Missing recommended environment variables for full functionality:', missingRecommended);
+if (!hasSupabaseConfig && missingRecommended.length > 0) {
+  console.warn('Missing recommended environment variables for full authentication functionality:', missingRecommended);
 }
 
 const app = express();

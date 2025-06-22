@@ -74,10 +74,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       // Option 1: Use Supabase Auth (recommended)
       if (isSupabaseConfigured && supabase) {
+        console.log('Using Supabase OAuth for Google sign-in');
         const { data, error } = await supabase.auth.signInWithOAuth({
           provider: 'google',
           options: {
-            redirectTo: `${req.headers.origin || 'http://localhost:5000'}/api/auth/callback`
+            redirectTo: `${req.headers.origin || getCallbackUrl().replace('/api/auth/google/callback', '')}/api/auth/callback`
           }
         });
         
@@ -86,7 +87,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           return res.redirect('/?error=oauth_config_error');
         }
         
-        // Redirect to Supabase OAuth URL
+        console.log('Redirecting to Supabase OAuth URL:', data.url);
         return res.redirect(data.url);
       }
       

@@ -38,8 +38,13 @@
 
 ### 3. Get Database URL
 1. Go to Settings → Database
-2. Copy the connection string under "Connection pooling"
+2. Copy the connection string under "Connection pooling" 
 3. Replace `[YOUR-PASSWORD]` with your database password
+4. **Important**: If your password contains special characters (like `?`, `@`, `#`), they must be URL-encoded:
+   - `?` becomes `%3F`
+   - `@` becomes `%40` 
+   - `#` becomes `%23`
+   - Use an online URL encoder or the app will auto-encode common characters
 
 ## Alternative: Google OAuth Setup
 
@@ -57,11 +62,13 @@
 
 **For Supabase (Recommended):**
 ```
-SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_URL=https://nvthjpjveqeuscyixwqg.supabase.co
 SUPABASE_KEY=your_supabase_anon_key
-DATABASE_URL=postgresql://postgres:[YOUR-PASSWORD]@db.your-project.supabase.co:5432/postgres
+DATABASE_URL=postgresql://postgres:YOUR_PASSWORD@db.nvthjpjveqeuscyixwqg.supabase.co:5432/postgres
 NODE_ENV=production
 ```
+
+**Important**: Replace `YOUR_PASSWORD` with your actual Supabase database password. Never commit real passwords to version control.
 
 **For Custom Google OAuth (Alternative):**
 ```
