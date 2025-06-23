@@ -35,106 +35,157 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        .debug {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: rgba(0,0,0,0.3);
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 12px;
+            text-align: left;
+            max-width: 600px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="spinner"></div>
         <h2>Completing sign in...</h2>
-        <p>Please wait while we redirect you.</p>
+        <p id="status">Processing authentication...</p>
+        <div id="debug" class="debug" style="display: none;">
+            <div id="debug-content"></div>
+        </div>
     </div>
 
-    <script type="module">
-        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+    <script>
+        let redirected = false;
 
-        async function initializeAuth() {
+        function updateStatus(message) {
+            document.getElementById('status').textContent = message;
+        }
+
+        function addDebug(message) {
+            const debug = document.getElementById('debug');
+            const content = document.getElementById('debug-content');
+            debug.style.display = 'block';
+            content.innerHTML += message + '<br>';
+            console.log(message);
+        }
+
+        function redirect(url) {
+            if (!redirected) {
+                redirected = true;
+                updateStatus('Redirecting...');
+                setTimeout(() => {
+                    window.location.href = url;
+                }, 1000);
+            }
+        }
+
+        async function handleAuth() {
             try {
-                // Get Supabase configuration from server
-                const response = await fetch('/api/auth/config')
-                const config = await response.json()
+                addDebug('Starting auth callback handling...');
+                addDebug('Current URL: ' + window.location.href);
                 
-                if (!config.supabaseUrl || !config.supabaseKey) {
-                    console.error('Supabase configuration not available')
-                    window.location.href = '/?error=config_missing'
-                    return
-                }
+                // Parse URL parameters
+                const urlParams = new URLSearchParams(window.location.search);
+                const hashParams = new URLSearchParams(window.location.hash.substring(1));
                 
-                const supabase = createClient(config.supabaseUrl, config.supabaseKey, {
-                    auth: {
-                        autoRefreshToken: true,
-                        persistSession: true,
-                        detectSessionInUrl: true
-                    }
-                })
-
-                // First, try to handle the auth callback
-                const { data, error } = await supabase.auth.getSession()
-                
+                // Check for errors first
+                const error = urlParams.get('error') || hashParams.get('error');
                 if (error) {
-                    console.error('Auth error:', error)
-                    window.location.href = '/?error=auth_failed'
-                    return
+                    addDebug('OAuth error found: ' + error);
+                    redirect('/?error=' + error);
+                    return;
                 }
 
-                let session = data.session
+                // Look for tokens in various locations
+                const access_token = urlParams.get('access_token') || hashParams.get('access_token');
+                const refresh_token = urlParams.get('refresh_token') || hashParams.get('refresh_token');
+                const code = urlParams.get('code');
 
-                // If no session, try to exchange the auth code
-                if (!session) {
-                    const urlParams = new URLSearchParams(window.location.search)
-                    const code = urlParams.get('code')
-                    
-                    if (code) {
-                        console.log('Exchanging auth code for session...')
-                        const { data: sessionData, error: sessionError } = await supabase.auth.exchangeCodeForSession(code)
-                        
-                        if (sessionError) {
-                            console.error('Code exchange error:', sessionError)
-                            window.location.href = '/?error=code_exchange_failed'
-                            return
-                        }
-                        
-                        session = sessionData.session
-                    }
-                }
+                addDebug('Tokens found - Access: ' + !!access_token + ', Refresh: ' + !!refresh_token + ', Code: ' + !!code);
 
-                if (session) {
-                    console.log('Session found, user authenticated:', session.user.email)
+                // If we have direct tokens, use them
+                if (access_token && refresh_token) {
+                    updateStatus('Processing tokens...');
+                    addDebug('Using direct tokens for session creation');
                     
-                    // Create a session in our backend
-                    const sessionResponse = await fetch('/api/auth/session', {
+                    const response = await fetch('/api/auth/session', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
                         },
                         credentials: 'include',
                         body: JSON.stringify({
-                            access_token: session.access_token,
-                            refresh_token: session.refresh_token,
-                            user: session.user
+                            access_token,
+                            refresh_token,
+                            // Create a basic user object from available data
+                            user: {
+                                id: 'temp_' + Date.now(),
+                                email: 'user@example.com', // Will be updated by backend
+                                user_metadata: {}
+                            }
                         })
-                    })
+                    });
 
-                    if (sessionResponse.ok) {
-                        console.log('Backend session created successfully')
-                        // Redirect to the main app
-                        window.location.href = '/?auth=success'
+                    if (response.ok) {
+                        addDebug('Session created successfully with direct tokens');
+                        redirect('/?auth=success');
+                        return;
                     } else {
-                        const errorText = await sessionResponse.text()
-                        console.error('Failed to create backend session:', errorText)
-                        window.location.href = '/?error=session_failed'
+                        const errorText = await response.text();
+                        addDebug('Session creation failed: ' + errorText);
                     }
-                } else {
-                    console.error('No session found after authentication')
-                    window.location.href = '/?error=no_session'
                 }
+
+                // If we have a code, try to exchange it via our backend
+                if (code) {
+                    updateStatus('Exchanging authorization code...');
+                    addDebug('Attempting code exchange via backend');
+                    
+                    const response = await fetch('/api/auth/exchange', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        credentials: 'include',
+                        body: JSON.stringify({ code })
+                    });
+
+                    if (response.ok) {
+                        addDebug('Code exchange successful');
+                        redirect('/?auth=success');
+                        return;
+                    } else {
+                        const errorText = await response.text();
+                        addDebug('Code exchange failed: ' + errorText);
+                    }
+                }
+
+                // No tokens or code found
+                addDebug('No usable auth data found in URL');
+                addDebug('URL params: ' + window.location.search);
+                addDebug('Hash params: ' + window.location.hash);
+                
+                redirect('/?error=no_auth_data');
+
             } catch (error) {
-                console.error('Auth callback error:', error)
-                window.location.href = '/?error=auth_failed'
+                addDebug('Auth callback error: ' + error.message);
+                redirect('/?error=auth_failed');
             }
         }
 
-        // Initialize auth when page loads
-        initializeAuth()
+        // Start authentication handling
+        handleAuth();
+
+        // Fallback timeout
+        setTimeout(() => {
+            if (!redirected) {
+                addDebug('Auth callback timeout reached');
+                redirect('/?error=auth_timeout');
+            }
+        }, 15000);
     </script>
 </body>
 </html>

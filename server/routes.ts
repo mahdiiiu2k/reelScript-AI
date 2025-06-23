@@ -99,6 +99,74 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.sendFile('auth-callback.html', { root: './client/public' });
   });
 
+  // Code exchange endpoint for Supabase OAuth
+  app.post('/api/auth/exchange', async (req, res) => {
+    try {
+      if (!isSupabaseConfigured || !supabase) {
+        return res.status(400).json({ error: 'Supabase not configured' });
+      }
+
+      const { code } = req.body;
+      
+      if (!code) {
+        return res.status(400).json({ error: 'Authorization code required' });
+      }
+
+      console.log('Exchanging authorization code for session');
+
+      // Exchange code for session using Supabase
+      const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+      
+      if (error) {
+        console.error('Code exchange error:', error);
+        return res.status(400).json({ error: 'Code exchange failed', details: error.message });
+      }
+
+      if (!data.session || !data.user) {
+        return res.status(400).json({ error: 'No session or user data received' });
+      }
+
+      console.log('Code exchange successful for user:', data.user.email);
+
+      // Create or update user in our database
+      let dbUser = await storage.getUserByGoogleId(data.user.id);
+      if (!dbUser) {
+        dbUser = await storage.createUser({
+          email: data.user.email!,
+          google_id: data.user.id,
+          name: data.user.user_metadata?.full_name || data.user.user_metadata?.name || null,
+          avatar_url: data.user.user_metadata?.avatar_url || data.user.user_metadata?.picture || null,
+        });
+        console.log('Created new user:', dbUser.id);
+      } else {
+        console.log('Found existing user:', dbUser.id);
+      }
+
+      // Create our own session
+      const sessionId = nanoid();
+      const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days
+      await storage.createSession({
+        id: sessionId,
+        user_id: dbUser.id,
+        expires_at: expiresAt,
+      });
+
+      // Set session cookie
+      res.cookie('session', sessionId, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+        expires: expiresAt,
+      });
+
+      console.log('Session created successfully via code exchange:', sessionId);
+      res.json({ success: true, user: dbUser });
+    } catch (error) {
+      console.error('Code exchange error:', error);
+      res.status(500).json({ error: 'Code exchange failed' });
+    }
+  });
+
   // Create session endpoint for client-side auth
   app.post('/api/auth/session', async (req, res) => {
     try {
