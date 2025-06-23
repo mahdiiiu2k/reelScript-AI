@@ -1,9 +1,8 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { createClient } from '@supabase/supabase-js';
 
 interface User {
-  id: string;
+  id: number;
   email: string;
   name: string | null;
   avatar_url: string | null;
@@ -22,7 +21,6 @@ interface AuthContextType {
   signInWithGoogle: () => void;
   signOut: () => Promise<void>;
   checkSubscription: () => Promise<void>;
-  createCheckoutSession: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -35,66 +33,12 @@ export const useAuth = () => {
   return context;
 };
 
-let supabase: any = null;
-
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [subscription, setSubscription] = useState<SubscriptionInfo>({ subscribed: false });
   const [loading, setLoading] = useState(true);
 
-  const initializeSupabase = async () => {
-    try {
-      const response = await fetch('/api/auth/config');
-      const config = await response.json();
-      
-      if (config.supabaseUrl && config.supabaseKey) {
-        supabase = createClient(config.supabaseUrl, config.supabaseKey, {
-          auth: {
-            autoRefreshToken: true,
-            persistSession: true,
-            detectSessionInUrl: true
-          }
-        });
-        
-        // Listen for auth state changes
-        supabase.auth.onAuthStateChange((event: string, session: any) => {
-          if (event === 'SIGNED_IN' && session?.user) {
-            setUser({
-              id: session.user.id,
-              email: session.user.email,
-              name: session.user.user_metadata?.full_name || session.user.user_metadata?.name || null,
-              avatar_url: session.user.user_metadata?.avatar_url || session.user.user_metadata?.picture || null,
-            });
-            checkBackendAuth();
-          } else if (event === 'SIGNED_OUT') {
-            setUser(null);
-            setSubscription({ subscribed: false });
-          }
-        });
-        
-        // Check initial session
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session?.user) {
-          setUser({
-            id: session.user.id,
-            email: session.user.email,
-            name: session.user.user_metadata?.full_name || session.user.user_metadata?.name || null,
-            avatar_url: session.user.user_metadata?.avatar_url || session.user.user_metadata?.picture || null,
-          });
-          checkBackendAuth();
-        } else {
-          setLoading(false);
-        }
-      } else {
-        setLoading(false);
-      }
-    } catch (error) {
-      console.error('Error initializing Supabase:', error);
-      setLoading(false);
-    }
-  };
-
-  const checkBackendAuth = async () => {
+  const checkAuth = async () => {
     try {
       const response = await fetch('/api/auth/me', {
         credentials: 'include',
@@ -102,12 +46,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       if (response.ok) {
         const data = await response.json();
+        setUser(data.user);
         setSubscription(data.subscription);
       } else {
+        setUser(null);
         setSubscription({ subscribed: false });
       }
     } catch (error) {
-      console.error('Error checking backend auth:', error);
+      console.error('Error checking auth:', error);
+      setUser(null);
       setSubscription({ subscribed: false });
     } finally {
       setLoading(false);
@@ -118,13 +65,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (!user) return;
     
     try {
-      const response = await fetch('/api/auth/me', {
+      const response = await fetch('/api/subscription/check', {
+        method: 'POST',
         credentials: 'include',
       });
 
       if (response.ok) {
         const data = await response.json();
-        setSubscription(data.subscription);
+        setSubscription(data);
       } else {
         setSubscription({ subscribed: false });
       }
@@ -140,43 +88,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signOut = async () => {
     try {
-      if (supabase) {
-        await supabase.auth.signOut();
-      }
       await fetch('/api/auth/logout', {
         method: 'POST',
         credentials: 'include',
       });
       setUser(null);
       setSubscription({ subscribed: false });
-      window.location.reload();
     } catch (error) {
       console.error('Error signing out:', error);
     }
   };
 
-  const createCheckoutSession = async () => {
-    try {
-      const response = await fetch('/api/create-checkout-session', {
-        method: 'POST',
-        credentials: 'include',
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        if (data.url) {
-          window.location.href = data.url;
-        }
-      } else {
-        console.error('Failed to create checkout session');
-      }
-    } catch (error) {
-      console.error('Error creating checkout session:', error);
-    }
-  };
-
   useEffect(() => {
-    initializeSupabase();
+    checkAuth();
   }, []);
 
   const value = {
@@ -186,7 +110,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     signInWithGoogle,
     signOut,
     checkSubscription,
-    createCheckoutSession,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

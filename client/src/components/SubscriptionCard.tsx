@@ -15,14 +15,13 @@ export const SubscriptionCard: React.FC = () => {
 
   const handleSubscribe = async () => {
     if (!user) {
-      // Redirect to Google OAuth for sign in
-      window.location.href = '/api/auth/google';
+      setShowAuthModal(true);
       return;
     }
 
     setIsLoading(true);
     try {
-      const response = await fetch('/api/create-checkout-session', {
+      const response = await fetch('/api/subscription/create-checkout', {
         method: 'POST',
         credentials: 'include',
       });
@@ -153,12 +152,14 @@ export const SubscriptionCard: React.FC = () => {
           className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white text-[18px]"
           size="lg"
         >
-          {isLoading ? 'Processing...' : user ? 'Subscribe' : 'Sign In'}
+          {isLoading ? 'Processing...' : user ? 'Subscribe Now' : 'Sign In'}
         </Button>
         
-        <p className="text-center text-sm text-gray-500 dark:text-gray-400">
-          {user ? 'Upgrade to access all features' : 'Sign in with Google to get started'}
-        </p>
+        {!user && (
+          <p className="text-center text-sm text-gray-500 dark:text-gray-400">
+            Sign in with Google to get started
+          </p>
+        )}
       </CardContent>
       <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />
     </Card>

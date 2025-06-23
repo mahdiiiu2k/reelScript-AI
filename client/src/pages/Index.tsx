@@ -70,7 +70,7 @@ const Index = () => {
       <Header />
       <main className="container mx-auto px-4 py-8 max-w-6xl">
         <div className={`grid gap-8 ${subscription.subscribed ? 'grid-cols-1 max-w-4xl mx-auto' : 'grid-cols-1 lg:grid-cols-3'}`}>
-          {/* Subscription Card - Always show for non-subscribers */}
+          {/* Subscription Card - Only show for non-subscribers */}
           {!subscription.subscribed && (
             <div className="lg:col-span-1">
               <SubscriptionCard />
