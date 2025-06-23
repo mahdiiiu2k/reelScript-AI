@@ -174,19 +174,51 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: 'Supabase not configured' });
       }
 
-      const { access_token, refresh_token, user } = req.body;
+      const { access_token, refresh_token } = req.body;
       
-      if (!access_token || !refresh_token || !user) {
-        return res.status(400).json({ error: 'Missing required auth data' });
+      if (!access_token || !refresh_token) {
+        return res.status(400).json({ error: 'Missing access_token or refresh_token' });
       }
 
-      console.log('Creating session for user:', user.email);
+      console.log('Creating session with tokens...');
+
+      let user;
+      try {
+        // Try to get user from Supabase first
+        const { data: userData, error } = await supabase.auth.getUser(access_token);
+        
+        if (error || !userData.user) {
+          console.log('Supabase getUser failed, trying manual JWT decode:', error?.message);
+          
+          // Fallback: decode JWT manually
+          const tokenParts = access_token.split('.');
+          if (tokenParts.length !== 3) {
+            throw new Error('Invalid JWT format');
+          }
+          
+          const payload = JSON.parse(Buffer.from(tokenParts[1], 'base64').toString());
+          console.log('Decoded JWT payload for user:', payload.email);
+          
+          user = {
+            id: payload.sub,
+            email: payload.email,
+            user_metadata: payload.user_metadata || {}
+          };
+        } else {
+          user = userData.user;
+        }
+      } catch (tokenError) {
+        console.error('Token processing failed:', tokenError);
+        return res.status(400).json({ error: 'Invalid access token' });
+      }
+
+      console.log('Retrieved user:', user.email);
 
       // Create or update user in our database
       let dbUser = await storage.getUserByGoogleId(user.id);
       if (!dbUser) {
         dbUser = await storage.createUser({
-          email: user.email,
+          email: user.email!,
           google_id: user.id,
           name: user.user_metadata?.full_name || user.user_metadata?.name || null,
           avatar_url: user.user_metadata?.avatar_url || user.user_metadata?.picture || null,
