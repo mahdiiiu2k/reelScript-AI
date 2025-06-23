@@ -54,6 +54,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     next();
   };
 
+  // Auth config endpoint for client-side auth
+  app.get('/api/auth/config', (req, res) => {
+    res.json({
+      supabaseUrl: process.env.SUPABASE_URL,
+      supabaseKey: process.env.SUPABASE_KEY
+    });
+  });
+
   // Auth routes
   app.get('/api/auth/google', async (req, res) => {
     try {
@@ -85,81 +93,63 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Supabase Auth callback
+  // Supabase Auth callback - serve the auth callback HTML page
   app.get('/api/auth/callback', async (req, res) => {
+    // Serve the auth callback HTML page that handles client-side auth
+    res.sendFile('auth-callback.html', { root: './client/public' });
+  });
+
+  // Create session endpoint for client-side auth
+  app.post('/api/auth/session', async (req, res) => {
     try {
       if (!isSupabaseConfigured || !supabase) {
-        console.error('Supabase not configured for auth callback');
-        return res.redirect('/?error=auth_not_configured');
+        return res.status(400).json({ error: 'Supabase not configured' });
       }
 
-      console.log('Processing Supabase auth callback');
+      const { access_token, refresh_token, user } = req.body;
       
-      // Handle the callback from Supabase Auth
-      const { access_token, refresh_token, error: authError } = req.query;
-      
-      if (authError) {
-        console.error('Auth callback error:', authError);
-        return res.redirect(`/?error=${authError}`);
+      if (!access_token || !refresh_token || !user) {
+        return res.status(400).json({ error: 'Missing required auth data' });
       }
-      
-      if (access_token && refresh_token) {
-        // Set the session in Supabase
-        const { data, error } = await supabase.auth.setSession({
-          access_token: access_token as string,
-          refresh_token: refresh_token as string
+
+      console.log('Creating session for user:', user.email);
+
+      // Create or update user in our database
+      let dbUser = await storage.getUserByGoogleId(user.id);
+      if (!dbUser) {
+        dbUser = await storage.createUser({
+          email: user.email,
+          google_id: user.id,
+          name: user.user_metadata?.full_name || user.user_metadata?.name || null,
+          avatar_url: user.user_metadata?.avatar_url || user.user_metadata?.picture || null,
         });
-        
-        if (error) {
-          console.error('Supabase session error:', error);
-          return res.redirect('/?error=auth_failed');
-        }
-        
-        // Get user info from Supabase
-        const { data: { user }, error: userError } = await supabase.auth.getUser();
-        
-        if (userError || !user) {
-          console.error('Failed to get user:', userError);
-          return res.redirect('/?error=auth_failed');
-        }
-        
-        console.log('User authenticated successfully:', user.email);
-        
-        // Create or update user in our database
-        let dbUser = await storage.getUserByGoogleId(user.id);
-        if (!dbUser) {
-          dbUser = await storage.createUser({
-            email: user.email!,
-            google_id: user.id,
-            name: user.user_metadata?.full_name || null,
-            avatar_url: user.user_metadata?.avatar_url || null,
-          });
-        }
-        
-        // Create our own session
-        const sessionId = nanoid();
-        const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days
-        await storage.createSession({
-          id: sessionId,
-          user_id: dbUser.id,
-          expires_at: expiresAt,
-        });
-        
-        // Set session cookie
-        res.cookie('session', sessionId, {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === 'production',
-          sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-          expires: expiresAt,
-        });
-        
-        return res.redirect('/?auth=success');
+        console.log('Created new user:', dbUser.id);
+      } else {
+        console.log('Found existing user:', dbUser.id);
       }
-      
-      return res.redirect('/?error=missing_tokens');
+
+      // Create our own session
+      const sessionId = nanoid();
+      const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days
+      await storage.createSession({
+        id: sessionId,
+        user_id: dbUser.id,
+        expires_at: expiresAt,
+      });
+
+      // Set session cookie
+      res.cookie('session', sessionId, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+        expires: expiresAt,
+      });
+
+      console.log('Session created successfully:', sessionId);
+      res.json({ success: true, user: dbUser });
     } catch (error) {
-      console.error('Supabase auth callback error:', error);
-      res.redirect('/?error=auth_failed');
+      console.error('Session creation error:', error);
+      res.status(500).json({ error: 'Failed to create session' });
     }
   });
 
