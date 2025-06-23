@@ -1,7 +1,6 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { OAuth2Client } from "google-auth-library";
 import { nanoid } from "nanoid";
 import cookieParser from "cookie-parser";
 import { supabase, isSupabaseConfigured } from "../lib/supabaseClient";
@@ -9,41 +8,27 @@ import { supabase, isSupabaseConfigured } from "../lib/supabaseClient";
 export async function registerRoutes(app: Express): Promise<Server> {
   app.use(cookieParser());
   
-  // Determine the correct callback URL based on environment
-  const getCallbackUrl = () => {
-    // Always prioritize GOOGLE_CALLBACK_URL if explicitly set
-    if (process.env.GOOGLE_CALLBACK_URL) {
-      console.log('Using explicit GOOGLE_CALLBACK_URL:', process.env.GOOGLE_CALLBACK_URL);
-      return process.env.GOOGLE_CALLBACK_URL;
-    }
-    
-    // Fallback logic for different environments
+  // Get the correct redirect URL for the application
+  const getAppRedirectUrl = () => {
     if (process.env.NODE_ENV === 'production') {
-      const fallbackUrl = `${process.env.RENDER_EXTERNAL_URL || process.env.REPLIT_DEV_DOMAIN || 'http://localhost:5000'}/api/auth/google/callback`;
-      console.log('Using production fallback callback URL:', fallbackUrl);
-      return fallbackUrl;
+      return process.env.RENDER_EXTERNAL_URL || 'https://reelscript-ai.onrender.com';
     }
-    
-    const devUrl = `${process.env.REPLIT_DEV_DOMAIN || 'http://localhost:5000'}/api/auth/google/callback`;
-    console.log('Using development callback URL:', devUrl);
-    return devUrl;
+    return process.env.REPLIT_DEV_DOMAIN || 'http://localhost:5000';
   };
 
-  // Initialize Google OAuth client only if credentials are available
-  let googleClient: OAuth2Client | null = null;
-  
-  if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
-    const callbackUrl = getCallbackUrl();
-    console.log('Initializing Google OAuth with callback URL:', callbackUrl);
-    
-    googleClient = new OAuth2Client(
-      process.env.GOOGLE_CLIENT_ID,
-      process.env.GOOGLE_CLIENT_SECRET,
-      callbackUrl
-    );
-  } else {
-    console.warn('Google OAuth credentials not found. Set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET environment variables.');
-  }
+  // Supabase callback URL (this should be registered in Google Cloud Console)
+  const getSupabaseCallbackUrl = () => {
+    return 'https://nvthjpjveqeuscyixwqg.supabase.co/auth/v1/callback';
+  };
+
+  // Log OAuth configuration
+  console.log('OAuth Configuration:', {
+    supabaseConfigured: isSupabaseConfigured,
+    googleClientId: process.env.GOOGLE_CLIENT_ID ? 'Set' : 'Missing',
+    googleClientSecret: process.env.GOOGLE_CLIENT_SECRET ? 'Set' : 'Missing',
+    supabaseCallbackUrl: getSupabaseCallbackUrl(),
+    appRedirectUrl: getAppRedirectUrl()
+  });
 
   // Middleware to check authentication
   const requireAuth = async (req: any, res: any, next: any) => {
@@ -72,13 +57,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Auth routes
   app.get('/api/auth/google', async (req, res) => {
     try {
-      // Option 1: Use Supabase Auth (recommended)
+      // Use Supabase Auth for Google OAuth
       if (isSupabaseConfigured && supabase) {
-        console.log('Using Supabase OAuth for Google sign-in');
+        console.log('Initiating Supabase Google OAuth');
         const { data, error } = await supabase.auth.signInWithOAuth({
           provider: 'google',
           options: {
-            redirectTo: `${req.headers.origin || getCallbackUrl().replace('/api/auth/google/callback', '')}/api/auth/callback`
+            redirectTo: `${getAppRedirectUrl()}/api/auth/callback`
           }
         });
         
@@ -91,24 +76,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.redirect(data.url);
       }
       
-      // Option 2: Fallback to custom Google OAuth
-      if (!googleClient) {
-        console.error('Google OAuth not configured');
-        return res.redirect('/?error=oauth_not_configured');
-      }
-      
-      console.log('Google OAuth Config:', {
-        clientId: process.env.GOOGLE_CLIENT_ID ? 'Set' : 'Missing',
-        clientSecret: process.env.GOOGLE_CLIENT_SECRET ? 'Set' : 'Missing',
-        callbackUrl: getCallbackUrl()
-      });
-      
-      const authUrl = googleClient.generateAuthUrl({
-        access_type: 'offline',
-        scope: ['profile', 'email'],
-        state: nanoid(),
-      });
-      res.redirect(authUrl);
+      // Fallback error if Supabase not configured
+      console.error('Supabase OAuth not configured');
+      return res.redirect('/?error=oauth_not_configured');
     } catch (error) {
       console.error('Google OAuth initiation error:', error);
       res.redirect('/?error=oauth_config_error');
@@ -118,15 +88,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Supabase Auth callback
   app.get('/api/auth/callback', async (req, res) => {
     try {
-      if (!isSupabaseConfigured) {
-        // Fallback to original Google OAuth callback
-        return res.redirect('/api/auth/google/callback?' + new URLSearchParams(req.query as any).toString());
+      if (!isSupabaseConfigured || !supabase) {
+        console.error('Supabase not configured for auth callback');
+        return res.redirect('/?error=auth_not_configured');
       }
 
-      const { access_token, refresh_token } = req.query;
+      console.log('Processing Supabase auth callback');
       
-      if (access_token && refresh_token && supabase) {
-        // Set the session
+      // Handle the callback from Supabase Auth
+      const { access_token, refresh_token, error: authError } = req.query;
+      
+      if (authError) {
+        console.error('Auth callback error:', authError);
+        return res.redirect(`/?error=${authError}`);
+      }
+      
+      if (access_token && refresh_token) {
+        // Set the session in Supabase
         const { data, error } = await supabase.auth.setSession({
           access_token: access_token as string,
           refresh_token: refresh_token as string
@@ -137,13 +115,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
           return res.redirect('/?error=auth_failed');
         }
         
-        // Get user info
+        // Get user info from Supabase
         const { data: { user }, error: userError } = await supabase.auth.getUser();
         
         if (userError || !user) {
           console.error('Failed to get user:', userError);
           return res.redirect('/?error=auth_failed');
         }
+        
+        console.log('User authenticated successfully:', user.email);
         
         // Create or update user in our database
         let dbUser = await storage.getUserByGoogleId(user.id);
@@ -156,7 +136,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           });
         }
         
-        // Create session
+        // Create our own session
         const sessionId = nanoid();
         const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days
         await storage.createSession({
@@ -165,6 +145,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           expires_at: expiresAt,
         });
         
+        // Set session cookie
         res.cookie('session', sessionId, {
           httpOnly: true,
           secure: process.env.NODE_ENV === 'production',
@@ -175,92 +156,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.redirect('/?auth=success');
       }
       
-      // Fallback to original Google OAuth callback
-      return res.redirect('/api/auth/google/callback?' + new URLSearchParams(req.query as any).toString());
+      return res.redirect('/?error=missing_tokens');
     } catch (error) {
       console.error('Supabase auth callback error:', error);
       res.redirect('/?error=auth_failed');
     }
   });
 
-  // Original Google OAuth callback (fallback)
+  // Legacy Google OAuth callback (redirects to Supabase auth)
   app.get('/api/auth/google/callback', async (req, res) => {
-    try {
-      if (!googleClient) {
-        console.error('Google OAuth not configured');
-        return res.redirect('/?error=oauth_not_configured');
-      }
-      
-      console.log('Google callback received:', { 
-        code: req.query.code ? 'Present' : 'Missing',
-        error: req.query.error || 'None'
-      });
-
-      const { code, error } = req.query;
-      
-      if (error) {
-        console.error('Google OAuth error:', error);
-        return res.redirect(`/?error=oauth_${error}`);
-      }
-      
-      if (!code) {
-        console.error('No authorization code received');
-        return res.redirect('/?error=auth_failed');
-      }
-
-      const { tokens } = await googleClient.getToken(code as string);
-      googleClient.setCredentials(tokens);
-
-      const ticket = await googleClient.verifyIdToken({
-        idToken: tokens.id_token!,
-        audience: process.env.GOOGLE_CLIENT_ID,
-      });
-
-      const payload = ticket.getPayload();
-      if (!payload) {
-        console.error('Invalid JWT payload');
-        return res.redirect('/?error=auth_failed');
-      }
-
-      console.log('User authenticated:', { email: payload.email, name: payload.name });
-
-      let user = await storage.getUserByGoogleId(payload.sub);
-      if (!user) {
-        user = await storage.createUser({
-          email: payload.email!,
-          google_id: payload.sub,
-          name: payload.name || null,
-          avatar_url: payload.picture || null,
-        });
-        console.log('New user created:', user.id);
-      } else {
-        console.log('Existing user found:', user.id);
-      }
-
-      // Create session
-      const sessionId = nanoid();
-      const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days
-      await storage.createSession({
-        id: sessionId,
-        user_id: user.id,
-        expires_at: expiresAt,
-      });
-
-      console.log('Session created:', sessionId);
-
-      res.cookie('session', sessionId, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-        expires: expiresAt,
-        domain: process.env.NODE_ENV === 'production' ? undefined : undefined,
-      });
-
-      res.redirect('/?auth=success');
-    } catch (error) {
-      console.error('Auth callback error:', error);
-      res.redirect('/?error=auth_failed');
-    }
+    console.log('Legacy Google OAuth callback accessed - redirecting to Supabase auth');
+    return res.redirect('/api/auth/google');
   });
 
   app.post('/api/auth/logout', requireAuth, async (req: any, res) => {
@@ -277,267 +183,100 @@ export async function registerRoutes(app: Express): Promise<Server> {
         subscribed: subscription?.subscribed || false,
         subscription_tier: subscription?.subscription_tier || null,
         subscription_end: subscription?.subscription_end || null,
-      }
+      },
     });
   });
 
-  // Subscription routes
-  app.post('/api/subscription/create-checkout', requireAuth, async (req: any, res) => {
+  // Script generation endpoint
+  app.post('/api/generate-script', requireAuth, async (req: any, res) => {
     try {
-      if (!process.env.STRIPE_SECRET_KEY) {
-        return res.status(500).json({ error: "Stripe not configured" });
+      const { 
+        title, 
+        description, 
+        length, 
+        customLength, 
+        language, 
+        customLanguage, 
+        tones, 
+        customTone, 
+        isAIChosenTone, 
+        structure, 
+        customStructure, 
+        hook, 
+        customHook, 
+        cta, 
+        customCta, 
+        goal, 
+        customGoal, 
+        targetAudience, 
+        customAudience, 
+        audienceAge, 
+        previousScripts 
+      } = req.body;
+
+      // Check subscription for premium features
+      const subscription = await storage.getSubscription(req.user.id);
+      const hasActiveSubscription = subscription?.subscribed && 
+        subscription.subscription_end && 
+        new Date(subscription.subscription_end) > new Date();
+
+      // Basic validation
+      if (!title || !description) {
+        return res.status(400).json({ error: "Title and description are required" });
       }
 
-      const Stripe = require('stripe');
-      const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+      // For now, return a placeholder response
+      // In production, this would integrate with your AI service
+      const script = `# ${title}
 
-      const customers = await stripe.customers.list({ email: req.user.email, limit: 1 });
-      let customerId;
-      if (customers.data.length > 0) {
-        customerId = customers.data[0].id;
-      }
+## Hook
+${hook === 'custom' ? customHook : hook}
 
-      const session = await stripe.checkout.sessions.create({
-        customer: customerId,
-        customer_email: customerId ? undefined : req.user.email,
-        line_items: [
-          {
-            price: "price_1Rc7AvEHEdRuv5DaPBQ7xjC2",
-            quantity: 1,
-          },
-        ],
-        mode: "subscription",
-        success_url: `${req.headers.origin || 'http://localhost:5000'}/?success=true`,
-        cancel_url: `${req.headers.origin || 'http://localhost:5000'}/?canceled=true`,
-      });
+## Main Content
+${description}
 
-      res.json({ url: session.url });
-    } catch (error) {
-      console.error('Checkout error:', error);
-      res.status(500).json({ error: "Failed to create checkout session" });
-    }
-  });
+## Call to Action
+${cta === 'custom' ? customCta : cta}
 
-  app.post('/api/subscription/customer-portal', requireAuth, async (req: any, res) => {
-    try {
-      if (!process.env.STRIPE_SECRET_KEY) {
-        return res.status(500).json({ error: "Stripe not configured" });
-      }
+---
+Generated with ${length === 'custom' ? customLength : length} length
+Language: ${language === 'custom' ? customLanguage : language}
+Tone: ${isAIChosenTone ? 'AI-chosen' : (tones.includes('custom') ? customTone : tones.join(', '))}
+Structure: ${structure === 'custom' ? customStructure : structure}
+Target Audience: ${targetAudience === 'custom' ? customAudience : targetAudience}
+Age Group: ${audienceAge}
+Goal: ${goal === 'custom' ? customGoal : goal}`;
 
-      const Stripe = require('stripe');
-      const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-
-      const customers = await stripe.customers.list({ email: req.user.email, limit: 1 });
-      if (customers.data.length === 0) {
-        return res.status(404).json({ error: "No Stripe customer found" });
-      }
-
-      const portalSession = await stripe.billingPortal.sessions.create({
-        customer: customers.data[0].id,
-        return_url: `${req.headers.origin || 'http://localhost:5000'}/`,
-      });
-
-      res.json({ url: portalSession.url });
-    } catch (error) {
-      console.error('Customer portal error:', error);
-      res.status(500).json({ error: "Failed to create customer portal session" });
-    }
-  });
-
-  app.post('/api/subscription/check', requireAuth, async (req: any, res) => {
-    try {
-      if (!process.env.STRIPE_SECRET_KEY) {
-        return res.json({ subscribed: false });
-      }
-
-      const Stripe = require('stripe');
-      const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-
-      const customers = await stripe.customers.list({ email: req.user.email, limit: 1 });
-      
-      if (customers.data.length === 0) {
-        await storage.createOrUpdateSubscription({
-          user_id: req.user.id,
-          stripe_customer_id: null,
-          subscribed: false,
-          subscription_tier: null,
-          subscription_end: null,
-        });
-        return res.json({ subscribed: false });
-      }
-
-      const customerId = customers.data[0].id;
-      const subscriptions = await stripe.subscriptions.list({
-        customer: customerId,
-        status: "active",
-        limit: 1,
-      });
-
-      const hasActiveSub = subscriptions.data.length > 0;
-      let subscriptionEnd = null;
-
-      if (hasActiveSub) {
-        const subscription = subscriptions.data[0];
-        subscriptionEnd = new Date(subscription.current_period_end * 1000);
-      }
-
-      await storage.createOrUpdateSubscription({
-        user_id: req.user.id,
-        stripe_customer_id: customerId,
-        subscribed: hasActiveSub,
-        subscription_tier: hasActiveSub ? "Premium" : null,
-        subscription_end: subscriptionEnd,
-      });
-
-      res.json({
-        subscribed: hasActiveSub,
-        subscription_tier: hasActiveSub ? "Premium" : null,
-        subscription_end: subscriptionEnd,
-      });
-    } catch (error) {
-      console.error('Check subscription error:', error);
-      res.status(500).json({ error: "Failed to check subscription" });
-    }
-  });
-
-  // Script generation route - No authentication required
-  app.post('/api/generate-script', async (req: any, res) => {
-    try {
-      if (!process.env.OPENROUTER_API_KEY) {
-        return res.status(500).json({ error: "AI service not configured. Please provide OpenRouter API key." });
-      }
-
-      const formData = req.body;
-
-      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
-          'Content-Type': 'application/json',
-          'HTTP-Referer': process.env.REPLIT_DEV_DOMAIN || 'http://localhost:5000',
-          'X-Title': 'Reel Script AI'
-        },
-        body: JSON.stringify({
-          model: 'meta-llama/llama-3.2-3b-instruct:free',
-          messages: [
-            {
-              role: 'system',
-              content: 'You are a viral short-form video scriptwriter. Write engaging, natural-sounding scripts for social media reels. Output only the spoken script as a single paragraph, no headings or formatting.'
-            },
-            {
-              role: 'user',
-              content: `Write a ${formData.length || '30-60 second'} viral script about: ${formData.description}. Target audience: ${formData.targetAudience || 'general'}. Tone: ${formData.tones?.join(', ') || 'engaging'}. Include a hook, main content, and call-to-action.`
-            }
-          ],
-          temperature: 0.8,
-          max_tokens: 500,
-          top_p: 0.9
-        })
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`OpenRouter API request failed: ${response.status}`);
-      }
-
-      const data = await response.json();
-      
-      if (!data.choices || !data.choices[0] || !data.choices[0].message) {
-        throw new Error('Invalid response format from OpenRouter API');
-      }
-
-      res.json({ script: data.choices[0].message.content });
+      res.json({ script });
     } catch (error) {
       console.error('Script generation error:', error);
       res.status(500).json({ error: "Failed to generate script" });
     }
   });
 
-  // Helper function to build prompt
-  const buildPrompt = (formData: any): string => {
-    let prompt = `You are an elite short-form video scriptwriter. Your job is to write a compelling spoken script (what the creator says) that makes a reel go viral using the best storytelling and hook psychology available.
+  // Subscription management
+  app.post('/api/create-checkout-session', requireAuth, async (req: any, res) => {
+    try {
+      // This would integrate with Stripe in production
+      res.json({ 
+        url: "https://checkout.stripe.com/pay/example",
+        message: "Stripe integration not implemented yet" 
+      });
+    } catch (error) {
+      console.error('Checkout session error:', error);
+      res.status(500).json({ error: "Failed to create checkout session" });
+    }
+  });
 
-Your output should be:
+  // Health check
+  app.get('/api/health', (req, res) => {
+    res.json({ 
+      status: 'ok', 
+      timestamp: new Date().toISOString(),
+      supabase: isSupabaseConfigured ? 'configured' : 'not configured'
+    });
+  });
 
-A single paragraph (natural for a creator to speak)
-
-No headings, no labels, no formatting
-
-Use commas and periods where appropriate
-
-The paragraph should feel natural, rhythmic, personal, and visually supported
-
-Follow this structure and logic in your writing:
-
-Use Callaway's 3-step hook formula at the start:
-
-Context Lean: Be ultra-clear about the topic and create immediate interest by referencing a benefit, pain point, mind-blowing stat, or metaphor
-
-Scroll-Stop Interjection: Use a word like "but", "yet", or "however" to deliver a surprising contrast
-
-Contrarian Snapback: Flip expectations in a direction that opens a curiosity loop and teases deeper insight
-
-Build the rest of the script using:
-
-The Dance (alternating conflict and context beats)
-
-Rhythm (sentence variety: short, medium, long, staccato when needed)
-
-Conversational Tone (as if the creator is talking to one close friend)
-
-Clear Direction (start with the end in mind, loop final line to intro if possible)
-
-Unique Story Lens (an unexpected or niche perspective that makes the take feel fresh)
-
-CTA (naturally integrate this toward the end if provided)
-
-Assume a strong visual hook will be shown on-screen during the first 2 seconds. Do not mention visuals in the script — just write the spoken part.
-
-Output just the final script paragraph. No explanations.
-
-🔽 USER INPUT VARIABLES:
-
-Reel Description: ${formData.description}
-
-Reel Title (Optional): ${formData.title || 'N/A'}
-
-Reel Length: ${formData.length && formData.length !== 'ai-choose' ? 
-  (formData.length === 'custom' && formData.customLength ? formData.customLength : formData.length) : 
-  'AI will choose optimal length'}
-
-Language / Dialect: ${formData.language === 'custom' ? formData.customLanguage : (formData.language || 'English')}
-
-Tone (Multiple Selection): ${formData.isAIChosenTone ? 'AI will choose optimal tone' : 
-  (formData.tones && formData.tones.length > 0 ? 
-    (formData.tones.includes('custom') && formData.customTone ? 
-      [...formData.tones.filter((t: string) => t !== 'custom'), formData.customTone].join(', ') : 
-      formData.tones.join(', ')) : 
-    'Not specified')}
-
-Script Structure: ${formData.structure === 'custom' ? formData.customStructure : 
-  (formData.structure && formData.structure !== 'ai-choose' ? formData.structure : 'AI will choose optimal structure')}
-
-Hook: ${formData.hook === 'custom' ? formData.customHook : 
-  (formData.hook && formData.hook !== 'ai-choose' ? formData.hook : 'AI will choose optimal hook')}
-
-Previous Reel Scripts (Optional): ${formData.previousScripts && formData.previousScripts.length > 0 ? 
-  formData.previousScripts.map((script: string, index: number) => `${index + 1}. ${script.substring(0, 200)}...`).join('\n') : 
-  'None provided'}
-
-Reel Goal: ${formData.goal === 'custom' ? formData.customGoal : 
-  (formData.goal && formData.goal !== 'ai-choose' ? formData.goal : 'AI will choose optimal goal')}
-
-Target Audience: ${formData.targetAudience === 'custom' ? formData.customAudience : 
-  (formData.targetAudience && formData.targetAudience !== 'ai-choose' ? formData.targetAudience : 'AI will choose optimal audience')}
-
-Call to Action (CTA): ${formData.cta === 'custom' ? formData.customCta : 
-  (formData.cta && formData.cta !== 'ai-choose' ? formData.cta : 'AI will choose optimal CTA')}
-
-Audience Age (Optional): ${formData.audienceAge && formData.audienceAge !== 'all-ages' ? formData.audienceAge : 'Not specified'}`;
-
-    return prompt;
-  };
-
-  const httpServer = createServer(app);
-  return httpServer;
+  const server = createServer(app);
+  return server;
 }
