@@ -67,13 +67,34 @@
                     }
                 })
 
-                // Get the current session from Supabase
-                const { data: { session }, error } = await supabase.auth.getSession()
+                // First, try to handle the auth callback
+                const { data, error } = await supabase.auth.getSession()
                 
                 if (error) {
                     console.error('Auth error:', error)
                     window.location.href = '/?error=auth_failed'
                     return
+                }
+
+                let session = data.session
+
+                // If no session, try to exchange the auth code
+                if (!session) {
+                    const urlParams = new URLSearchParams(window.location.search)
+                    const code = urlParams.get('code')
+                    
+                    if (code) {
+                        console.log('Exchanging auth code for session...')
+                        const { data: sessionData, error: sessionError } = await supabase.auth.exchangeCodeForSession(code)
+                        
+                        if (sessionError) {
+                            console.error('Code exchange error:', sessionError)
+                            window.location.href = '/?error=code_exchange_failed'
+                            return
+                        }
+                        
+                        session = sessionData.session
+                    }
                 }
 
                 if (session) {
@@ -85,6 +106,7 @@
                         headers: {
                             'Content-Type': 'application/json',
                         },
+                        credentials: 'include',
                         body: JSON.stringify({
                             access_token: session.access_token,
                             refresh_token: session.refresh_token,
@@ -93,14 +115,16 @@
                     })
 
                     if (sessionResponse.ok) {
+                        console.log('Backend session created successfully')
                         // Redirect to the main app
                         window.location.href = '/?auth=success'
                     } else {
-                        console.error('Failed to create backend session')
+                        const errorText = await sessionResponse.text()
+                        console.error('Failed to create backend session:', errorText)
                         window.location.href = '/?error=session_failed'
                     }
                 } else {
-                    console.error('No session found')
+                    console.error('No session found after authentication')
                     window.location.href = '/?error=no_session'
                 }
             } catch (error) {

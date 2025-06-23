@@ -42,7 +42,7 @@ export const UserMenu: React.FC = () => {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           <Avatar className="h-8 w-8">
-            <AvatarImage src={user.user_metadata?.avatar_url} alt={user.email || ''} />
+            <AvatarImage src={user.avatar_url ?? undefined} alt={user.email || ''} />
             <AvatarFallback className="bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-300">
               {userInitials}
             </AvatarFallback>

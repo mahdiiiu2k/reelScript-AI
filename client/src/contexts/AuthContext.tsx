@@ -1,5 +1,6 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
+// Note: Supabase client will be accessed via API endpoints for consistency
 
 interface User {
   id: number;
@@ -40,6 +41,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const checkAuth = async () => {
     try {
+      // Check if user just signed in from URL params
+      const urlParams = new URLSearchParams(window.location.search);
+      const authSuccess = urlParams.get('auth');
+      
+      if (authSuccess === 'success') {
+        console.log('Auth success detected from URL');
+        // Clear the URL params
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+
+      // Check backend authentication
       const response = await fetch('/api/auth/me', {
         credentials: 'include',
       });
@@ -48,6 +60,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const data = await response.json();
         setUser(data.user);
         setSubscription(data.subscription);
+        console.log('User authenticated:', data.user.email);
       } else {
         setUser(null);
         setSubscription({ subscribed: false });
