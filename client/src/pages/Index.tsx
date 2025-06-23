@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Header } from '@/components/Header';
 import { ScriptForm } from '@/components/ScriptForm';
 import { ScriptResult } from '@/components/ScriptResult';
-import { SignInPrompt } from '@/components/SignInPrompt';
+import { SubscriptionCard } from '@/components/SubscriptionCard';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { toast } from 'sonner';
@@ -73,7 +73,7 @@ const Index = () => {
           {/* Subscription Card - Always show for non-subscribers */}
           {!subscription.subscribed && (
             <div className="lg:col-span-1">
-              <SignInPrompt />
+              <SubscriptionCard />
             </div>
           )}
 
