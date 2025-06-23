@@ -1,0 +1,107 @@
+==> Cloning from https://github.com/mahdiiiu2k/reelScript-AI
+==> Checking out commit 6aaefda8dea2cec80e407ef07c3feff7017f5de0 in branch main
+==> Downloading cache...
+==> Transferred 224MB in 8s. Extraction took 5s.
+==> Using Node.js version 22.16.0 (default)
+==> Docs on specifying a Node.js version: https://render.com/docs/node-version
+==> Using Bun version 1.1.0 (default)
+==> Docs on specifying a Bun version: https://render.com/docs/bun-version
+==> Running build command 'npm install --include=dev && npm run build'...
+up to date, audited 545 packages in 2s
+73 packages are looking for funding
+  run `npm fund` for details
+8 vulnerabilities (1 low, 7 moderate)
+To address issues that do not require attention, run:
+  npm audit fix
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+Run `npm audit` for details.
+> rest-express@1.0.0 build
+> vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist
+vite v5.4.14 building for production...
+transforming...
+Browserslist: browsers data (caniuse-lite) is 8 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+✓ 1735 modules transformed.
+rendering chunks...
+computing gzip size...
+../dist/public/index.html                   0.87 kB │ gzip:   0.49 kB
+../dist/public/assets/index-C-10b33v.css   96.03 kB │ gzip:  15.33 kB
+../dist/public/assets/index-DQCmaIjp.js   458.86 kB │ gzip: 139.11 kB
+✓ built in 3.75s
+  dist/index.js  26.8kb
+⚡ Done in 5ms
+==> Uploading build...
+==> Uploaded in 6.2s. Compression took 3.0s
+==> Build successful 🎉
+==> Deploying...
+==> Running 'npm run start'
+> rest-express@1.0.0 start
+> NODE_ENV=production node dist/index.js
+Connecting to PostgreSQL database...
+✅ Supabase client initialized: https://nvthjpjveqeuscyixwqg.supabase.co
+✅ Supabase configuration detected - enhanced auth features available
+OAuth Configuration: {
+  supabaseConfigured: true,
+  googleClientId: 'Set',
+  googleClientSecret: 'Set',
+  supabaseCallbackUrl: 'https://nvthjpjveqeuscyixwqg.supabase.co/auth/v1/callback',
+  appRedirectUrl: 'https://reelscript-ai.onrender.com'
+}
+6:11:51 PM [express] serving on port 5000
+✅ Successfully connected to PostgreSQL database
+==> Your service is live 🎉
+6:13:53 PM [express] GET /api/auth/me 304 in 729ms :: {"user":{"id":10,"email":"chouikimahdiabderrah…
+Checkout session error: Error: Dynamic require of "stripe" is not supported
+    at file:///opt/render/project/src/dist/index.js:6:9
+    at file:///opt/render/project/src/dist/index.js:477:22
+    at Layer.handle [as handle_request] (/opt/render/project/src/node_modules/express/lib/router/layer.js:95:5)
+    at next (/opt/render/project/src/node_modules/express/lib/router/route.js:149:13)
+    at requireAuth (file:///opt/render/project/src/dist/index.js:235:5)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+6:13:57 PM [express] POST /api/subscription/create-checkout 500 in 482ms :: {"error":"Failed to crea…
+Checkout session error: Error: Dynamic require of "stripe" is not supported
+    at file:///opt/render/project/src/dist/index.js:6:9
+    at file:///opt/render/project/src/dist/index.js:477:22
+    at Layer.handle [as handle_request] (/opt/render/project/src/node_modules/express/lib/router/layer.js:95:5)
+    at next (/opt/render/project/src/node_modules/express/lib/router/route.js:149:13)
+    at requireAuth (file:///opt/render/project/src/dist/index.js:235:5)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+6:14:00 PM [express] POST /api/subscription/create-checkout 500 in 482ms :: {"error":"Failed to crea…
+Checkout session error: Error: Dynamic require of "stripe" is not supported
+    at file:///opt/render/project/src/dist/index.js:6:9
+    at file:///opt/render/project/src/dist/index.js:477:22
+    at Layer.handle [as handle_request] (/opt/render/project/src/node_modules/express/lib/router/layer.js:95:5)
+    at next (/opt/render/project/src/node_modules/express/lib/router/route.js:149:13)
+    at requireAuth (file:///opt/render/project/src/dist/index.js:235:5)
+6:14:02 PM [express] POST /api/subscription/create-checkout 500 in 482ms :: {"error":"Failed to crea…
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+6:14:24 PM [express] GET /api/auth/me 304 in 722ms :: {"user":{"id":10,"email":"chouikimahdiabderrah…
+Checkout session error: Error: Dynamic require of "stripe" is not supported
+    at file:///opt/render/project/src/dist/index.js:6:9
+    at file:///opt/render/project/src/dist/index.js:477:22
+    at Layer.handle [as handle_request] (/opt/render/project/src/node_modules/express/lib/router/layer.js:95:5)
+    at next (/opt/render/project/src/node_modules/express/lib/router/route.js:149:13)
+    at requireAuth (file:///opt/render/project/src/dist/index.js:235:5)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+6:14:30 PM [express] POST /api/subscription/create-checkout 500 in 480ms :: {"error":"Failed to crea…
+6:14:34 PM [express] POST /api/auth/logout 200 in 721ms :: {"success":true}
+Initiating Supabase Google OAuth
+Redirecting to Supabase OAuth URL: https://nvthjpjveqeuscyixwqg.supabase.co/auth/v1/authorize?provider=google&redirect_to=https%3A%2F%2Freelscript-ai.onrender.com%2Fapi%2Fauth%2Fcallback
+6:14:39 PM [express] GET /api/auth/google 302 in 3ms
+6:14:44 PM [express] GET /api/auth/callback 200 in 2ms
+Creating session with tokens...
+Retrieved user: cloudgateaii@gmail.com
+Created new user: 11
+Session created successfully: gDL6zamUo20JOMCjGVqGi
+6:14:47 PM [express] POST /api/auth/session 200 in 1579ms :: {"success":true,"user":{"id":11,"email"…
+6:14:49 PM [express] GET /api/auth/me 200 in 718ms :: {"user":{"id":11,"email":"cloudgateaii@gmail.c…
+Checkout session error: Error: Dynamic require of "stripe" is not supported
+    at file:///opt/render/project/src/dist/index.js:6:9
+    at file:///opt/render/project/src/dist/index.js:477:22
+    at Layer.handle [as handle_request] (/opt/render/project/src/node_modules/express/lib/router/layer.js:95:5)
+    at next (/opt/render/project/src/node_modules/express/lib/router/route.js:149:13)
+    at requireAuth (file:///opt/render/project/src/dist/index.js:235:5)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+6:14:57 PM [express] POST /api/subscription/create-checkout 500 in 480ms :: {"error":"Failed to crea…

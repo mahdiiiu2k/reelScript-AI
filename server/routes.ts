@@ -4,6 +4,7 @@ import { storage } from "./storage";
 import { nanoid } from "nanoid";
 import cookieParser from "cookie-parser";
 import { supabase, isSupabaseConfigured } from "../lib/supabaseClient";
+import Stripe from "stripe";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   app.use(cookieParser());
@@ -363,7 +364,7 @@ Goal: ${goal === 'custom' ? customGoal : goal}`;
         return res.status(500).json({ error: "Stripe not configured" });
       }
 
-      const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+      const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
       const priceId = 'price_1Rc7AvEHEdRuv5DaPBQ7xjC2'; // $5/month price ID from replit.md
 
       const session = await stripe.checkout.sessions.create({
@@ -396,7 +397,7 @@ Goal: ${goal === 'custom' ? customGoal : goal}`;
         return res.status(500).json({ error: "Stripe not configured" });
       }
 
-      const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+      const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
       
       // Get the user's Stripe customer ID from subscription
       const subscription = await storage.getSubscription(req.user.id);
@@ -453,8 +454,8 @@ Goal: ${goal === 'custom' ? customGoal : goal}`;
         return res.status(400).send('Webhook secret not configured');
       }
 
-      const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-      event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
+      const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+      event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET!);
     } catch (err) {
       console.error('Webhook signature verification failed:', err);
       return res.status(400).send(`Webhook Error: ${err.message}`);
