@@ -1,0 +1,128 @@
+~/workspace$ rm -f .git/index.lock .git/objects/maintenance.lock.git/logs/REBASE_HEAD
+~/workspace$ git push origin main
+Enumerating objects: 26, done.
+Counting objects: 100% (26/26), done.
+Delta compression using up to 8 threads
+Compressing objects: 100% (15/15), done.
+Writing objects: 100% (16/16), 5.13 KiB | 2.56 MiB/s, done.
+Total 16 (delta 11), reused 0 (delta 0), pack-reused 0 (from 0)
+remote: Resolving deltas: 100% (11/11), completed with 8 local objects.
+remote: error: GH013: Repository rule violations found for refs/heads/main.
+remote: 
+remote: - GITHUB PUSH PROTECTION
+remote:   —————————————————————————————————————————
+remote:     Resolve the following violations before pushing again
+remote: 
+remote:     - Push cannot contain secrets
+remote: 
+remote:     
+remote:      (?) Learn how to resolve a blocked push
+remote:      https://docs.github.com/code-security/secret-scanning/working-with-secret-scanning-and-push-protection/working-with-push-protection-from-the-command-line#resolving-a-blocked-push
+remote:     
+remote:      (?) This repository does not have Secret Scanning enabled, but is eligible. Enable Secret Scanning to view and manage detected secrets.
+remote:      Visit the repository settings page, https://github.com/mahdiiiu2k/reelScript-AI/settings/security_analysis
+remote:     
+remote:     
+remote:       —— Google OAuth Access Token —————————————————————————
+remote:        locations:
+remote:          - commit: 41083e26339337dd6be9a44cfb05d573e62e6b56
+remote:            path: attached_assets/Pasted-Completing-sign-in-Redirecting-Starting-auth-callback-handling-Current-URL-https-re-1750699125871_1750699125873.txt:5
+remote:          - commit: 41083e26339337dd6be9a44cfb05d573e62e6b56
+remote:            path: attached_assets/Pasted-Completing-sign-in-Redirecting-Starting-auth-callback-handling-Current-URL-https-re-1750699125871_1750699125873.txt:11
+remote:     
+remote:        (?) To push, remove secret from commit(s) or follow this URL to allow the secret.
+remote:        https://github.com/mahdiiiu2k/reelScript-AI/security/secret-scanning/unblock-secret/2yuzg6r7xBRRZPmGshFMPEL2aTy
+remote:     
+remote: 
+remote: 
+To https://github.com/mahdiiiu2k/reelScript-AI
+ ! [remote rejected] main -> main (push declined due to repository rule violations)
+error: failed to push some refs to 'https://github.com/mahdiiiu2k/reelScript-AI'
+~/workspace$ ^C
+~/workspace$ rm -f .git/index.lock
+rm -f "attached_assets/Pasted-Completing-sign-in-Redirecting-Starting-auth-callback-handling-Current-URL-https-re-1750699125871_1750699125873.txt"
+~/workspace$ git add .
+git commit -m "Remove OAuth token files for security and complete authentication system"
+git push origin main
+On branch main
+Your branch is ahead of 'origin/main' by 3 commits.
+  (use "git push" to publish your local commits)
+
+nothing to commit, working tree clean
+Enumerating objects: 30, done.
+Counting objects: 100% (30/30), done.
+Delta compression using up to 8 threads
+Compressing objects: 100% (19/19), done.
+Writing objects: 100% (20/20), 6.90 KiB | 3.45 MiB/s, done.
+Total 20 (delta 12), reused 0 (delta 0), pack-reused 0 (from 0)
+remote: Resolving deltas: 100% (12/12), completed with 8 local objects.
+remote: error: GH013: Repository rule violations found for refs/heads/main.
+remote: 
+remote: - GITHUB PUSH PROTECTION
+remote:   —————————————————————————————————————————
+remote:     Resolve the following violations before pushing again
+remote: 
+remote:     - Push cannot contain secrets
+remote: 
+remote:     
+remote:      (?) Learn how to resolve a blocked push
+remote:      https://docs.github.com/code-security/secret-scanning/working-with-secret-scanning-and-push-protection/working-with-push-protection-from-the-command-line#resolving-a-blocked-push
+remote:     
+remote:      (?) This repository does not have Secret Scanning enabled, but is eligible. Enable Secret Scanning to view and manage detected secrets.
+remote:      Visit the repository settings page, https://github.com/mahdiiiu2k/reelScript-AI/settings/security_analysis
+remote:     
+remote:     
+remote:       —— Google OAuth Access Token —————————————————————————
+remote:        locations:
+remote:          - commit: 41083e26339337dd6be9a44cfb05d573e62e6b56
+remote:            path: attached_assets/Pasted-Completing-sign-in-Redirecting-Starting-auth-callback-handling-Current-URL-https-re-1750699125871_1750699125873.txt:5
+remote:          - commit: 41083e26339337dd6be9a44cfb05d573e62e6b56
+remote:            path: attached_assets/Pasted-Completing-sign-in-Redirecting-Starting-auth-callback-handling-Current-URL-https-re-1750699125871_1750699125873.txt:11
+remote:     
+remote:        (?) To push, remove secret from commit(s) or follow this URL to allow the secret.
+remote:        https://github.com/mahdiiiu2k/reelScript-AI/security/secret-scanning/unblock-secret/2yuzg6r7xBRRZPmGshFMPEL2aTy
+remote:     
+remote: 
+remote: 
+To https://github.com/mahdiiiu2k/reelScript-AI
+ ! [remote rejected] main -> main (push declined due to repository rule violations)
+error: failed to push some refs to 'https://github.com/mahdiiiu2k/reelScript-AI'
+~/workspace$ rm -f .git/index.lock .git/objects/maintenance.lock .git/logs/REBASE_HEAD
+~/workspace$ git reset --hard 94cec22
+HEAD is now at 94cec22 Improve Google login process and address authentication redirection issues
+error: Unable to create '/home/runner/workspace/.git/packed-refs.lock': File exists.
+
+Another git process seems to be running in this repository, e.g.
+an editor opened by 'git commit'. Please make sure all processes
+are terminated then try again. If it still fails, a git process
+may have crashed in this repository earlier:
+remove the file manually to continue.
+error: Unable to create '/home/runner/workspace/.git/packed-refs.lock': File exists.
+
+Another git process seems to be running in this repository, e.g.
+an editor opened by 'git commit'. Please make sure all processes
+are terminated then try again. If it still fails, a git process
+may have crashed in this repository earlier:
+remove the file manually to continue.
+~/workspace$ git add client/public/auth-callback.html server/routes.ts shared/schema.ts replit.md
+~/workspace$ git push origin main
+Everything up-to-date
+~/workspace$ rm -f .git/index.lock .git/packed-refs.lock .git/objects/maintenance.lock .git/logs/REBASE_HEAD
+~/workspace$ git add client/public/auth-callback.html server/routes.ts shared/schema.ts replit.md
+~/workspace$ git commit -m "Fix authentication flow and complete Stripe integration"
+On branch main
+Your branch is ahead of 'origin/main' by 1 commit.
+  (use "git push" to publish your local commits)
+
+nothing to commit, working tree clean
+~/workspace$ git push origin main
+Enumerating objects: 6, done.
+Counting objects: 100% (6/6), done.
+Delta compression using up to 8 threads
+Compressing objects: 100% (4/4), done.
+Writing objects: 100% (4/4), 2.33 KiB | 2.33 MiB/s, done.
+Total 4 (delta 1), reused 0 (delta 0), pack-reused 0 (from 0)
+remote: Resolving deltas: 100% (1/1), completed with 1 local object.
+To https://github.com/mahdiiiu2k/reelScript-AI
+   94cec22..bbe14ec  main -> main
+~/workspace$ 
