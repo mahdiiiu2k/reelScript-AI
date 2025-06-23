@@ -69,52 +69,33 @@ const Index = () => {
     <div className="min-h-screen bg-gradient-to-br from-sky-50 via-cyan-50 to-blue-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 transition-all duration-500">
       <Header />
       <main className="container mx-auto px-4 py-8 max-w-6xl">
-        {!user ? (
-          /* Not authenticated - show sign in prompt */
-          <div className="flex items-center justify-center min-h-[60vh]">
-            <SignInPrompt />
-          </div>
-        ) : (
-          /* Authenticated - show main content with subscription-based access */
-          <div className={`grid gap-8 ${subscription.subscribed ? 'grid-cols-1 max-w-4xl mx-auto' : 'grid-cols-1 lg:grid-cols-3'}`}>
-            {/* Subscription prompt for non-subscribers */}
-            {!subscription.subscribed && (
-              <div className="lg:col-span-1">
-                <Card className="bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 border-purple-200 dark:border-purple-700">
-                  <CardContent className="p-6">
-                    <div className="text-center space-y-4">
-                      <h3 className="text-lg font-semibold text-purple-800 dark:text-purple-200">
-                        Unlock Premium Features
-                      </h3>
-                      <p className="text-sm text-gray-600 dark:text-gray-300">
-                        Subscribe to access all script generation features and remove limitations.
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            )}
+        <div className={`grid gap-8 ${subscription.subscribed ? 'grid-cols-1 max-w-4xl mx-auto' : 'grid-cols-1 lg:grid-cols-3'}`}>
+          {/* Subscription Card - Always show for non-subscribers */}
+          {!subscription.subscribed && (
+            <div className="lg:col-span-1">
+              <SignInPrompt />
+            </div>
+          )}
 
-            {/* Main content */}
-            <div className={subscription.subscribed ? 'col-span-1' : 'lg:col-span-2'}>
-              <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-md rounded-2xl shadow-xl border border-gray-200/50 dark:border-slate-700/50 p-6 md:p-8">
-                {!generatedScript ? (
-                  <ScriptForm 
-                    onScriptGenerated={handleScriptGenerated}
-                    isGenerating={isGenerating}
-                    setIsGenerating={setIsGenerating}
-                    hasActiveSubscription={subscription.subscribed}
-                  />
-                ) : (
-                  <ScriptResult 
-                    script={generatedScript}
-                    onNewScript={handleNewScript}
-                  />
-                )}
-              </div>
+          {/* Main content */}
+          <div className={subscription.subscribed ? 'col-span-1' : 'lg:col-span-2'}>
+            <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-md rounded-2xl shadow-xl border border-gray-200/50 dark:border-slate-700/50 p-6 md:p-8">
+              {!generatedScript ? (
+                <ScriptForm 
+                  onScriptGenerated={handleScriptGenerated}
+                  isGenerating={isGenerating}
+                  setIsGenerating={setIsGenerating}
+                  hasActiveSubscription={subscription.subscribed}
+                />
+              ) : (
+                <ScriptResult 
+                  script={generatedScript}
+                  onNewScript={handleNewScript}
+                />
+              )}
             </div>
           </div>
-        )}
+        </div>
       </main>
     </div>
   );
