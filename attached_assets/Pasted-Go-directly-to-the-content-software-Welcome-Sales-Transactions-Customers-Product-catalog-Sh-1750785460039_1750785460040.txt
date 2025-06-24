@@ -1,0 +1,309 @@
+Go directly to the content
+
+software
+Welcome
+Sales
+Transactions
+Customers
+Product catalog
+Shortcuts
+Tax
+Subscriptions
+Products
+Payments
+Billing
+Reporting
+More
+To research
+
+Getting Started Guide
+
+Create an event destination
+
+Select events
+Choose the type of destination
+Configure your destination
+Start by selecting the events you want to listen to
+Stripe will send these events to your destination.
+
+Events of
+Define the scope of your event destination and receive events from your account or connected accounts. Learn more about Connect webhooks.
+
+Your account
+
+Connected accounts
+API Version
+
+API Version
+
+Your current version (2025-05-28.basil)
+Events
+
+Find an event using a name or description…
+Select all
+
+
+Account Person
+v2
+3 events
+
+Occurs when a Person is created.
+
+
+Occurs when a Person is deleted.
+
+
+Occurs when a Person is updated.
+
+
+
+Account
+4 events
+
+Occurs whenever an account status or property has changed.
+
+
+Occurs whenever an external account is created.
+
+
+Occurs whenever an external account is deleted.
+
+
+Occurs whenever an external account is updated.
+
+
+
+Account
+v2
+12 events
+
+This event occurs when an account is closed.
+
+
+Occurs when an Account is created.
+
+
+Occurs when an Account is updated.
+
+
+Occurs when the status of an Account's customer configuration capability is updated.
+
+
+Occurs when an Account's customer configuration is updated.
+
+
+Occurs when the status of an Account's merchant configuration capability is updated.
+
+
+Occurs when an Account's merchant configuration is updated.
+
+
+Occurs when the status of an Account's recipient configuration capability is updated.
+
+
+Occurs when a Recipient's configuration is updated.
+
+
+This event occurs when account defaults are created or updated.
+
+
+Occurs when an Identity is updated.
+
+
+Occurs when an Account's requirements are updated.
+
+
+
+Adjustment
+v2
+1 event
+
+Balance
+1 event
+
+Billing Meter
+2 events
+
+Billing Portal
+3 events
+
+Billing
+8 events
+
+Capability
+1 event
+
+Cash Balance
+1 event
+
+Charge
+13 events
+
+Checkout
+4 events
+
+Climate
+7 events
+
+Coupon
+3 events
+
+Credit Note
+3 events
+
+Customer Cash Balance Transaction
+1 event
+
+Customer
+21 events
+
+Entitlements
+1 event
+
+File
+1 event
+
+Financial Account
+v2
+2 events
+
+Financial Address
+v2
+2 events
+
+Financial Connections
+7 events
+
+Identity
+6 events
+
+Inbound Transfer
+v2
+6 events
+
+Invoice Payment
+1 event
+
+Invoice
+16 events
+
+Invoice item
+2 events
+
+Issuing Authorization
+3 events
+
+Issuing Card
+2 events
+
+Issuing Cardholder
+2 events
+
+Issuing Dispute
+6 events
+
+Issuing Personalization Design
+4 events
+
+Issuing Token
+2 events
+
+Issuing Transaction
+3 events
+
+Mandate
+1 event
+
+Outbound Payment
+v2
+6 events
+
+Outbound Transfer
+v2
+6 events
+
+Payment Intent
+8 events
+
+Payment Link
+2 events
+
+Payment Method
+4 events
+
+Payout
+6 events
+
+Person
+3 events
+
+Plan
+3 events
+
+Price
+3 events
+
+Product
+3 events
+
+Promotion Code
+2 events
+
+Quote
+5 events
+
+Radar
+2 events
+
+Received Credit
+v2
+4 events
+
+Received Debit
+v2
+5 events
+
+Refund
+3 events
+
+Reporting
+3 events
+
+Review
+2 events
+
+Setup Intent
+5 events
+
+Sigma
+1 event
+
+Source
+7 events
+
+Subscription Schedule
+7 events
+
+Tax Rate
+2 events
+
+Tax
+1 event
+
+Terminal
+3 events
+
+Test Helpers
+5 events
+
+Top-up
+5 events
+
+Transaction
+v2
+2 events
+
+Transfer
+3 events
+Cancel
+Continue
