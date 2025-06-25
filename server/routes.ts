@@ -468,18 +468,48 @@ Goal: ${goal === 'custom' ? customGoal : goal}`;
         console.log('Checkout session completed:', session.id);
         
         // Get user ID from metadata
-        const userId = parseInt(session.metadata.user_id);
-        if (userId) {
-          // Create or update subscription
-          await storage.createOrUpdateSubscription({
-            user_id: userId,
-            stripe_customer_id: session.customer,
-            stripe_subscription_id: session.subscription,
-            subscribed: true,
-            subscription_tier: 'premium',
-            subscription_end: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
-          });
-          console.log('Subscription activated for user:', userId);
+        const userId = parseInt(session.metadata?.user_id);
+        if (userId && session.customer && session.subscription) {
+          try {
+            // Create or update subscription
+            await storage.createOrUpdateSubscription({
+              user_id: userId,
+              stripe_customer_id: session.customer,
+              stripe_subscription_id: session.subscription,
+              subscribed: true,
+              subscription_tier: 'premium',
+              subscription_end: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
+            });
+            console.log('✅ Subscription activated for user:', userId);
+          } catch (error) {
+            console.error('❌ Failed to activate subscription:', error);
+          }
+        } else {
+          console.log('❌ Missing required data in checkout session:', { userId, customer: session.customer, subscription: session.subscription });
+        }
+        break;
+
+      case 'customer.subscription.updated':
+        const updatedSubscription = event.data.object;
+        console.log('Subscription updated:', updatedSubscription.id);
+        
+        // Find user by stripe_subscription_id and update status
+        try {
+          const existingSubscription = await storage.getSubscriptionByStripeId(updatedSubscription.id);
+          if (existingSubscription) {
+            const isActive = updatedSubscription.status === 'active';
+            await storage.createOrUpdateSubscription({
+              user_id: existingSubscription.user_id,
+              stripe_customer_id: existingSubscription.stripe_customer_id,
+              stripe_subscription_id: updatedSubscription.id,
+              subscribed: isActive,
+              subscription_tier: isActive ? 'premium' : 'free',
+              subscription_end: isActive ? new Date(updatedSubscription.current_period_end * 1000) : null,
+            });
+            console.log('✅ Subscription updated for user:', existingSubscription.user_id, 'Active:', isActive);
+          }
+        } catch (error) {
+          console.error('❌ Failed to update subscription:', error);
         }
         break;
 
@@ -487,9 +517,66 @@ Goal: ${goal === 'custom' ? customGoal : goal}`;
         const deletedSubscription = event.data.object;
         console.log('Subscription canceled:', deletedSubscription.id);
         
-        // Note: In a full implementation, you'd find the subscription by stripe_subscription_id
-        // For now, this is a placeholder for the webhook handler
-        console.log('Subscription deletion webhook received but not fully implemented');
+        try {
+          const existingSubscription = await storage.getSubscriptionByStripeId(deletedSubscription.id);
+          if (existingSubscription) {
+            await storage.createOrUpdateSubscription({
+              user_id: existingSubscription.user_id,
+              stripe_customer_id: existingSubscription.stripe_customer_id,
+              stripe_subscription_id: deletedSubscription.id,
+              subscribed: false,
+              subscription_tier: 'free',
+              subscription_end: null,
+            });
+            console.log('✅ Subscription canceled for user:', existingSubscription.user_id);
+          }
+        } catch (error) {
+          console.error('❌ Failed to cancel subscription:', error);
+        }
+        break;
+
+      case 'invoice.payment_succeeded':
+        const successfulInvoice = event.data.object;
+        console.log('Payment succeeded for subscription:', successfulInvoice.subscription);
+        
+        try {
+          const existingSubscription = await storage.getSubscriptionByStripeId(successfulInvoice.subscription);
+          if (existingSubscription) {
+            await storage.createOrUpdateSubscription({
+              user_id: existingSubscription.user_id,
+              stripe_customer_id: existingSubscription.stripe_customer_id,
+              stripe_subscription_id: successfulInvoice.subscription,
+              subscribed: true,
+              subscription_tier: 'premium',
+              subscription_end: new Date(successfulInvoice.period_end * 1000),
+            });
+            console.log('✅ Payment confirmed for user:', existingSubscription.user_id);
+          }
+        } catch (error) {
+          console.error('❌ Failed to process payment confirmation:', error);
+        }
+        break;
+
+      case 'invoice.payment_failed':
+        const failedInvoice = event.data.object;
+        console.log('Payment failed for subscription:', failedInvoice.subscription);
+        
+        try {
+          const existingSubscription = await storage.getSubscriptionByStripeId(failedInvoice.subscription);
+          if (existingSubscription) {
+            await storage.createOrUpdateSubscription({
+              user_id: existingSubscription.user_id,
+              stripe_customer_id: existingSubscription.stripe_customer_id,
+              stripe_subscription_id: failedInvoice.subscription,
+              subscribed: false,
+              subscription_tier: 'free',
+              subscription_end: null,
+            });
+            console.log('✅ Subscription deactivated due to payment failure for user:', existingSubscription.user_id);
+          }
+        } catch (error) {
+          console.error('❌ Failed to process payment failure:', error);
+        }
         break;
 
       default:

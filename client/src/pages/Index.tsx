@@ -11,13 +11,17 @@ import { toast } from 'sonner';
 const Index = () => {
   const [generatedScript, setGeneratedScript] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
-  const { user, subscription, loading } = useAuth();
+  const { user, subscription, loading, checkSubscription } = useAuth();
 
   useEffect(() => {
     // Check for success/cancel URL parameters
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('success') === 'true') {
       toast.success('Subscription activated! Welcome to Premium!');
+      // Refresh subscription status immediately
+      if (checkSubscription) {
+        checkSubscription();
+      }
       // Clean up URL
       window.history.replaceState({}, document.title, window.location.pathname);
     } else if (urlParams.get('canceled') === 'true') {
@@ -26,6 +30,10 @@ const Index = () => {
       window.history.replaceState({}, document.title, window.location.pathname);
     } else if (urlParams.get('auth') === 'success') {
       toast.success('Successfully signed in!');
+      // Refresh subscription status after auth
+      if (checkSubscription) {
+        setTimeout(() => checkSubscription(), 1000);
+      }
       // Clean up URL
       window.history.replaceState({}, document.title, window.location.pathname);
     } else if (urlParams.get('error')) {
@@ -40,7 +48,7 @@ const Index = () => {
       // Clean up URL
       window.history.replaceState({}, document.title, window.location.pathname);
     }
-  }, []);
+  }, [checkSubscription]);
 
   const handleScriptGenerated = (script: string) => {
     setGeneratedScript(script);

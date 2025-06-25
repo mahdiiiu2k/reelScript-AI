@@ -98,6 +98,14 @@ The application is configured for deployment on Replit with the following setup:
 
 ```
 Changelog:
+- June 25, 2025. Enhanced Stripe webhook system and subscription flow
+  - Updated Stripe price ID to price_1RdwpGEHEdRuv5DaQJ4gi4pz for new pricing structure
+  - Enhanced webhook handler to process checkout.session.completed, subscription updates, and payment events
+  - Added automatic subscription status refresh when users return from successful payment
+  - Implemented complete subscription flow: payment → webhook → database update → UI refresh
+  - Added getSubscriptionByStripeId method to storage interface for webhook lookups
+  - Enhanced error handling and logging in webhook processing
+  - Subscription card automatically disappears and all form inputs enable after successful payment
 - June 24, 2025. Created comprehensive project documentation
   - Generated complete technical documentation in COMPLETE_PROJECT_DOCUMENTATION.md
   - Created detailed internal functionality guide in INTERNAL_FUNCTIONALITY_GUIDE.md
