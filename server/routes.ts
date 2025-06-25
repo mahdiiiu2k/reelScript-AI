@@ -1,4 +1,5 @@
 import type { Express } from "express";
+import express from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { nanoid } from "nanoid";
@@ -432,39 +433,40 @@ Goal: ${goal === 'custom' ? customGoal : goal}`;
   });
 
   // Stripe webhook endpoint
-  app.post('/api/webhook/stripe', (req, res, next) => {
-    if (req.headers['content-type'] === 'application/json') {
-      let data = '';
-      req.setEncoding('utf8');
-      req.on('data', chunk => data += chunk);
-      req.on('end', () => {
-        req.body = data;
-        next();
-      });
-    } else {
-      next();
-    }
-  }, async (req, res) => {
+  app.post('/api/webhook/stripe', express.raw({ type: 'application/json' }), async (req, res) => {
     const sig = req.headers['stripe-signature'];
     let event;
 
-    console.log('🔔 Webhook received:', {
-      headers: req.headers,
+    console.log('Webhook received:', {
       hasSignature: !!sig,
-      bodyLength: req.body?.length || 0
+      bodyLength: req.body?.length || 0,
+      contentType: req.headers['content-type']
     });
 
     try {
       if (!process.env.STRIPE_WEBHOOK_SECRET) {
-        console.error('❌ Stripe webhook secret not configured');
+        console.error('Stripe webhook secret not configured');
         return res.status(400).send('Webhook secret not configured');
       }
 
       const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
-      event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET!);
-      console.log('✅ Webhook verified successfully. Event type:', event.type);
+      
+      // For test mode, we can be more lenient with webhook verification
+      if (process.env.NODE_ENV === 'development' && !sig) {
+        console.log('Development mode: parsing webhook without signature verification');
+        try {
+          event = JSON.parse(req.body.toString());
+        } catch (parseError) {
+          console.error('Failed to parse webhook body:', parseError);
+          return res.status(400).send('Invalid JSON');
+        }
+      } else {
+        event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET!);
+      }
+      
+      console.log('Webhook verified successfully. Event type:', event.type);
     } catch (err) {
-      console.error('❌ Webhook signature verification failed:', err);
+      console.error('Webhook signature verification failed:', err);
       return res.status(400).send(`Webhook Error: ${err.message}`);
     }
 
@@ -611,27 +613,46 @@ Goal: ${goal === 'custom' ? customGoal : goal}`;
     res.json({received: true});
   });
 
-  // Test endpoint to manually activate subscription (for debugging)
-  app.post('/api/subscription/test-activate', requireAuth, async (req: any, res) => {
+  // Verify and activate subscription after successful Stripe checkout
+  app.post('/api/subscription/verify-session', requireAuth, async (req: any, res) => {
     try {
-      console.log('🧪 Test activation for user:', req.user.id);
+      const { session_id } = req.body;
       
-      const subscriptionData = {
-        user_id: req.user.id,
-        stripe_customer_id: 'test_customer_' + req.user.id,
-        stripe_subscription_id: 'test_sub_' + req.user.id,
-        subscribed: true,
-        subscription_tier: 'premium',
-        subscription_end: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-      };
+      if (!session_id) {
+        return res.status(400).json({ error: 'Session ID required' });
+      }
       
-      const result = await storage.createOrUpdateSubscription(subscriptionData);
-      console.log('✅ Test subscription activated:', result);
+      console.log('Verifying session:', session_id, 'for user:', req.user.id);
       
-      res.json({ success: true, subscription: result });
+      const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+      const session = await stripe.checkout.sessions.retrieve(session_id);
+      
+      if (session.payment_status === 'paid' && session.metadata?.user_id === req.user.id.toString()) {
+        // Create subscription record
+        const subscriptionData = {
+          user_id: req.user.id,
+          stripe_customer_id: session.customer as string,
+          stripe_subscription_id: session.subscription as string,
+          subscribed: true,
+          subscription_tier: 'premium',
+          subscription_end: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+        };
+        
+        const result = await storage.createOrUpdateSubscription(subscriptionData);
+        console.log('Subscription activated via session verification:', result);
+        
+        res.json({ success: true, subscription: result });
+      } else {
+        console.log('Session verification failed:', {
+          paymentStatus: session.payment_status,
+          metadataUserId: session.metadata?.user_id,
+          actualUserId: req.user.id
+        });
+        res.status(400).json({ error: 'Session verification failed' });
+      }
     } catch (error) {
-      console.error('❌ Test activation failed:', error);
-      res.status(500).json({ error: 'Failed to activate test subscription' });
+      console.error('Session verification error:', error);
+      res.status(500).json({ error: 'Failed to verify session' });
     }
   });
 

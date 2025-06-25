@@ -17,11 +17,31 @@ const Index = () => {
     // Check for success/cancel URL parameters
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('success') === 'true') {
-      toast.success('Subscription activated! Welcome to Premium!');
-      // Refresh subscription status immediately
-      if (checkSubscription) {
-        checkSubscription();
+      const sessionId = urlParams.get('session_id');
+      toast.success('Payment successful! Activating your premium access...');
+      
+      // Call backend to verify and activate subscription
+      if (sessionId && user) {
+        fetch('/api/subscription/verify-session', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ session_id: sessionId })
+        }).then(response => {
+          if (response.ok) {
+            checkSubscription();
+            toast.success('Premium access activated!');
+          } else {
+            toast.error('Failed to activate subscription. Please contact support.');
+          }
+        }).catch(() => {
+          toast.error('Error activating subscription.');
+        });
+      } else if (checkSubscription) {
+        // Fallback: just refresh subscription status
+        setTimeout(() => checkSubscription(), 2000);
       }
+      
       // Clean up URL
       window.history.replaceState({}, document.title, window.location.pathname);
     } else if (urlParams.get('canceled') === 'true') {

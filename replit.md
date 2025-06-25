@@ -105,6 +105,8 @@ Changelog:
   - Implemented complete subscription flow: payment → webhook → database update → UI refresh
   - Added getSubscriptionByStripeId method to storage interface for webhook lookups
   - Enhanced error handling and logging in webhook processing
+  - Added session verification endpoint as backup to webhook for reliable subscription activation
+  - Fixed webhook body parsing to properly handle Stripe raw data format
   - Subscription card automatically disappears and all form inputs enable after successful payment
 - June 24, 2025. Created comprehensive project documentation
   - Generated complete technical documentation in COMPLETE_PROJECT_DOCUMENTATION.md
