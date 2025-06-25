@@ -365,7 +365,7 @@ Goal: ${goal === 'custom' ? customGoal : goal}`;
       }
 
       const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
-      const priceId = 'price_1Rc7AvEHEdRuv5DaPBQ7xjC2'; // $5/month price ID from replit.md
+      const priceId = 'price_1RdwpGEHEdRuv5DaQJ4gi4pz'; // $5/month price ID
 
       const session = await stripe.checkout.sessions.create({
         customer_email: req.user.email,

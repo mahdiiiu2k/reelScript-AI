@@ -113,7 +113,7 @@ Changelog:
   - Rebranded application from "Reel Script AI" to "Script Expert"
   - Created custom feather logo design matching brand identity
   - Updated color scheme to sky/cyan gradients throughout UI
-  - Added Stripe price ID (price_1Rc7AvEHEdRuv5DaPBQ7xjC2) for $5/month subscription
+  - Added Stripe price ID (price_1RdwpGEHEdRuv5DaQJ4gi4pz) for $5/month subscription
   - Enhanced subscription button text: "Subscribe Now" when authenticated, "Sign In" when not
   - Updated page title and meta description for SEO optimization
   - Confirmed mobile-first layout with subscription card above form
