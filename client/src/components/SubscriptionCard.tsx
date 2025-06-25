@@ -169,43 +169,14 @@ export const SubscriptionCard: React.FC = () => {
           ))}
         </ul>
         
-        <div className="space-y-3">
-          <Button 
-            onClick={handleSubscribe}
-            disabled={isLoading}
-            className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white text-[18px]"
-            size="lg"
-          >
-            {isLoading ? 'Processing...' : user ? 'Subscribe Now' : 'Sign In'}
-          </Button>
-          
-          {user && (
-            <Button 
-              onClick={async () => {
-                try {
-                  const response = await fetch('/api/subscription/force-activate', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    credentials: 'include',
-                    body: JSON.stringify({ email: user.email })
-                  });
-                  if (response.ok) {
-                    checkSubscription();
-                    toast.success('Premium access activated!');
-                  } else {
-                    toast.error('Please complete payment first');
-                  }
-                } catch (error) {
-                  toast.error('Activation failed');
-                }
-              }}
-              variant="outline"
-              className="w-full border-green-300 text-green-700 hover:bg-green-50 text-sm"
-            >
-              Already Paid? Activate Now
-            </Button>
-          )}
-        </div>
+        <Button 
+          onClick={handleSubscribe}
+          disabled={isLoading}
+          className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white text-[18px]"
+          size="lg"
+        >
+          {isLoading ? 'Processing...' : user ? 'Subscribe Now' : 'Sign In'}
+        </Button>
         
         {!user && (
           <p className="text-center text-sm text-gray-500 dark:text-gray-400">

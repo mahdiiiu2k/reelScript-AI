@@ -20,90 +20,54 @@ const Index = () => {
       const sessionId = urlParams.get('session_id');
       toast.success('Payment successful! Activating your premium access...');
       
-      // Call backend to verify and activate subscription
+      // Activate subscription automatically after payment
       if (sessionId) {
-        // First try to activate subscription
-        const activateSubscription = () => {
-          console.log('Activating subscription with session ID:', sessionId);
+        const activateSubscription = async (userEmail: string) => {
+          console.log('Auto-activating subscription for:', userEmail, 'session:', sessionId);
           
-          // Try email-based activation first (more reliable)
-          if (user?.email) {
-            console.log('Using email-based activation for:', user.email);
-            fetch('/api/subscription/activate-by-email', {
+          try {
+            const response = await fetch('/api/subscription/force-activate', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               credentials: 'include',
               body: JSON.stringify({ 
-                session_id: sessionId,
-                email: user.email 
+                email: userEmail 
               })
-            }).then(async response => {
-              const data = await response.json();
-              console.log('Email activation response:', response.status, data);
-              if (response.ok) {
-                setTimeout(() => {
-                  checkSubscription();
-                  toast.success('Premium access activated!');
-                }, 1000);
-              } else {
-                console.error('Email activation failed:', response.status, data);
-                toast.error('Failed to activate subscription. Please contact support.');
-              }
-            }).catch(error => {
-              console.error('Email activation error:', error);
-              toast.error('Error activating subscription.');
             });
-          } else {
-            // If no user email, try force activation as last resort
-            console.log('No user email available, trying force activation');
-            setTimeout(() => {
-              if (user?.email) {
-                fetch('/api/subscription/force-activate', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  credentials: 'include',
-                  body: JSON.stringify({ email: user.email })
-                }).then(async response => {
-                  const data = await response.json();
-                  console.log('Force activation response:', response.status, data);
-                  if (response.ok) {
-                    setTimeout(() => {
-                      checkSubscription();
-                      toast.success('Premium access activated!');
-                    }, 1000);
-                  } else {
-                    toast.error('Failed to activate subscription. Please contact support.');
-                  }
-                }).catch(error => {
-                  console.error('Force activation error:', error);
-                  toast.error('Error activating subscription.');
-                });
-              } else {
-                toast.error('Please sign in to activate your subscription');
-              }
-            }, 3000);
+            
+            const data = await response.json();
+            console.log('Activation response:', response.status, data);
+            
+            if (response.ok) {
+              checkSubscription();
+              toast.success('Premium access activated!');
+            } else {
+              console.error('Activation failed:', response.status, data);
+              toast.error('Failed to activate subscription. Please contact support.');
+            }
+          } catch (error) {
+            console.error('Activation error:', error);
+            toast.error('Error activating subscription.');
           }
         };
 
-        if (!user) {
-          console.log('No user found, waiting for authentication...');
-          // Wait for user to load, then try activation
-          let attempts = 0;
-          const waitForAuth = () => {
-            attempts++;
-            if (user) {
-              console.log('User loaded, proceeding with verification');
-              activateSubscription();
-            } else if (attempts < 5) {
-              setTimeout(waitForAuth, 1000);
-            } else {
-              toast.error('Please sign in to activate your subscription');
-            }
-          };
-          setTimeout(waitForAuth, 1000);
-        } else {
-          activateSubscription();
-        }
+        // Wait for user authentication with retries
+        let attempts = 0;
+        const maxAttempts = 10;
+        
+        const waitForAuthAndActivate = () => {
+          attempts++;
+          if (user?.email) {
+            activateSubscription(user.email);
+          } else if (attempts < maxAttempts) {
+            setTimeout(waitForAuthAndActivate, 1000);
+          } else {
+            console.error('Failed to authenticate user after payment');
+            toast.error('Please refresh the page and sign in again');
+          }
+        };
+        
+        setTimeout(waitForAuthAndActivate, 500);
       } else if (checkSubscription) {
         // Fallback: just refresh subscription status
         setTimeout(() => checkSubscription(), 2000);
