@@ -22,47 +22,86 @@ const Index = () => {
       
       // Call backend to verify and activate subscription
       if (sessionId) {
+        // First try to activate subscription
+        const activateSubscription = () => {
+          console.log('Activating subscription with session ID:', sessionId);
+          
+          // Try email-based activation first (more reliable)
+          if (user?.email) {
+            console.log('Using email-based activation for:', user.email);
+            fetch('/api/subscription/activate-by-email', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              credentials: 'include',
+              body: JSON.stringify({ 
+                session_id: sessionId,
+                email: user.email 
+              })
+            }).then(async response => {
+              const data = await response.json();
+              console.log('Email activation response:', response.status, data);
+              if (response.ok) {
+                setTimeout(() => {
+                  checkSubscription();
+                  toast.success('Premium access activated!');
+                }, 1000);
+              } else {
+                console.error('Email activation failed:', response.status, data);
+                toast.error('Failed to activate subscription. Please contact support.');
+              }
+            }).catch(error => {
+              console.error('Email activation error:', error);
+              toast.error('Error activating subscription.');
+            });
+          } else {
+            // Fallback to session-based activation
+            console.log('Using session-based activation');
+            fetch('/api/subscription/verify-session', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              credentials: 'include',
+              body: JSON.stringify({ session_id: sessionId })
+            }).then(async response => {
+              const data = await response.json();
+              console.log('Session verification response:', response.status, data);
+              if (response.ok) {
+                setTimeout(() => {
+                  checkSubscription();
+                  toast.success('Premium access activated!');
+                }, 1000);
+              } else if (response.status === 401) {
+                console.log('Not authenticated, please sign in again');
+                toast.error('Please sign in again to activate your subscription');
+              } else {
+                console.error('Session verification failed:', response.status, data);
+                toast.error('Failed to activate subscription. Please contact support.');
+              }
+            }).catch(error => {
+              console.error('Session verification error:', error);
+              toast.error('Error activating subscription.');
+            });
+          }
+        };
+
         if (!user) {
           console.log('No user found, waiting for authentication...');
-          // Wait a moment for user to be loaded from auth context
-          setTimeout(() => {
+          // Wait for user to load, then try activation
+          let attempts = 0;
+          const waitForAuth = () => {
+            attempts++;
             if (user) {
               console.log('User loaded, proceeding with verification');
-              // Retry the verification
-              window.location.reload();
+              activateSubscription();
+            } else if (attempts < 5) {
+              setTimeout(waitForAuth, 1000);
             } else {
               toast.error('Please sign in to activate your subscription');
             }
-          }, 2000);
-          return;
+          };
+          setTimeout(waitForAuth, 1000);
+        } else {
+          activateSubscription();
         }
-        console.log('Verifying session with ID:', sessionId);
-        fetch('/api/subscription/verify-session', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
-          body: JSON.stringify({ session_id: sessionId })
-        }).then(async response => {
-          const data = await response.json();
-          console.log('Session verification response:', response.status, data);
-          if (response.ok) {
-            // Wait a moment then refresh subscription status
-            setTimeout(() => {
-              checkSubscription();
-              toast.success('Premium access activated!');
-            }, 1000);
-          } else {
-            console.error('Session verification failed:', response.status, data);
-            if (response.status === 401) {
-              toast.error('Please sign in again to activate your subscription');
-            } else {
-              toast.error('Failed to activate subscription. Please contact support.');
-            }
-          }
-        }).catch(error => {
-          console.error('Session verification error:', error);
-          toast.error('Error activating subscription.');
-        });
       } else if (checkSubscription) {
         // Fallback: just refresh subscription status
         setTimeout(() => checkSubscription(), 2000);

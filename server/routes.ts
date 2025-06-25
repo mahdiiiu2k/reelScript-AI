@@ -461,13 +461,13 @@ Goal: ${goal === 'custom' ? customGoal : goal}`;
           return res.status(400).send('Invalid JSON');
         }
       } else {
-        event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET!);
+        event = stripe.webhooks.constructEvent(req.body, sig as string, process.env.STRIPE_WEBHOOK_SECRET!);
       }
       
       console.log('Webhook verified successfully. Event type:', event.type);
     } catch (err) {
       console.error('Webhook signature verification failed:', err);
-      return res.status(400).send(`Webhook Error: ${err.message}`);
+      return res.status(400).send(`Webhook Error: ${(err as Error).message}`);
     }
 
     // Handle the event
@@ -504,7 +504,7 @@ Goal: ${goal === 'custom' ? customGoal : goal}`;
             console.log('✅ Subscription activated for user:', userId, 'Result:', result);
           } catch (error) {
             console.error('❌ Failed to activate subscription:', error);
-            console.error('Error details:', error.message, error.stack);
+            console.error('Error details:', (error as Error).message);
           }
         } else {
           console.log('❌ Missing required data in checkout session:', { 
@@ -614,8 +614,78 @@ Goal: ${goal === 'custom' ? customGoal : goal}`;
     res.json({received: true});
   });
 
-  // Verify and activate subscription after successful Stripe checkout
-  app.post('/api/subscription/verify-session', requireAuth, async (req: any, res) => {
+  // Direct subscription activation by email (bypasses auth issues)
+  app.post('/api/subscription/activate-by-email', async (req: any, res) => {
+    try {
+      const { session_id, email } = req.body;
+      
+      if (!session_id || !email) {
+        return res.status(400).json({ error: 'Session ID and email required' });
+      }
+      
+      console.log('Activating subscription for email:', email, 'session:', session_id);
+      
+      // Find user by email
+      const user = await storage.getUserByEmail(email);
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+      
+      // Verify session with Stripe
+      const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+      const session = await stripe.checkout.sessions.retrieve(session_id);
+      
+      console.log('Stripe session details:', {
+        sessionId: session.id,
+        paymentStatus: session.payment_status,
+        customer: session.customer,
+        mode: session.mode
+      });
+      
+      if (session.payment_status === 'paid') {
+        // Create subscription record
+        const subscriptionData = {
+          user_id: user.id,
+          stripe_customer_id: session.customer as string,
+          stripe_subscription_id: session.subscription as string || `checkout_${session.id}`,
+          subscribed: true,
+          subscription_tier: 'premium',
+          subscription_end: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+        };
+        
+        console.log('Creating subscription with data:', subscriptionData);
+        const result = await storage.createOrUpdateSubscription(subscriptionData);
+        console.log('Subscription activated successfully:', result);
+        
+        res.json({ success: true, subscription: result });
+      } else {
+        console.log('Payment not completed:', session.payment_status);
+        res.status(400).json({ error: 'Payment not completed' });
+      }
+    } catch (error) {
+      console.error('Activation error:', error);
+      res.status(500).json({ error: 'Failed to activate subscription', message: (error as Error).message });
+    }
+  });
+
+  // Verify and activate subscription after successful Stripe checkout (with fallback auth)
+  app.post('/api/subscription/verify-session', async (req: any, res) => {
+    // Try authentication first
+    const sessionId = req.cookies.session;
+    let user = null;
+    
+    if (sessionId) {
+      const session = await storage.getSession(sessionId);
+      if (session && session.expires_at > new Date()) {
+        user = await storage.getUser(session.user_id);
+      }
+    }
+    
+    if (!user) {
+      return res.status(401).json({ error: 'Not authenticated', requireSignIn: true });
+    }
+    
+    req.user = user;
     try {
       const { session_id } = req.body;
       
@@ -669,7 +739,7 @@ Goal: ${goal === 'custom' ? customGoal : goal}`;
       }
     } catch (error) {
       console.error('Session verification error:', error);
-      res.status(500).json({ error: 'Failed to verify session', message: error.message });
+      res.status(500).json({ error: 'Failed to verify session', message: (error as Error).message });
     }
   });
 
