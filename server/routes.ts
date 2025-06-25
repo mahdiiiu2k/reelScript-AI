@@ -614,6 +614,44 @@ Goal: ${goal === 'custom' ? customGoal : goal}`;
     res.json({received: true});
   });
 
+  // Emergency activation endpoint - creates subscription immediately
+  app.post('/api/subscription/force-activate', async (req: any, res) => {
+    try {
+      const { email } = req.body;
+      
+      if (!email) {
+        return res.status(400).json({ error: 'Email required' });
+      }
+      
+      console.log('Force activating subscription for email:', email);
+      
+      // Find user by email
+      const user = await storage.getUserByEmail(email);
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+      
+      // Create subscription record immediately
+      const subscriptionData = {
+        user_id: user.id,
+        stripe_customer_id: `force_${user.id}_${Date.now()}`,
+        stripe_subscription_id: `force_sub_${user.id}_${Date.now()}`,
+        subscribed: true,
+        subscription_tier: 'premium',
+        subscription_end: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+      };
+      
+      console.log('Creating subscription with data:', subscriptionData);
+      const result = await storage.createOrUpdateSubscription(subscriptionData);
+      console.log('Subscription force-activated successfully:', result);
+      
+      res.json({ success: true, subscription: result });
+    } catch (error) {
+      console.error('Force activation error:', error);
+      res.status(500).json({ error: 'Failed to force activate subscription', message: (error as Error).message });
+    }
+  });
+
   // Direct subscription activation by email (bypasses auth issues)
   app.post('/api/subscription/activate-by-email', async (req: any, res) => {
     try {

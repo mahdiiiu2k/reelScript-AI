@@ -107,6 +107,8 @@ Changelog:
   - Enhanced error handling and logging in webhook processing
   - Added session verification endpoint as backup to webhook for reliable subscription activation
   - Fixed webhook body parsing to properly handle Stripe raw data format
+  - Added manual "Already Paid? Activate Now" button as fallback for webhook failures
+  - Created force activation endpoint to bypass authentication and webhook issues
   - Subscription card automatically disappears and all form inputs enable after successful payment
 - June 24, 2025. Created comprehensive project documentation
   - Generated complete technical documentation in COMPLETE_PROJECT_DOCUMENTATION.md

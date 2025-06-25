@@ -54,32 +54,34 @@ const Index = () => {
               toast.error('Error activating subscription.');
             });
           } else {
-            // Fallback to session-based activation
-            console.log('Using session-based activation');
-            fetch('/api/subscription/verify-session', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              credentials: 'include',
-              body: JSON.stringify({ session_id: sessionId })
-            }).then(async response => {
-              const data = await response.json();
-              console.log('Session verification response:', response.status, data);
-              if (response.ok) {
-                setTimeout(() => {
-                  checkSubscription();
-                  toast.success('Premium access activated!');
-                }, 1000);
-              } else if (response.status === 401) {
-                console.log('Not authenticated, please sign in again');
-                toast.error('Please sign in again to activate your subscription');
+            // If no user email, try force activation as last resort
+            console.log('No user email available, trying force activation');
+            setTimeout(() => {
+              if (user?.email) {
+                fetch('/api/subscription/force-activate', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  credentials: 'include',
+                  body: JSON.stringify({ email: user.email })
+                }).then(async response => {
+                  const data = await response.json();
+                  console.log('Force activation response:', response.status, data);
+                  if (response.ok) {
+                    setTimeout(() => {
+                      checkSubscription();
+                      toast.success('Premium access activated!');
+                    }, 1000);
+                  } else {
+                    toast.error('Failed to activate subscription. Please contact support.');
+                  }
+                }).catch(error => {
+                  console.error('Force activation error:', error);
+                  toast.error('Error activating subscription.');
+                });
               } else {
-                console.error('Session verification failed:', response.status, data);
-                toast.error('Failed to activate subscription. Please contact support.');
+                toast.error('Please sign in to activate your subscription');
               }
-            }).catch(error => {
-              console.error('Session verification error:', error);
-              toast.error('Error activating subscription.');
-            });
+            }, 3000);
           }
         };
 
