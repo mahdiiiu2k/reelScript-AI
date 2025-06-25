@@ -448,16 +448,23 @@ Goal: ${goal === 'custom' ? customGoal : goal}`;
     const sig = req.headers['stripe-signature'];
     let event;
 
+    console.log('🔔 Webhook received:', {
+      headers: req.headers,
+      hasSignature: !!sig,
+      bodyLength: req.body?.length || 0
+    });
+
     try {
       if (!process.env.STRIPE_WEBHOOK_SECRET) {
-        console.error('Stripe webhook secret not configured');
+        console.error('❌ Stripe webhook secret not configured');
         return res.status(400).send('Webhook secret not configured');
       }
 
       const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
       event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET!);
+      console.log('✅ Webhook verified successfully. Event type:', event.type);
     } catch (err) {
-      console.error('Webhook signature verification failed:', err);
+      console.error('❌ Webhook signature verification failed:', err);
       return res.status(400).send(`Webhook Error: ${err.message}`);
     }
 
@@ -469,23 +476,41 @@ Goal: ${goal === 'custom' ? customGoal : goal}`;
         
         // Get user ID from metadata
         const userId = parseInt(session.metadata?.user_id);
+        console.log('🔍 Checkout session data:', {
+          sessionId: session.id,
+          userId: userId,
+          customer: session.customer,
+          subscription: session.subscription,
+          metadata: session.metadata
+        });
+        
         if (userId && session.customer && session.subscription) {
           try {
             // Create or update subscription
-            await storage.createOrUpdateSubscription({
+            const subscriptionData = {
               user_id: userId,
-              stripe_customer_id: session.customer,
-              stripe_subscription_id: session.subscription,
+              stripe_customer_id: session.customer as string,
+              stripe_subscription_id: session.subscription as string,
               subscribed: true,
               subscription_tier: 'premium',
               subscription_end: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
-            });
-            console.log('✅ Subscription activated for user:', userId);
+            };
+            console.log('💾 Creating subscription with data:', subscriptionData);
+            
+            const result = await storage.createOrUpdateSubscription(subscriptionData);
+            console.log('✅ Subscription activated for user:', userId, 'Result:', result);
           } catch (error) {
             console.error('❌ Failed to activate subscription:', error);
+            console.error('Error details:', error.message, error.stack);
           }
         } else {
-          console.log('❌ Missing required data in checkout session:', { userId, customer: session.customer, subscription: session.subscription });
+          console.log('❌ Missing required data in checkout session:', { 
+            userId, 
+            hasUserId: !!userId,
+            customer: session.customer, 
+            subscription: session.subscription,
+            metadata: session.metadata 
+          });
         }
         break;
 
@@ -586,12 +611,37 @@ Goal: ${goal === 'custom' ? customGoal : goal}`;
     res.json({received: true});
   });
 
+  // Test endpoint to manually activate subscription (for debugging)
+  app.post('/api/subscription/test-activate', requireAuth, async (req: any, res) => {
+    try {
+      console.log('🧪 Test activation for user:', req.user.id);
+      
+      const subscriptionData = {
+        user_id: req.user.id,
+        stripe_customer_id: 'test_customer_' + req.user.id,
+        stripe_subscription_id: 'test_sub_' + req.user.id,
+        subscribed: true,
+        subscription_tier: 'premium',
+        subscription_end: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+      };
+      
+      const result = await storage.createOrUpdateSubscription(subscriptionData);
+      console.log('✅ Test subscription activated:', result);
+      
+      res.json({ success: true, subscription: result });
+    } catch (error) {
+      console.error('❌ Test activation failed:', error);
+      res.status(500).json({ error: 'Failed to activate test subscription' });
+    }
+  });
+
   // Health check
   app.get('/api/health', (req, res) => {
     res.json({ 
       status: 'ok', 
       timestamp: new Date().toISOString(),
-      supabase: isSupabaseConfigured ? 'configured' : 'not configured'
+      supabase: isSupabaseConfigured ? 'configured' : 'not configured',
+      webhookUrl: `${getAppRedirectUrl()}/api/webhook/stripe`
     });
   });
 

@@ -23,6 +23,7 @@ export const subscriptions = pgTable("subscriptions", {
   id: serial("id").primaryKey(),
   user_id: integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
   stripe_customer_id: text("stripe_customer_id"),
+  stripe_subscription_id: text("stripe_subscription_id"),
   subscribed: boolean("subscribed").notNull().default(false),
   subscription_tier: text("subscription_tier"),
   subscription_end: timestamp("subscription_end"),

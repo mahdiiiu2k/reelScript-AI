@@ -78,6 +78,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (!user) return;
     
     try {
+      console.log('🔄 Checking subscription status for user:', user.email);
       const response = await fetch('/api/subscription/check', {
         method: 'POST',
         credentials: 'include',
@@ -85,8 +86,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (response.ok) {
         const data = await response.json();
+        console.log('📊 Subscription data received:', data);
         setSubscription(data);
       } else {
+        console.log('❌ Subscription check failed, setting to false');
         setSubscription({ subscribed: false });
       }
     } catch (error) {

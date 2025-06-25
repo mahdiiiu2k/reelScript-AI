@@ -105,15 +105,38 @@ export const SubscriptionCard: React.FC = () => {
               {isLoading ? 'Loading...' : 'Manage Subscription'}
             </Button>
           </div>
-          <Button 
-            onClick={checkSubscription}
-            variant="ghost"
-            size="sm"
-            className="w-full text-purple-600 dark:text-purple-300"
-          >
-            <Sparkles className="w-4 h-4 mr-2" />
-            Refresh Status
-          </Button>
+          <div className="flex gap-2">
+            <Button 
+              onClick={checkSubscription}
+              variant="ghost"
+              size="sm"
+              className="flex-1 text-purple-600 dark:text-purple-300"
+            >
+              <Sparkles className="w-4 h-4 mr-2" />
+              Refresh Status
+            </Button>
+            <Button 
+              onClick={async () => {
+                try {
+                  const response = await fetch('/api/subscription/test-activate', {
+                    method: 'POST',
+                    credentials: 'include',
+                  });
+                  if (response.ok) {
+                    checkSubscription();
+                    toast.success('Test subscription activated!');
+                  }
+                } catch (error) {
+                  toast.error('Test activation failed');
+                }
+              }}
+              variant="outline"
+              size="sm"
+              className="flex-1 text-xs border-purple-300"
+            >
+              Test Activate
+            </Button>
+          </div>
         </CardContent>
       </Card>
     );
