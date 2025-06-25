@@ -1,0 +1,177 @@
+
+Commencez par sélectionner les événements que vous souhaitez écouter
+Stripe enverra ces événements à votre destination.
+Événements de
+Définissez la portée de votre destination d'événements et recevez des événements de votre compte ou de comptes connectés. En savoir plus sur les webhooks Connect.
+
+Votre compte
+
+Comptes connectés
+Version de l'API
+
+Version de l'API
+
+Votre version actuelle (2025-05-28.basil)
+Événements
+
+Tous les événements
+Événements sélectionnés
+0
+Trouver un événement à l'aide d'un nom ou d'une description…
+Tout sélectionner
+
+
+Account
+4 événements
+
+Balance
+1 événement
+
+Billing Portal
+3 événements
+
+Billing
+8 événements
+
+Capability
+1 événement
+
+Cash Balance
+1 événement
+
+Charge
+13 événements
+
+Checkout
+4 événements
+
+Climate
+7 événements
+
+Coupon
+3 événements
+
+Credit Note
+3 événements
+
+Customer Cash Balance Transaction
+1 événement
+
+Customer
+21 événements
+
+Entitlements
+1 événement
+
+File
+1 événement
+
+Financial Connections
+7 événements
+
+Identity
+6 événements
+
+Invoice Payment
+1 événement
+
+Invoice
+16 événements
+
+Invoiceitem
+2 événements
+
+Issuing Authorization
+3 événements
+
+Issuing Card
+2 événements
+
+Issuing Cardholder
+2 événements
+
+Issuing Dispute
+6 événements
+
+Issuing Personalization Design
+4 événements
+
+Issuing Token
+2 événements
+
+Issuing Transaction
+3 événements
+
+Mandate
+1 événement
+
+Payment Intent
+8 événements
+
+Payment Link
+2 événements
+
+Payment Method
+4 événements
+
+Payout
+6 événements
+
+Person
+3 événements
+
+Plan
+3 événements
+
+Price
+3 événements
+
+Product
+3 événements
+
+Promotion Code
+2 événements
+
+Quote
+5 événements
+
+Radar
+2 événements
+
+Refund
+3 événements
+
+Reporting
+3 événements
+
+Review
+2 événements
+
+Setup Intent
+5 événements
+
+Sigma
+1 événement
+
+Source
+7 événements
+
+Subscription Schedule
+7 événements
+
+Tax Rate
+2 événements
+
+Tax
+1 événement
+
+Terminal
+3 événements
+
+Test Helpers
+5 événements
+
+Topup
+5 événements
+
+Transfer
