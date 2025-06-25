@@ -117,6 +117,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     checkAuth();
+    
+    // Check for payment success in URL
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('success') === 'true') {
+      // Ensure auth is loaded before handling payment success
+      setTimeout(() => {
+        if (!user) {
+          console.log('Waiting for authentication after payment...');
+          checkAuth();
+        }
+      }, 1000);
+    }
   }, []);
 
   const value = {

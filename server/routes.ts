@@ -471,10 +471,11 @@ Goal: ${goal === 'custom' ? customGoal : goal}`;
     }
 
     // Handle the event
+    console.log('Processing webhook event:', event.type);
     switch (event.type) {
       case 'checkout.session.completed':
         const session = event.data.object;
-        console.log('Checkout session completed:', session.id);
+        console.log('✅ Checkout session completed:', session.id);
         
         // Get user ID from metadata
         const userId = parseInt(session.metadata?.user_id);
@@ -486,13 +487,13 @@ Goal: ${goal === 'custom' ? customGoal : goal}`;
           metadata: session.metadata
         });
         
-        if (userId && session.customer && session.subscription) {
+        if (userId && session.customer) {
           try {
             // Create or update subscription
             const subscriptionData = {
               user_id: userId,
               stripe_customer_id: session.customer as string,
-              stripe_subscription_id: session.subscription as string,
+              stripe_subscription_id: session.subscription as string || `checkout_${session.id}`,
               subscribed: true,
               subscription_tier: 'premium',
               subscription_end: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
@@ -618,41 +619,57 @@ Goal: ${goal === 'custom' ? customGoal : goal}`;
     try {
       const { session_id } = req.body;
       
+      console.log('Session verification request:', {
+        sessionId: session_id,
+        userId: req.user?.id,
+        userEmail: req.user?.email
+      });
+      
       if (!session_id) {
         return res.status(400).json({ error: 'Session ID required' });
       }
       
-      console.log('Verifying session:', session_id, 'for user:', req.user.id);
-      
       const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
       const session = await stripe.checkout.sessions.retrieve(session_id);
+      
+      console.log('Stripe session details:', {
+        sessionId: session.id,
+        paymentStatus: session.payment_status,
+        customer: session.customer,
+        subscription: session.subscription,
+        metadata: session.metadata,
+        mode: session.mode
+      });
       
       if (session.payment_status === 'paid' && session.metadata?.user_id === req.user.id.toString()) {
         // Create subscription record
         const subscriptionData = {
           user_id: req.user.id,
           stripe_customer_id: session.customer as string,
-          stripe_subscription_id: session.subscription as string,
+          stripe_subscription_id: session.subscription as string || `checkout_${session.id}`,
           subscribed: true,
           subscription_tier: 'premium',
           subscription_end: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
         };
         
+        console.log('Creating subscription with data:', subscriptionData);
         const result = await storage.createOrUpdateSubscription(subscriptionData);
-        console.log('Subscription activated via session verification:', result);
+        console.log('Subscription activated successfully:', result);
         
         res.json({ success: true, subscription: result });
       } else {
-        console.log('Session verification failed:', {
+        const errorDetails = {
           paymentStatus: session.payment_status,
           metadataUserId: session.metadata?.user_id,
-          actualUserId: req.user.id
-        });
-        res.status(400).json({ error: 'Session verification failed' });
+          actualUserId: req.user.id,
+          userIdMatch: session.metadata?.user_id === req.user.id.toString()
+        };
+        console.log('Session verification failed:', errorDetails);
+        res.status(400).json({ error: 'Session verification failed', details: errorDetails });
       }
     } catch (error) {
       console.error('Session verification error:', error);
-      res.status(500).json({ error: 'Failed to verify session' });
+      res.status(500).json({ error: 'Failed to verify session', message: error.message });
     }
   });
 

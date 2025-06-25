@@ -21,20 +21,46 @@ const Index = () => {
       toast.success('Payment successful! Activating your premium access...');
       
       // Call backend to verify and activate subscription
-      if (sessionId && user) {
+      if (sessionId) {
+        if (!user) {
+          console.log('No user found, waiting for authentication...');
+          // Wait a moment for user to be loaded from auth context
+          setTimeout(() => {
+            if (user) {
+              console.log('User loaded, proceeding with verification');
+              // Retry the verification
+              window.location.reload();
+            } else {
+              toast.error('Please sign in to activate your subscription');
+            }
+          }, 2000);
+          return;
+        }
+        console.log('Verifying session with ID:', sessionId);
         fetch('/api/subscription/verify-session', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
           body: JSON.stringify({ session_id: sessionId })
-        }).then(response => {
+        }).then(async response => {
+          const data = await response.json();
+          console.log('Session verification response:', response.status, data);
           if (response.ok) {
-            checkSubscription();
-            toast.success('Premium access activated!');
+            // Wait a moment then refresh subscription status
+            setTimeout(() => {
+              checkSubscription();
+              toast.success('Premium access activated!');
+            }, 1000);
           } else {
-            toast.error('Failed to activate subscription. Please contact support.');
+            console.error('Session verification failed:', response.status, data);
+            if (response.status === 401) {
+              toast.error('Please sign in again to activate your subscription');
+            } else {
+              toast.error('Failed to activate subscription. Please contact support.');
+            }
           }
-        }).catch(() => {
+        }).catch(error => {
+          console.error('Session verification error:', error);
           toast.error('Error activating subscription.');
         });
       } else if (checkSubscription) {
